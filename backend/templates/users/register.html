@@ -2,8 +2,62 @@
 {% load static %}
 {% load i18n %}
 {% block content %}
-<div class="container vh-100 d-flex flex-column justify-content-center">
-  <div class="mx-auto container-sm bg-body-secondary p-4 rounded-3">
+<style>
+  body {
+    background: url('../../media/backgrounds/register.jpg') repeat center center fixed;
+    background-size: contain;
+    color: white;
+  }
+
+  .register-container {
+    background: rgba(146, 41, 207, 0.1);
+    backdrop-filter: blur(10px);
+    border-radius: 15px;
+    padding: 30px;
+    box-shadow: 0 0 20px rgba(146, 41, 207, 0.5);
+    text-align: center;
+    max-width: 400px;
+    animation: float 3s infinite ease-in-out alternate;
+  }
+
+  @keyframes float {
+    from {
+      transform: translateY(0);
+    }
+    to {
+      transform: translateY(10px);
+    }
+  }
+
+  .form-floating input {
+    background: transparent;
+    border: 2px solid rgba(146, 41, 207, 0.7);
+    color: white;
+    border-radius: 8px;
+    transition: box-shadow 0.3s;
+  }
+
+  .form-floating input:focus {
+    box-shadow: 0 0 10px rgba(146, 41, 207, 1);
+    border-color: rgba(146, 41, 207, 1);
+  }
+
+  .btn-primary, .btn-secondary {
+    border-radius: 50px;
+    transition: all 0.3s ease-in-out;
+    background: linear-gradient(45deg, #6A0DAD, #6A0DAD);
+    border: none;
+    color: white;
+  }
+
+  .btn-primary:hover, .btn-secondary:hover {
+    background: linear-gradient(45deg, #6A0DAD, #89CFF0);
+    box-shadow: 0 0 10px rgba(146, 41, 207, 1);
+  }
+</style>
+
+<div class="container vh-100 d-flex flex-column justify-content-center align-items-center">
+  <div class="register-container">
     <h1>{% translate "Cadastro" %}</h1>
     <form action="{% url 'register' %}" method="post">
       <div class="form-group">

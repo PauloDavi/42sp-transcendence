@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-02-16 00:15-0300\n"
+"POT-Creation-Date: 2025-02-17 15:00-0300\n"
 "PO-Revision-Date: 2025-02-15 00:42-0300\n"
 "Last-Translator:   <super@gmail.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -292,23 +292,23 @@ msgstr "En línea"
 msgid "Offline"
 msgstr "Desconectado"
 
-#: templates/users/login.html:8 templates/users/register.html:25
+#: templates/users/login.html:59 templates/users/register.html:25
 msgid "Login"
 msgstr "Conectar"
 
-#: templates/users/login.html:25
+#: templates/users/login.html:76
 msgid "Logar"
 msgstr "Acceso"
 
-#: templates/users/login.html:29
+#: templates/users/login.html:80
 msgid "Login com 42"
 msgstr "Enter with 42"
 
-#: templates/users/login.html:31 templates/users/register.html:24
+#: templates/users/login.html:82 templates/users/register.html:24
 msgid "Cadastrar"
 msgstr "Registro"
 
-#: templates/users/login.html:41
+#: templates/users/login.html:92
 msgid "Autenticando"
 msgstr "Autenticando"
 
