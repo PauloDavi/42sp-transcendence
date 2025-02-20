@@ -25,7 +25,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
         # Save message on postgres
         await sync_to_async(Message.objects.create)(
-            sender=self.scope["user"], content=message_content
+            sender=self.scope["user"], content=message_content, chat_id=self.room_name
         )
 
         # Send message to room group

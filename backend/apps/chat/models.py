@@ -26,6 +26,7 @@ class ChatParticipants(models.Model):
 
 class Message(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    chat = models.ForeignKey(Chat, related_name="messages", on_delete=models.CASCADE, null=True)
     sender = models.ForeignKey(User, related_name="sent_messages", on_delete=models.CASCADE)
     content = models.TextField()
     sent_at = models.DateTimeField(auto_now_add=True)
