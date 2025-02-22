@@ -5,18 +5,18 @@
     <textarea id="chat-log" cols="100" rows="20"></textarea><br>
     <input id="chat-message-input" type="text" size="100"><br>
     <input id="chat-message-submit" type="button" value="{% translate "Enviar" %}">
-    {{ room_name|json_script:"room-name" }}
+    {{ room_uuid|json_script:"room-uuid" }}
 {% endblock %}
 
 {% block scripts %}
 <script>
-    const roomName = JSON.parse(document.getElementById('room-name').textContent);
+    const roomUuid = JSON.parse(document.getElementById('room-uuid').textContent);
 
     const chatSocket = new WebSocket(
         'ws://'
         + window.location.host
         + '/ws/chat/'
-        + roomName
+        + roomUuid
         + '/'
     );
 
