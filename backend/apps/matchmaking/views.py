@@ -5,6 +5,10 @@ from django.utils.translation import gettext_lazy as _
 from django.contrib.auth.decorators import login_required
 from apps.users.models import User
 from apps.matchmaking.models import Match
+from asgiref.sync import async_to_sync
+from channels.layers import get_channel_layer
+from django.http import JsonResponse
+from django.views.decorators.http import require_http_methods
 
 @login_required
 def create_match(request, opponent_id):
@@ -29,8 +33,53 @@ def create_match(request, opponent_id):
   )
   match.save()
   
+  channel_layer = get_channel_layer()
+  async_to_sync(channel_layer.group_send)(
+    str(opponent.id),
+    {
+      "type": "send_toast",
+      "message": f"{request.user.username} {_('quer jogar contra você')}",
+      "tag": "warning",
+      "title": str(_("Convite de partida")),
+      "action": "match",
+      "extra_data": {
+        "accept_url": reverse("match_game", kwargs={"match_id": match.id}),
+        "accept_text": str(_("Aceitar")),
+        "reject_url": reverse("match_refuse", kwargs={"match_id": match.id}),
+        "reject_text": str(_("Rejeitar")),
+      }
+    },
+  )
+  
   messages.success(request, _("Match created successfully"))
   return redirect(reverse("match_game", kwargs={"match_id": match.id}))
+
+@require_http_methods(["DELETE"])
+@login_required
+def match_refuse(request, match_id):
+  match = get_object_or_404(Match, id=match_id)
+  
+  if match.user1 != request.user and match.user2 != request.user:
+    messages.error(request, _("You are not part of this match"))
+    return redirect("/")
+  
+  opponent = match.user1 if match.user1 != request.user else match.user2
+  
+  match.delete()
+  
+  channel_layer = get_channel_layer()
+  async_to_sync(channel_layer.group_send)(
+    str(opponent.id),
+    {
+      "type": "send_toast",
+      "message": f"{request.user.username} {_('recusou a partida')}",
+      "tag": "danger",
+      "title": str(_("Partida recusada")),
+      "action": "match_refuse",
+    },
+  )
+  
+  return JsonResponse({"status": "success"})
 
 def match_game(request, match_id):
   match = get_object_or_404(Match, id=match_id)

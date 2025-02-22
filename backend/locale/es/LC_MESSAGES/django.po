@@ -8,16 +8,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-02-19 19:04-0300\n"
-"PO-Revision-Date: 2025-02-19 13:32-0300\n"
+"POT-Creation-Date: 2025-02-22 17:53-0300\n"
+"PO-Revision-Date: 2025-02-22 17:55-0300\n"
 "Last-Translator:   <super@gmail.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=3; plural=n == 1 ? 0 : n != 0 && n % 1000000 == 0 ? "
-"1 : 2;\n"
+"Plural-Forms: nplurals=3; plural=n == 1 ? 0 : n != 0 && n % 1000000 == 0 ? 1 : 2;\n"
 "X-Translated-Using: django-rosetta 0.10.1\n"
 
 #: apps/matchmaking/models.py:11
@@ -50,29 +49,49 @@ msgstr "Partido"
 msgid "Partidas"
 msgstr "Partidos"
 
-#: apps/matchmaking/views.py:15
+#: apps/matchmaking/views.py:19
 msgid "Opponent not found"
 msgstr "Oponente no encontrado"
 
-#: apps/matchmaking/views.py:19
+#: apps/matchmaking/views.py:23
 msgid "You can't play against yourself"
 msgstr "No puedes jugar contra ti mismo"
 
-#: apps/matchmaking/views.py:23
+#: apps/matchmaking/views.py:27
 msgid "Opponent is offline"
 msgstr "El oponente está desconectado"
 
-#: apps/matchmaking/views.py:32
+#: apps/matchmaking/views.py:43
+#| msgid "Convite recusado"
+msgid "Convite de partida"
+msgstr "Invitación a un partido"
+
+#: apps/matchmaking/views.py:47
+#| msgid "Aceitar convite"
+msgid "Aceitar"
+msgstr "Aceptar"
+
+#: apps/matchmaking/views.py:49
+#| msgid "Rejected"
+msgid "Rejeitar"
+msgstr "Rechazar"
+
+#: apps/matchmaking/views.py:54
 msgid "Match created successfully"
 msgstr "Partido creado exitosamente"
 
-#: apps/matchmaking/views.py:39
-msgid "Match already finished"
-msgstr "Partido ya terminado"
-
-#: apps/matchmaking/views.py:43
+#: apps/matchmaking/views.py:63 apps/matchmaking/views.py:92
 msgid "You are not part of this match"
 msgstr "No eres parte de este partido"
+
+#: apps/matchmaking/views.py:77
+#| msgid "Partidas"
+msgid "Partida recusada"
+msgstr "Partido rechazado"
+
+#: apps/matchmaking/views.py:88
+msgid "Match already finished"
+msgstr "Partido ya terminado"
 
 #: apps/users/forms.py:8
 msgid "Nome de login"
@@ -244,19 +263,19 @@ msgstr " ganó"
 msgid "Esperando o adversário entrar na partida"
 msgstr "Esperando que el oponente entre al partido"
 
-#: templates/shared/partials/_messages.html:22
+#: templates/shared/partials/_messages.html:20
 msgid "Sucesso"
 msgstr "Éxito"
 
-#: templates/shared/partials/_messages.html:24
+#: templates/shared/partials/_messages.html:22
 msgid "Erro"
 msgstr "Error"
 
-#: templates/shared/partials/_messages.html:26
+#: templates/shared/partials/_messages.html:24
 msgid "Alerta"
 msgstr "Alerta"
 
-#: templates/shared/partials/_messages.html:28
+#: templates/shared/partials/_messages.html:26
 msgid "Informação"
 msgstr "Información"
 
