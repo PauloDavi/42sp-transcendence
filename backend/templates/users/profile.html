@@ -1,6 +1,103 @@
 {% extends 'shared/base.html' %}
 {% load static %}
 {% load i18n %}
+
+{% block styles %}
+<style>
+  body {
+    background: url('../../media/backgrounds/profile.jpg');
+    background-position: center;
+    background-attachment: fixed;
+    animation: moveBackground 60s linear infinite alternate;
+    color: white;
+  }
+
+  @keyframes moveBackground {
+    0% {
+        background-position: 0% 0%;
+    }
+    100% {
+        background-position: 100% 100%;
+    }
+  }
+
+  .card {
+    background: rgba(0, 0, 0, 0.5);
+    border-radius: 15px;
+    box-shadow: 0 0 15px rgba(0, 255, 128, 0.5);
+    border: 2px solid rgba(0, 255, 128, 0.7);
+    overflow: hidden;
+  }
+
+  .card-header {
+    background: linear-gradient(45deg, #00FFA3, #00CFFF);
+    color: black;
+    font-weight: bold;
+  }
+
+  .card-body {
+    color: white;
+  }
+
+  .btn-primary {
+    border-radius: 50px;
+    background: linear-gradient(45deg, #00FFA3, #00CFFF);
+    border: none;
+    color: white;
+    transition: 0.3s;
+  }
+
+  .btn-primary:hover {
+    background: linear-gradient(45deg, #00CFFF, #00FFA3);
+    box-shadow: 0 0 10px rgba(0, 255, 128, 1);
+  }
+
+  .btn-outline-success {
+    border-color: rgba(0, 255, 128, 0.8);
+    color: rgba(0, 255, 128, 0.8);
+  }
+
+  .btn-outline-success:hover {
+    background: rgba(0, 255, 128, 0.8);
+    color: black;
+    box-shadow: 0 0 10px rgba(0, 255, 128, 1);
+  }
+
+  .table {
+    color: white;
+  }
+
+  .table th {
+    background: rgba(0, 255, 128, 0.3);
+  }
+
+  .table-hover tbody tr:hover {
+    background: rgba(0, 255, 128, 0.2);
+  }
+
+  .rounded-circle {
+    border: 2px solid rgba(0, 255, 128, 0.7);
+    box-shadow: 0 0 10px rgba(0, 255, 128, 0.5);
+  }
+
+  .badge {
+    padding: 8px;
+    font-size: 14px;
+  }
+
+  .bg-success {
+    background-color: rgba(0, 255, 128, 0.7) !important;
+    box-shadow: 0 0 10px rgba(0, 255, 128, 0.5);
+  }
+
+  .bg-danger {
+    background-color: rgba(255, 0, 0, 0.7) !important;
+    box-shadow: 0 0 10px rgba(255, 0, 0, 0.5);
+  }
+</style>
+{% endblock %}
+
+
 {% block content %}
 <div class="w-100 ps-4 pb-4 pt-2 row">
     <div class="container col-12 col-md-4">
