@@ -1,5 +1,6 @@
-from django.shortcuts import redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
+from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 from django.contrib.auth.decorators import login_required
 from apps.users.models import User
@@ -22,13 +23,24 @@ def create_match(request, opponent_id):
     messages.error(request, _("Opponent is offline"))
     return redirect(next_url)
   
-  Match(
+  match = Match(
     user1=request.user,
     user2=opponent,
-    winner=request.user,
-    score_user1=1,
-    score_user2=0,
-  ).save()
+  )
+  match.save()
   
   messages.success(request, _("Match created successfully"))
-  return redirect(next_url)
+  return redirect(reverse("match_game", kwargs={"match_id": match.id}))
+
+def match_game(request, match_id):
+  match = get_object_or_404(Match, id=match_id)
+
+  if match.finished_date_played:
+    messages.error(request, _("Match already finished"))
+    return redirect("/")
+
+  if match.user1 != request.user and match.user2 != request.user:
+    messages.error(request, _("You are not part of this match"))
+    return redirect("/")
+
+  return render(request, "matchmaking/pong.html", { "match": match, "is_player1": match.user1 == request.user })

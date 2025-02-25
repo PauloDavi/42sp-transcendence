@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-02-19 13:13-0300\n"
-"PO-Revision-Date: 2025-02-15 00:42-0300\n"
+"POT-Creation-Date: 2025-02-19 19:04-0300\n"
+"PO-Revision-Date: 2025-02-19 13:31-0300\n"
 "Last-Translator:   <super@gmail.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "Language: \n"
@@ -49,21 +49,29 @@ msgstr "Partida"
 msgid "Partidas"
 msgstr "Partidas"
 
-#: apps/matchmaking/views.py:14
+#: apps/matchmaking/views.py:15
 msgid "Opponent not found"
 msgstr "Oponente não encontrado"
 
-#: apps/matchmaking/views.py:18
+#: apps/matchmaking/views.py:19
 msgid "You can't play against yourself"
 msgstr "Você não pode jogar contra si mesmo"
 
-#: apps/matchmaking/views.py:22
+#: apps/matchmaking/views.py:23
 msgid "Opponent is offline"
 msgstr "Oponente esta offline"
 
-#: apps/matchmaking/views.py:33
+#: apps/matchmaking/views.py:32
 msgid "Match created successfully"
 msgstr "Partida criada com sucesso"
+
+#: apps/matchmaking/views.py:39
+msgid "Match already finished"
+msgstr "Partida já foi finalizada"
+
+#: apps/matchmaking/views.py:43
+msgid "You are not part of this match"
+msgstr "Você não faz parte desta partida"
 
 #: apps/users/forms.py:8
 msgid "Nome de login"
@@ -226,6 +234,14 @@ msgstr "Espanhol"
 #: templates/chat/room.html:7 templates/users/chat.html:15
 msgid "Enviar"
 msgstr "Enviar"
+
+#: templates/matchmaking/pong.html:130
+msgid " ganhou!"
+msgstr " ganhou!"
+
+#: templates/matchmaking/pong.html:140
+msgid "Esperando o adversário entrar na partida"
+msgstr "Esperando o adversário entrar na partida"
 
 #: templates/shared/partials/_messages.html:22
 msgid "Sucesso"

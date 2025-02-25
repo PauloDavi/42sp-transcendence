@@ -1,4 +1,5 @@
 database/data
+database/redis
 venv
 .env
 .DS_Store

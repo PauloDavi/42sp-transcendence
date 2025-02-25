@@ -1,0 +1,233 @@
+{% extends 'shared/base.html' %}
+{% load static %}
+{% load i18n %}
+{% block content %}
+<div class="mb-3 mx-auto p-0">
+  <canvas class="canvas-size" id="game"></canvas>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const wsScheme = window.location.protocol === "https:" ? "wss" : "ws";
+  const socket = new WebSocket(`${wsScheme}://${window.location.host}/ws/game/{{ match.id }}/`);
+
+  socket.onopen = function () {
+    console.log("WebSocket do game conectado!");
+  };
+
+  socket.onerror = function (error) {
+    console.error("Erro no WebSocket do game:", error);
+  };
+
+  socket.onclose = function () {
+    console.log("WebSocket do game desconectado!");
+  };
+
+  const canvas = document.getElementById("game");
+  const context = canvas.getContext("2d");
+  const paddleHitSound = new Audio("{% static '/sound/paddleHit.mp3' %}");
+  const wallHitSound = new Audio("{% static '/sound/wallHit.mp3' %}");
+
+  const backgroundCanvas = document.createElement("canvas");
+  const scoreboardCanvas = document.createElement("canvas");
+  const scoreboardContext = scoreboardCanvas.getContext("2d");
+
+  let leftScore, rightScore;
+  let grid, keysPressed = {}, lastKeysPressed = {}, gameStart = false, gameOver = false;
+  let leftPaddle, rightPaddle, ball;
+
+  function initializeGame() {
+    grid = canvas.width * 0.02;
+    leftScore = 0;
+    rightScore = 0;
+
+    leftPaddle = {};
+    rightPaddle = {};
+    ball = {};
+
+    paddleHitSound.load();
+    wallHitSound.load();
+  }
+
+  function loop(timestamp) {
+    if (gameOver || !gameStart) return;
+    draw();
+    verifyKeys();
+    requestAnimationFrame(loop);
+  }
+
+  function verifyKeys() {
+    if (keysPressed["KeyW"] && !lastKeysPressed["KeyW"]) {
+      socket.send(JSON.stringify({ type: "up", event: "keydown" }));
+    } else if (!keysPressed["KeyW"] && lastKeysPressed["KeyW"]) {
+      socket.send(JSON.stringify({ type: "up", event: "keyup" }));
+    }
+    
+    if (keysPressed["KeyS"] && !lastKeysPressed["KeyS"]) {
+      socket.send(JSON.stringify({ type: "down", event: "keydown" }));
+    } else if (!keysPressed["KeyS"] && lastKeysPressed["KeyS"]) {
+      socket.send(JSON.stringify({ type: "down", event: "keyup" }));
+    }
+
+    lastKeysPressed = { ...keysPressed };
+  }
+
+  function draw() {
+    context.clearRect(0, 0, canvas.width, canvas.height);
+
+    context.fillStyle = "white";
+    if (leftPaddle && leftPaddle.x && leftPaddle.y && leftPaddle.width && leftPaddle.height) {
+      context.fillRect(leftPaddle.x, leftPaddle.y, leftPaddle.width, leftPaddle.height);
+    }
+    if (rightPaddle && rightPaddle.x && rightPaddle.y && rightPaddle.width && rightPaddle.height) {
+      context.fillRect(rightPaddle.x, rightPaddle.y, rightPaddle.width, rightPaddle.height);
+    }
+    if (ball && ball.x && ball.y && ball.width && ball.height) {
+      context.fillRect(ball.x, ball.y, ball.width, ball.height);
+    }
+
+    context.drawImage(scoreboardCanvas, 0, 0);
+    context.drawImage(backgroundCanvas, 0, 0);
+  }
+
+  function createBackground() {
+    const backgroundContext = backgroundCanvas.getContext("2d");
+
+    backgroundCanvas.width = canvas.width;
+    backgroundCanvas.height = canvas.height;
+
+    backgroundContext.fillStyle = "lightgrey";
+    backgroundContext.fillRect(0, 0, backgroundCanvas.width, grid);
+    backgroundContext.fillRect(0, backgroundCanvas.height - grid, backgroundCanvas.width, backgroundCanvas.height);
+
+    for (let i = grid; i < backgroundCanvas.height - grid; i += grid * 2) {
+      backgroundContext.fillRect(backgroundCanvas.width / 2 - grid / 2, i, grid, grid);
+    }
+  }
+
+  function drawScoreboard() {
+    scoreboardCanvas.width = canvas.width;
+    scoreboardCanvas.height = canvas.height;
+
+    scoreboardContext.clearRect(0, 0, scoreboardCanvas.width, scoreboardCanvas.height);
+    scoreboardContext.fillStyle = "white";
+
+    scoreboardContext.font = canvas.height * 0.05 + "px Arial";
+    scoreboardContext.textAlign = "center";
+    scoreboardContext.fillText(leftScore, scoreboardCanvas.width * 0.25, scoreboardCanvas.height * 0.1);
+    scoreboardContext.fillText(rightScore, scoreboardCanvas.width * 0.75, scoreboardCanvas.height * 0.1);
+  }
+
+  function drawEndGameScreen(winner) {
+    context.fillStyle = "rgba(0, 0, 0, 0.7)";
+    context.fillRect(0, 0, canvas.width, canvas.height);
+
+    context.fillStyle = "white";
+    context.font = canvas.height * 0.06 + "px Arial";
+    context.textAlign = "center";
+    context.fillText(winner + "{% translate ' ganhou!' %}", canvas.width / 2, canvas.height / 2);
+  }
+
+  function drawStartGameScreen(winner) {
+    context.fillStyle = "rgba(0, 0, 0, 0.7)";
+    context.fillRect(0, 0, canvas.width, canvas.height);
+
+    context.fillStyle = "white";
+    context.font = canvas.height * 0.06 + "px Arial";
+    context.textAlign = "center";
+    context.fillText("{% translate 'Esperando o adversário entrar na partida' %}", canvas.width / 2, canvas.height / 2);
+  }
+
+  function adjustCanvasResolution() {
+    const dpr = window.devicePixelRatio || 1;
+    const width = canvas.clientWidth * dpr;
+    const height = canvas.clientHeight * dpr;
+
+    canvas.width = width;
+    canvas.height = height;
+    canvas.style.width = `${canvas.clientWidth}px`;
+    canvas.style.height = `${canvas.clientHeight}px`;
+
+    initializeGame();
+    createBackground();
+    drawScoreboard();
+    draw();
+    drawStartGameScreen();
+  }
+
+  function adjustCanvasSize() {
+    const header = document.querySelector("header");
+    const container = canvas.parentElement;
+
+    let availableHeight = window.innerHeight - header.offsetHeight - 32;
+    let width = availableHeight * 2;
+    if (width > window.innerWidth) {
+      width = window.innerWidth;
+      availableHeight = width / 2;
+    }
+
+    container.style.width = `${width}px`;
+    container.style.height = `${availableHeight}px`;
+    canvas.width = width;
+    canvas.height = availableHeight;
+  }
+
+  socket.onmessage = (event) => {
+    const data = JSON.parse(event.data);
+
+    rightPaddle.x = data.game.paddles.right_paddle.x * grid;
+    rightPaddle.y = data.game.paddles.right_paddle.y * grid;
+    rightPaddle.width = data.game.paddles.right_paddle.width * grid;
+    rightPaddle.height = data.game.paddles.right_paddle.height * grid;
+
+    leftPaddle.x = data.game.paddles.left_paddle.x * grid;
+    leftPaddle.y = data.game.paddles.left_paddle.y * grid;
+    leftPaddle.width = data.game.paddles.left_paddle.width * grid;
+    leftPaddle.height = data.game.paddles.left_paddle.height * grid;
+
+    ball.x = data.game.ball.x * grid;
+    ball.y = data.game.ball.y * grid;
+    ball.width = data.game.ball.width * grid;
+    ball.height = data.game.ball.height * grid;
+
+    leftScore = data.game.score.left_score;
+    rightScore = data.game.score.right_score;
+
+    for (const event of data.events) {
+      if (event.type === "game_start") {
+        gameStart = true;
+        requestAnimationFrame(loop);
+      } else if (event.type === "paddle_hit") {
+        paddleHitSound.play();
+      } else if (event.type === "wall_hit") {
+        wallHitSound.play();
+      } else if (event.type === "score_update") {
+        drawScoreboard();
+      } else if (event.type === "game_over") {
+        gameOver = true;
+        drawEndGameScreen(event.winner);
+      }
+    }
+  };
+
+  document.addEventListener("keydown", (e) => {
+    if (["KeyW", "KeyS"].includes(e.code)) {
+      e.preventDefault();
+      keysPressed[e.code] = true;
+    }
+  });
+
+  document.addEventListener("keyup", (e) => {
+    if (["KeyW", "KeyS"].includes(e.code)) {
+      e.preventDefault();
+      keysPressed[e.code] = false;
+    }
+  });
+
+  adjustCanvasSize();
+  adjustCanvasResolution();
+});
+</script>
+{% endblock %}

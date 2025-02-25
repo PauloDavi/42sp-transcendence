@@ -11,7 +11,7 @@ class Match(models.Model):
     score_user1 = models.PositiveIntegerField(default=0, verbose_name=_("Pontuação do usuário 1"))
     score_user2 = models.PositiveIntegerField(default=0, verbose_name=_("Pontuação do usuário 2"))
     started_date_played = models.DateTimeField(auto_now_add=True, verbose_name=_("Jogado em"))
-    finished_date_played = models.DateTimeField(auto_now_add=True, null=True, verbose_name=_("Finalizado em"))
+    finished_date_played = models.DateTimeField(null=True, verbose_name=_("Finalizado em"))
     updated_at = models.DateTimeField(auto_now=True, verbose_name=_("Atualizado em"))
 
     class Meta:
