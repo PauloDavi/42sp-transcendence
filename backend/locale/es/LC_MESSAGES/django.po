@@ -37,7 +37,7 @@ msgstr "Completado el"
 
 #: apps/matchmaking/models.py:15 apps/users/models.py:22
 #: apps/users/models.py:52 templates/users/friend.html:22
-#: templates/users/profile.html:17
+#: templates/users/profile.html:114
 msgid "Atualizado em"
 msgstr "Actualizado el"
 
@@ -45,7 +45,7 @@ msgstr "Actualizado el"
 msgid "Partida"
 msgstr "Partido"
 
-#: apps/matchmaking/models.py:19 templates/users/profile.html:85
+#: apps/matchmaking/models.py:19 templates/users/profile.html:182
 msgid "Partidas"
 msgstr "Partidos"
 
@@ -138,23 +138,23 @@ msgstr "Crear una contraseña"
 msgid "As senhas não coincidem."
 msgstr "Las contraseñas no coinciden."
 
-#: apps/users/models.py:14 templates/users/profile.html:47
-#: templates/users/profile.html:180
+#: apps/users/models.py:14 templates/users/profile.html:144
+#: templates/users/profile.html:277
 msgid "Avatar"
 msgstr "Avatar"
 
 #: apps/users/models.py:19 templates/users/friend.html:19
-#: templates/users/profile.html:14 templates/users/profile.html:88
+#: templates/users/profile.html:111 templates/users/profile.html:185
 msgid "Vitórias"
 msgstr "Victorias"
 
 #: apps/users/models.py:20 templates/users/friend.html:20
-#: templates/users/profile.html:15 templates/users/profile.html:89
+#: templates/users/profile.html:112 templates/users/profile.html:186
 msgid "Derrotas"
 msgstr "Derrotas"
 
 #: apps/users/models.py:21 apps/users/models.py:51
-#: templates/users/friend.html:21 templates/users/profile.html:16
+#: templates/users/friend.html:21 templates/users/profile.html:113
 msgid "Criado em"
 msgstr "Creado en"
 
@@ -315,7 +315,7 @@ msgstr "Logout"
 msgid "Chat"
 msgstr "Charlar"
 
-#: templates/users/friend.html:9 templates/users/profile.html:9
+#: templates/users/friend.html:9 templates/users/profile.html:106
 msgid "Perfil do Usuário"
 msgstr "Perfil de usuario"
 
@@ -347,71 +347,71 @@ msgstr "Registro"
 msgid "Autenticando"
 msgstr "Autenticando"
 
-#: templates/users/profile.html:18
+#: templates/users/profile.html:115
 msgid "Editar Perfil"
 msgstr "Editar perfil"
 
-#: templates/users/profile.html:27
+#: templates/users/profile.html:124
 msgid "Amigos"
 msgstr "Amigos"
 
-#: templates/users/profile.html:32
+#: templates/users/profile.html:129
 msgid "Buscar usuário..."
 msgstr "Añadir usuario..."
 
-#: templates/users/profile.html:55
+#: templates/users/profile.html:152
 msgid "Aceitar convite"
 msgstr "Aceptar invitación"
 
-#: templates/users/profile.html:56
+#: templates/users/profile.html:153
 msgid "Recusar convite"
 msgstr "Rechazar invitación"
 
-#: templates/users/profile.html:59
+#: templates/users/profile.html:156
 msgid "Convite recusado"
 msgstr "Invitación rechazada"
 
-#: templates/users/profile.html:61
+#: templates/users/profile.html:158
 msgid "Você recusou a amizade"
 msgstr "Rechazaste la amistad"
 
-#: templates/users/profile.html:63
+#: templates/users/profile.html:160
 msgid "Convite pendente"
 msgstr "Invitación pendiente"
 
-#: templates/users/profile.html:78
+#: templates/users/profile.html:175
 msgid "Você ainda não tem amigos adicionados."
 msgstr "No tienes amigos añadidos todavía"
 
-#: templates/users/profile.html:90
+#: templates/users/profile.html:187
 msgid "Todas"
 msgstr "Todo"
 
-#: templates/users/profile.html:99
+#: templates/users/profile.html:196
 msgid "Oponente"
 msgstr "Adversario"
 
-#: templates/users/profile.html:100
+#: templates/users/profile.html:197
 msgid "Placar"
 msgstr "Marcador"
 
-#: templates/users/profile.html:101
+#: templates/users/profile.html:198
 msgid "Início"
 msgstr "Inicio"
 
-#: templates/users/profile.html:102
+#: templates/users/profile.html:199
 msgid "Fim"
 msgstr "Fin"
 
-#: templates/users/profile.html:146
+#: templates/users/profile.html:243
 msgid "Você ainda não jogou nenhuma partida."
 msgstr "Aún no has jugado ningún partido."
 
-#: templates/users/profile.html:201
+#: templates/users/profile.html:298
 msgid "Nenhum usuário encontrado"
 msgstr "No se encontraron usuarios"
 
-#: templates/users/profile.html:209
+#: templates/users/profile.html:306
 msgid "Erro ao buscar usuários"
 msgstr "Error al buscar usuarios"
 
@@ -419,11 +419,11 @@ msgstr "Error al buscar usuarios"
 msgid "Cadastro"
 msgstr "Registro"
 
-#: templates/users/update_user.html:7
+#: templates/users/update_user.html:65
 msgid "Atualize seu perfil"
 msgstr "Actualiza tu perfil"
 
-#: templates/users/update_user.html:31
+#: templates/users/update_user.html:89
 msgid "Salvar"
 msgstr "Ahorrar"
 
