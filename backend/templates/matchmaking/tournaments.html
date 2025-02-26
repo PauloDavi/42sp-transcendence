@@ -1,0 +1,203 @@
+{% extends 'shared/base.html' %}
+{% load static %}
+{% load i18n %}
+{% block content %}
+<div class="container">
+  <div class="card text-center">
+    <div class="card-header d-flex justify-content-between align-items-center">
+      <h4 class="m-0">{% translate "Torneios" %}</h4>
+      <button class="btn btn-primary px-1 py-0" data-bs-toggle="modal" data-bs-target="#createTournamentModal">
+        <i class="bi bi-plus fs-4"></i>
+      </button>
+    </div>
+    <div class="card-body">
+      {% if tournaments %}
+        <div class="table-responsive">
+            <table class="table table-striped table-hover">
+            <thead>
+              <tr>
+                <th>{% translate "Nome" %}</th>
+                <th>{% translate "Jogadores" %}</th>
+                <th>{% translate "Iniciado em" %}</th>
+                <th>{% translate "Finalizado em" %}</th>
+                <th>{% translate "Criado em" %}</th>
+                <th>{% translate "Ações" %}</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for tournament in tournaments %}
+              <tr>
+                <td>{{ tournament.name }}</td>
+                <td>
+                  {% for player in tournament.players.all %}
+                    {% if player.player == tournament.winner %}
+                      <span class="badge bg-success">{{ player.display_name }}</span>
+                    {% else %}
+                      <span class="badge bg-secondary">{{ player.display_name }}</span>
+                    {% endif %}
+                  {% empty %}
+                    <span>{% translate "Nenhum jogador" %}</span>
+                  {% endfor %}
+                </td>
+                <td>{{ tournament.started_at|date:"d/m/Y H:i:s"|default:"-" }}</td>
+                <td>{{ tournament.finished_at|date:"d/m/Y H:i:s"|default:"-" }}</td>
+                <td>{{ tournament.created_at|date:"d/m/Y H:i:s"|default:"-" }}</td>
+                <td>
+                  {% if tournament.created_by == user %}
+                    {% if not tournament.started_at %}
+                      <form method="post" action="{% url 'delete_tournament' tournament.id %}">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-danger btn-sm">{% translate "Deletar" %}</button>
+                      </form>
+                    {% else %}
+                      <a href="{% url 'tournament_detail' tournament.id %}" class="btn btn-primary btn-sm">{% translate "Ver" %}</a>
+                    {% endif %}
+                  {% else %}
+                    {% if tournament.started_at %}
+                      <a href="{% url 'tournament' tournament.id %}" class="btn btn-primary btn-sm">{% translate "Ver" %}</a>
+                    {% else %}
+                      <button class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#joinTournamentModal">
+                        {% translate "Entrar" %}
+                      </button>
+                    {% endif %}
+                  {% endif %}
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+            </table>
+        </div>
+        
+        <nav>
+          <ul class="pagination justify-content-center">
+            {% if tournaments.has_previous %}
+            <li class="page-item">
+              <a
+                class="page-link"
+                href="?page=1{% if request.GET.filter %}&filter={{ request.GET.filter }}{% endif %}">
+                  &laquo; <span class="d-none d-sm-inline">{% translate "Primeira" %}</span>
+              </a>
+            </li>
+            <li class="page-item">
+              <a
+                class="page-link"
+                href="?page={{ tournaments.previous_page_number }}{% if request.GET.filter %}&filter={{ request.GET.filter }}{% endif %}">
+                  &lsaquo; <span class="d-none d-sm-inline">{% translate "Anterior" %}</span>
+              </a>
+            </li>
+            {% endif %}
+
+            <li class="page-item active">
+              <span class="page-link">{% translate "Página" %} {{ tournaments.number }} {% translate "de" %} {{ tournaments.paginator.num_pages }}</span>
+            </li>
+
+            {% if tournaments.has_next %}
+            <li class="page-item">
+              <a
+                class="page-link"
+                href="?page={{ tournaments.next_page_number }}{% if request.GET.filter %}&filter={{ request.GET.filter }}{% endif %}">
+                  <span class="d-none d-sm-inline">{% translate "Próxima" %}</span> &rsaquo;
+              </a>
+            </li>
+            <li class="page-item">
+              <a
+                class="page-link"
+                href="?page={{ tournaments.paginator.num_pages }}{% if request.GET.filter %}&filter={{ request.GET.filter }}{% endif %}">
+                  <span class="d-none d-sm-inline">{% translate "Última" %}</span> &raquo;
+              </a>
+            </li>
+            {% endif %}
+          </ul>
+        </nav>
+      {% else %}
+        <p>{% translate "Nenhum torneio encontrado." %}</p>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="createTournamentModal" tabindex="-1" aria-labelledby="createTournamentModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="createTournamentModalLabel">{% translate "Novo torneio" %}</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <form method="post" action="{% url 'tournaments' %}">
+        <div class="modal-body">
+          {% csrf_token %}
+          {% for field in form.visible_fields %}
+          <div class="form-floating mt-3">
+            {{ field }}
+            <label for="{{ field.id_for_label }}"> {{ field.label }} </label>
+  
+            {% if field.errors %}
+            <div class="invalid-feedback d-block">
+              {% for error in field.errors %}
+                {{ error }}
+              {% endfor %}
+            </div>
+            {% endif %}
+          </div>
+          {% endfor %}
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{% translate "Fechar" %}</button>
+          <button type="submit" class="btn btn-primary">{% translate "Salvar" %}</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="joinTournamentModal" tabindex="-1" aria-labelledby="joinTournamentModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="joinTournamentModalLabel">{% translate "Entrar no torneio" %}</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <form method="post" id="joinTournamentForm" action="">
+        <div class="modal-body">
+          {% csrf_token %}
+          {% for field in join_form.visible_fields %}
+          <div c{% if form.errors %}
+          <script type="text/javascript">
+            document.addEventListener('DOMContentLoaded', function() {
+              var myModal = new bootstrap.Modal(document.getElementById('createTournamentModal'));
+              myModal.show();
+            });
+          </script>
+          {% endif %}lass="form-floating mt-3">
+            {{ field }}
+            <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+            {% if field.errors %}
+            <div class="invalid-feedback d-block">
+              {% for error in field.errors %}
+                {{ error }}
+              {% endfor %}
+            </div>
+            {% endif %}
+          </div>
+          {% endfor %}
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{% translate "Fechar" %}</button>
+          <button type="submit" class="btn btn-primary">{% translate "Entrar" %}</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script type="text/javascript">
+{% if form.errors %}
+  document.addEventListener('DOMContentLoaded', function() {
+    var myModal = new bootstrap.Modal(document.getElementById('createTournamentModal'));
+    myModal.show();
+  });
+{% endif %}
+</script>
+{% endblock %}

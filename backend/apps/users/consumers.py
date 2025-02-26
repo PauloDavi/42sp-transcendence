@@ -2,6 +2,7 @@ from channels.generic.websocket import AsyncWebsocketConsumer
 from channels.db import database_sync_to_async
 import json
 
+
 class OnlineStatusConsumer(AsyncWebsocketConsumer):
     async def connect(self):
         if self.scope["user"].is_authenticated:
@@ -19,6 +20,7 @@ class OnlineStatusConsumer(AsyncWebsocketConsumer):
 
     async def send_toast(self, event):
         await self.send(text_data=json.dumps(event))
+
 
 @database_sync_to_async
 def update_status_online(user, status_online):

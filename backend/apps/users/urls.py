@@ -1,23 +1,24 @@
 from django.urls import path
-from apps.users.views import home, \
-    login, \
-    logout, \
-    register, \
-    update_user, \
-    search_user, \
-    profile, \
-    add_friend, \
-    remove_friend, \
-    accept_friend, \
-    reject_friend, \
-    friend_profile
+from apps.users.views import (
+    home,
+    login,
+    logout,
+    register,
+    update_user,
+    search_user,
+    profile,
+    add_friend,
+    remove_friend,
+    accept_friend,
+    reject_friend,
+    friend_profile,
+)
 
 urlpatterns = [
     path("", home, name="home"),
     path("login", login, name="login"),
     path("logout", logout, name="logout"),
     path("register", register, name="register"),
-
     path("user", profile, name="profile"),
     path("user/<uuid:friend_id>", friend_profile, name="friend_profile"),
     path("user/edit", update_user, name="update_user"),

@@ -21,6 +21,7 @@ PADDLE_X_OFFSET = 2.0
 FRAME_DELAY = 1 / 30
 PADDLE_SPEED = 0.3
 
+
 class PongConsumer(AsyncWebsocketConsumer):
     games = {}
     game_locks = {}
@@ -80,15 +81,15 @@ class PongConsumer(AsyncWebsocketConsumer):
                 "running": False,
             }
             self.game_locks[self.room_group_name] = asyncio.Lock()
-        
+
         self.is_left_user = await is_left_user(self.match, self.user)
-        
+
         game = self.games[self.room_group_name]
         await self.channel_layer.group_send(
             self.room_group_name,
             {"type": "send_game_state", "game": game, "events": []},
         )
-        
+
         if self.user.username not in game["players"]:
             game["players"][self.user.username] = self.channel_name
 
@@ -100,7 +101,7 @@ class PongConsumer(AsyncWebsocketConsumer):
                     {
                         "type": "send_game_state",
                         "game": game,
-                        "events": [{"type": "game_start"}]
+                        "events": [{"type": "game_start"}],
                     },
                 )
                 self.game_task = asyncio.create_task(self.game_loop())
@@ -134,7 +135,10 @@ class PongConsumer(AsyncWebsocketConsumer):
                 paddles[paddle_key]["vy"] = speed
 
     async def game_loop(self):
-        while self.room_group_name in self.games and self.games[self.room_group_name]["running"]:
+        while (
+            self.room_group_name in self.games
+            and self.games[self.room_group_name]["running"]
+        ):
             start_time = time.perf_counter()
             await self.update_game_state()
             elapsed_time = time.perf_counter() - start_time
@@ -170,8 +174,20 @@ class PongConsumer(AsyncWebsocketConsumer):
             ball["resseting"] = False
 
     async def update_paddle_positions(self, paddles):
-        paddles["left_paddle"]["y"] = max(1.0, min(GRID_HEIGHT - PADDLE_HEIGHT - 1.0, paddles["left_paddle"]["y"] + paddles["left_paddle"]["vy"]))
-        paddles["right_paddle"]["y"] = max(1.0, min(GRID_HEIGHT - PADDLE_HEIGHT - 1.0, paddles["right_paddle"]["y"] + paddles["right_paddle"]["vy"]))
+        paddles["left_paddle"]["y"] = max(
+            1.0,
+            min(
+                GRID_HEIGHT - PADDLE_HEIGHT - 1.0,
+                paddles["left_paddle"]["y"] + paddles["left_paddle"]["vy"],
+            ),
+        )
+        paddles["right_paddle"]["y"] = max(
+            1.0,
+            min(
+                GRID_HEIGHT - PADDLE_HEIGHT - 1.0,
+                paddles["right_paddle"]["y"] + paddles["right_paddle"]["vy"],
+            ),
+        )
 
     async def check_wall_collisions(self, ball, events):
         if ball["y"] < 1.0 or ball["y"] > GRID_HEIGHT - 2.0:
@@ -183,7 +199,9 @@ class PongConsumer(AsyncWebsocketConsumer):
         right_paddle = paddles["right_paddle"]
 
         def update_ball_when_collide_with_paddle(paddle, new_ball_x):
-            impact_point = ball["y"] + ball["height"] / 2 - (paddle["y"] + paddle["height"] / 2)
+            impact_point = (
+                ball["y"] + ball["height"] / 2 - (paddle["y"] + paddle["height"] / 2)
+            )
             normalized_impact = impact_point / (paddle["height"] / 2)
             ball["vx"] *= -1.05
             ball["vy"] = normalized_impact * BALL_SPEED
@@ -191,16 +209,26 @@ class PongConsumer(AsyncWebsocketConsumer):
 
         if (
             left_paddle["x"] < ball["x"] < left_paddle["x"] + left_paddle["width"]
-            and (left_paddle["y"] - ball["height"]) < ball["y"] < left_paddle["y"] + left_paddle["height"]
+            and (left_paddle["y"] - ball["height"])
+            < ball["y"]
+            < left_paddle["y"] + left_paddle["height"]
         ):
-            update_ball_when_collide_with_paddle(left_paddle, left_paddle["x"] + left_paddle["width"])
+            update_ball_when_collide_with_paddle(
+                left_paddle, left_paddle["x"] + left_paddle["width"]
+            )
             events.append({"type": "paddle_hit"})
 
         if (
-            right_paddle["x"] < (ball["x"] + BALL_SIZE) < right_paddle["x"] + right_paddle["width"]
-            and (right_paddle["y"] - ball["height"]) < ball["y"] < right_paddle["y"] + right_paddle["height"]
+            right_paddle["x"]
+            < (ball["x"] + BALL_SIZE)
+            < right_paddle["x"] + right_paddle["width"]
+            and (right_paddle["y"] - ball["height"])
+            < ball["y"]
+            < right_paddle["y"] + right_paddle["height"]
         ):
-            update_ball_when_collide_with_paddle(right_paddle, right_paddle["x"] - ball["width"])
+            update_ball_when_collide_with_paddle(
+                right_paddle, right_paddle["x"] - ball["width"]
+            )
             events.append({"type": "paddle_hit"})
 
     async def check_score(self, ball, game, events):
@@ -213,16 +241,24 @@ class PongConsumer(AsyncWebsocketConsumer):
                 "x": GRID_WIDTH / 2 - BALL_SIZE / 2,
                 "y": GRID_HEIGHT / 2 - BALL_SIZE / 2,
                 "vx": (1 if random.random() > 0.5 else -1) * BALL_SPEED,
-                "vy": (1 if random.random() > 0.5 else -1) * BALL_SPEED * random.uniform(0.5, 1.5),
+                "vy": (1 if random.random() > 0.5 else -1)
+                * BALL_SPEED
+                * random.uniform(0.5, 1.5),
                 "width": BALL_SIZE,
                 "height": BALL_SIZE,
                 "resseting": True,
-                "reset_timer": time.perf_counter() + random.uniform(0.5, 1.5)
+                "reset_timer": time.perf_counter() + random.uniform(0.5, 1.5),
             }
 
             if game["score"][scoring_player] >= 3:
-                winner = self.match.user1 if scoring_player == "left_score" else self.match.user2
-                asyncio.create_task(self.update_match_winner(self.match, winner, game["score"]))
+                winner = (
+                    self.match.user1
+                    if scoring_player == "left_score"
+                    else self.match.user2
+                )
+                asyncio.create_task(
+                    self.update_match_winner(self.match, winner, game["score"])
+                )
                 game["running"] = False
                 events.append({"type": "game_over", "winner": winner.username})
 
@@ -235,11 +271,15 @@ class PongConsumer(AsyncWebsocketConsumer):
 
     async def send_game_state(self, event):
         """Envia o estado atualizado do jogo para os clientes"""
-        await self.send(text_data=json.dumps({"game": event["game"], "events": event["events"]}))
+        await self.send(
+            text_data=json.dumps({"game": event["game"], "events": event["events"]})
+        )
+
 
 @database_sync_to_async
 def is_left_user(match, user):
     return user == match.user1
+
 
 @database_sync_to_async
 def verify_if_user_in_match(match, user):

@@ -22,16 +22,13 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    
     "allauth",
     "allauth.account",
     "allauth.socialaccount",
     "allauth.socialaccount.providers.oauth2",
     "apps.users.providers.fortytwo",
-    
     "rosetta",
     "channels",
-    
     "apps.users.apps.UsersConfig",
     "apps.matchmaking.apps.MatchmakingConfig",
     "apps.chat.apps.ChatConfig",

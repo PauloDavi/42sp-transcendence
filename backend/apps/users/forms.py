@@ -3,6 +3,7 @@ from django.contrib.auth.forms import UserCreationForm as BaseUserCreationForm
 from apps.users.models import User
 from django.utils.translation import gettext_lazy as _
 
+
 class UserLoginForm(forms.Form):
     name = forms.CharField(
         label=_("Nome de login"),
@@ -33,30 +34,40 @@ class UserLoginForm(forms.Form):
             self.fields[field].widget.attrs["class"] += " is-invalid"
         return cleaned_data
 
-class   UserCreationForm(BaseUserCreationForm):
+
+class UserCreationForm(BaseUserCreationForm):
     class Meta:
         model = User
         fields = ["username", "email", "password1", "password2"]
-        
+
         labels = {
             "username": _("Nome de usuário"),
             "email": _("E-mail"),
             "password1": _("Senha"),
             "password2": _("Confirme sua senha"),
         }
-        
+
         widgets = {
-            "username": forms.TextInput(attrs={"class": "form-control", "placeholder": _("Ex: João Silva")}),
-            "email": forms.TextInput(attrs={"class": "form-control", "placeholder": _("Ex: joao@silva.com")}),
+            "username": forms.TextInput(
+                attrs={"class": "form-control", "placeholder": _("Ex: João Silva")}
+            ),
+            "email": forms.TextInput(
+                attrs={"class": "form-control", "placeholder": _("Ex: joao@silva.com")}
+            ),
         }
-    
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        for field_name, placeholder in {"password1": _("Crie uma senha"), "password2": _("Confirme sua senha")}.items():
-            self.fields[field_name].widget.attrs.update({
-                "class": "form-control",
-                "placeholder": placeholder,
-            })
+        for field_name, placeholder in {
+            "password1": _("Crie uma senha"),
+            "password2": _("Confirme sua senha"),
+        }.items():
+            self.fields[field_name].widget.attrs.update(
+                {
+                    "class": "form-control",
+                    "placeholder": placeholder,
+                }
+            )
 
     def clean(self):
         cleaned_data = super().clean()
@@ -64,15 +75,19 @@ class   UserCreationForm(BaseUserCreationForm):
             self.fields[field].widget.attrs["class"] += " is-invalid"
         return cleaned_data
 
+
 class UserChangeForm(forms.ModelForm):
     class Meta:
         model = User
         fields = ["email", "password"]
 
+
 class UserEditProfileForm(forms.Form):
     email = forms.EmailField(
         required=True,
-        widget=forms.EmailInput(attrs={"class": "form-control", "placeholder": "E-mail"}),
+        widget=forms.EmailInput(
+            attrs={"class": "form-control", "placeholder": "E-mail"}
+        ),
     )
     avatar = forms.ImageField(
         required=False,
@@ -82,13 +97,17 @@ class UserEditProfileForm(forms.Form):
         required=False,
         max_length=50,
         label=_("Senha"),
-        widget=forms.PasswordInput(attrs={"class": "form-control", "placeholder": _("Senha")}),
+        widget=forms.PasswordInput(
+            attrs={"class": "form-control", "placeholder": _("Senha")}
+        ),
     )
     password2 = forms.CharField(
         required=False,
         max_length=50,
         label=_("Confirme sua senha"),
-        widget=forms.PasswordInput(attrs={"class": "form-control", "placeholder": _("Confirme sua senha")}),
+        widget=forms.PasswordInput(
+            attrs={"class": "form-control", "placeholder": _("Confirme sua senha")}
+        ),
     )
 
     def clean_password2(self):

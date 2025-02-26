@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-02-22 17:53-0300\n"
+"POT-Creation-Date: 2025-02-25 19:54-0300\n"
 "PO-Revision-Date: 2025-02-22 17:54-0300\n"
 "Last-Translator:   <super@gmail.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,6 +18,18 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Translated-Using: django-rosetta 0.10.1\n"
+
+#: apps/matchmaking/forms.py:12 apps/matchmaking/forms.py:38
+msgid "Digite seu nome de exibição"
+msgstr ""
+
+#: apps/matchmaking/forms.py:15 apps/matchmaking/forms.py:41
+msgid "Seu nome de exibição"
+msgstr ""
+
+#: apps/matchmaking/forms.py:25
+msgid "Ex: Torneio 42"
+msgstr ""
 
 #: apps/matchmaking/models.py:11
 msgid "Pontuação do usuário 1"
@@ -31,7 +43,8 @@ msgstr "User Score 2"
 msgid "Jogado em"
 msgstr "Played in"
 
-#: apps/matchmaking/models.py:14
+#: apps/matchmaking/models.py:14 apps/matchmaking/models.py:42
+#: templates/matchmaking/tournaments.html:22
 msgid "Finalizado em"
 msgstr "Completed on"
 
@@ -49,49 +62,113 @@ msgstr "Match"
 msgid "Partidas"
 msgstr "Matches"
 
-#: apps/matchmaking/views.py:19
+#: apps/matchmaking/models.py:27
+msgid "Nome de exibição"
+msgstr ""
+
+#: apps/matchmaking/models.py:28
+msgid "Entrou em"
+msgstr ""
+
+#: apps/matchmaking/models.py:35
+#, fuzzy
+#| msgid "Nome de usuário"
+msgid "Nome do torneio"
+msgstr "User name"
+
+#: apps/matchmaking/models.py:40 apps/users/models.py:21
+#: apps/users/models.py:51 templates/matchmaking/tournaments.html:23
+#: templates/users/friend.html:21 templates/users/profile.html:16
+msgid "Criado em"
+msgstr "Created at"
+
+#: apps/matchmaking/models.py:41 templates/matchmaking/tournaments.html:21
+#, fuzzy
+#| msgid "Criado em"
+msgid "Iniciado em"
+msgstr "Created at"
+
+#: apps/matchmaking/models.py:45
+msgid "Torneio"
+msgstr ""
+
+#: apps/matchmaking/models.py:46 templates/matchmaking/tournaments.html:8
+msgid "Torneios"
+msgstr ""
+
+#: apps/matchmaking/views.py:22
 msgid "Opponent not found"
 msgstr "Opponent not found"
 
-#: apps/matchmaking/views.py:23
+#: apps/matchmaking/views.py:26
 msgid "You can't play against yourself"
 msgstr "You can't play against yourself"
 
-#: apps/matchmaking/views.py:27
+#: apps/matchmaking/views.py:30
 msgid "Opponent is offline"
 msgstr "Opponent is offline"
 
-#: apps/matchmaking/views.py:43
-#| msgid "Convite recusado"
+#: apps/matchmaking/views.py:46
 msgid "Convite de partida"
 msgstr "Match invitation"
 
-#: apps/matchmaking/views.py:47
-#| msgid "Aceitar convite"
+#: apps/matchmaking/views.py:50
 msgid "Aceitar"
 msgstr "Accept"
 
-#: apps/matchmaking/views.py:49
-#| msgid "Rejected"
+#: apps/matchmaking/views.py:52
 msgid "Rejeitar"
 msgstr "Reject"
 
-#: apps/matchmaking/views.py:54
+#: apps/matchmaking/views.py:57
 msgid "Match created successfully"
 msgstr "Match created successfully"
 
-#: apps/matchmaking/views.py:63 apps/matchmaking/views.py:92
+#: apps/matchmaking/views.py:66 apps/matchmaking/views.py:95
 msgid "You are not part of this match"
 msgstr "You are not part of this match"
 
-#: apps/matchmaking/views.py:77
-#| msgid "Partidas"
+#: apps/matchmaking/views.py:80
 msgid "Partida recusada"
 msgstr "Match refused"
 
-#: apps/matchmaking/views.py:88
+#: apps/matchmaking/views.py:91
 msgid "Match already finished"
 msgstr "Match already finished"
+
+#: apps/matchmaking/views.py:109
+#, fuzzy
+#| msgid "Match created successfully"
+msgid "Tournament created successfully"
+msgstr "Match created successfully"
+
+#: apps/matchmaking/views.py:146
+#, fuzzy
+#| msgid "You are not part of this match"
+msgid "You are not the creator of this tournament"
+msgstr "You are not part of this match"
+
+#: apps/matchmaking/views.py:150
+#, fuzzy
+#| msgid "Match created successfully"
+msgid "Tournament already started"
+msgstr "Match created successfully"
+
+#: apps/matchmaking/views.py:154
+#, fuzzy
+#| msgid "Match created successfully"
+msgid "Tournament deleted successfully"
+msgstr "Match created successfully"
+
+#: apps/matchmaking/views.py:162
+msgid "Você já está participando deste torneio."
+msgstr ""
+
+#: apps/matchmaking/views.py:170
+#, fuzzy
+#| msgid "Usuário criado com sucesso"
+msgid "Você entrou no torneio com sucesso!"
+msgstr "User created successfully"
 
 #: apps/users/forms.py:8
 msgid "Nome de login"
@@ -251,7 +328,19 @@ msgstr "English"
 msgid "Espanhol"
 msgstr "Spanish"
 
-#: templates/chat/room.html:7 templates/users/chat.html:15
+#: templates/chat/index.html:8
+msgid "Create chat room"
+msgstr ""
+
+#: templates/chat/index.html:13
+msgid "Enter chat room code"
+msgstr ""
+
+#: templates/chat/room.html:6
+msgid "Room code"
+msgstr ""
+
+#: templates/chat/room.html:9 templates/users/chat.html:15
 msgid "Enviar"
 msgstr "Submit"
 
@@ -262,6 +351,86 @@ msgstr " won!"
 #: templates/matchmaking/pong.html:140
 msgid "Esperando o adversário entrar na partida"
 msgstr "Waiting for the opponent to enter the match"
+
+#: templates/matchmaking/tournaments.html:19
+msgid "Nome"
+msgstr ""
+
+#: templates/matchmaking/tournaments.html:20
+#, fuzzy
+#| msgid "Jogado em"
+msgid "Jogadores"
+msgstr "Played in"
+
+#: templates/matchmaking/tournaments.html:24
+msgid "Ações"
+msgstr ""
+
+#: templates/matchmaking/tournaments.html:39
+msgid "Nenhum jogador"
+msgstr ""
+
+#: templates/matchmaking/tournaments.html:50
+msgid "Deletar"
+msgstr ""
+
+#: templates/matchmaking/tournaments.html:53
+#: templates/matchmaking/tournaments.html:57
+msgid "Ver"
+msgstr ""
+
+#: templates/matchmaking/tournaments.html:60
+#: templates/matchmaking/tournaments.html:186
+msgid "Entrar"
+msgstr ""
+
+#: templates/matchmaking/tournaments.html:78 templates/users/profile.html:123
+msgid "Primeira"
+msgstr ""
+
+#: templates/matchmaking/tournaments.html:85 templates/users/profile.html:126
+msgid "Anterior"
+msgstr ""
+
+#: templates/matchmaking/tournaments.html:91 templates/users/profile.html:131
+msgid "Página"
+msgstr ""
+
+#: templates/matchmaking/tournaments.html:91 templates/users/profile.html:131
+msgid "de"
+msgstr ""
+
+#: templates/matchmaking/tournaments.html:99 templates/users/profile.html:136
+msgid "Próxima"
+msgstr ""
+
+#: templates/matchmaking/tournaments.html:106 templates/users/profile.html:139
+msgid "Última"
+msgstr ""
+
+#: templates/matchmaking/tournaments.html:113
+#, fuzzy
+#| msgid "Nenhum usuário encontrado"
+msgid "Nenhum torneio encontrado."
+msgstr "No users found"
+
+#: templates/matchmaking/tournaments.html:123
+msgid "Novo torneio"
+msgstr ""
+
+#: templates/matchmaking/tournaments.html:145
+#: templates/matchmaking/tournaments.html:185
+msgid "Fechar"
+msgstr ""
+
+#: templates/matchmaking/tournaments.html:146
+#: templates/users/update_user.html:31
+msgid "Salvar"
+msgstr "Save"
+
+#: templates/matchmaking/tournaments.html:157
+msgid "Entrar no torneio"
+msgstr ""
 
 #: templates/shared/partials/_messages.html:20
 msgid "Sucesso"
@@ -279,35 +448,39 @@ msgstr "Alert"
 msgid "Informação"
 msgstr "Information"
 
-#: templates/shared/partials/_navbar.html:14
+#: templates/shared/partials/_navbar.html:12
+msgid "Tournaments"
+msgstr ""
+
+#: templates/shared/partials/_navbar.html:17
 msgid "Foto do usuário"
 msgstr "User Photo"
 
-#: templates/shared/partials/_navbar.html:18
+#: templates/shared/partials/_navbar.html:21
 msgid "Perfil"
 msgstr "Profile"
 
-#: templates/shared/partials/_navbar.html:22
+#: templates/shared/partials/_navbar.html:25
 msgid "Tema"
 msgstr "Theme"
 
-#: templates/shared/partials/_navbar.html:27
+#: templates/shared/partials/_navbar.html:30
 msgid "Claro"
 msgstr "Light"
 
-#: templates/shared/partials/_navbar.html:32
+#: templates/shared/partials/_navbar.html:35
 msgid "Escuro"
 msgstr "Dark"
 
-#: templates/shared/partials/_navbar.html:37
+#: templates/shared/partials/_navbar.html:40
 msgid "Automático"
 msgstr "Automatic"
 
-#: templates/shared/partials/_navbar.html:45
+#: templates/shared/partials/_navbar.html:48
 msgid "Lingua"
 msgstr "Language"
 
-#: templates/shared/partials/_navbar.html:70
+#: templates/shared/partials/_navbar.html:73
 msgid "Logout"
 msgstr "Logout"
 

@@ -4,15 +4,23 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('users', '0005_friendship'),
+        ("users", "0005_friendship"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='friendship',
-            name='status',
-            field=models.CharField(choices=[('PENDING', 'Pending'), ('ACCEPTED', 'Accepted'), ('REJECTED', 'Rejected')], default='PENDING', max_length=10, verbose_name='Status'),
+            model_name="friendship",
+            name="status",
+            field=models.CharField(
+                choices=[
+                    ("PENDING", "Pending"),
+                    ("ACCEPTED", "Accepted"),
+                    ("REJECTED", "Rejected"),
+                ],
+                default="PENDING",
+                max_length=10,
+                verbose_name="Status",
+            ),
         ),
     ]

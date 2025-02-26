@@ -3,12 +3,14 @@ from allauth.socialaccount.providers.base import ProviderAccount
 from allauth.socialaccount.providers.oauth2.provider import OAuth2Provider
 from apps.users.providers.fortytwo.views import FortyTwoOAuth2Adapter
 
+
 class FortyTwoAccount(ProviderAccount):
     def get_profile_url(self):
         return self.account.extra_data.get("url")
 
     def get_avatar_url(self):
         return self.account.extra_data.get("image_url")
+
 
 class FortyTwoProvider(OAuth2Provider):
     id = "fortytwo"
@@ -38,5 +40,6 @@ class FortyTwoProvider(OAuth2Provider):
         if "email" in data:
             ret.append(EmailAddress(email=data["email"], primary=True, verified=True))
         return ret
+
 
 provider_classes = [FortyTwoProvider]

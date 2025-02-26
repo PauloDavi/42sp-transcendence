@@ -204,8 +204,8 @@
                                         <tr>
                                             <td><a href="{% url 'friend_profile' match.opponent.id %}">{{ match.opponent.username }}</a></td>
                                             <td><span class="badge bg-success">{{ match.points }}</span> x <span class="badge bg-danger">{{ match.opponent_points }}</span></td>
-                                            <td>{{ match.started_date_played|date:"d/m/Y H:i" }}</td>
-                                            <td>{{ match.finished_date_played|date:"d/m/Y H:i" }}</td>
+                                            <td>{{ match.started_date_played|date:"d/m/Y H:i:s"|default:"-" }}</td>
+                                            <td>{{ match.finished_date_played|date:"d/m/Y H:i:s"|default:"-" }}</td>
                                         </tr>
                                     {% endfor %}
                                 </tbody>
@@ -217,23 +217,23 @@
                         <ul class="pagination justify-content-center">
                             {% if matches.has_previous %}
                                 <li class="page-item">
-                                    <a class="page-link" href="?page=1{% if request.GET.filter %}&filter={{ request.GET.filter }}{% endif %}">&laquo; <span class="d-none d-sm-inline">Primeira</span></a>
+                                    <a class="page-link" href="?page=1{% if request.GET.filter %}&filter={{ request.GET.filter }}{% endif %}">&laquo; <span class="d-none d-sm-inline">{% translate "Primeira" %}</span></a>
                                 </li>
                                 <li class="page-item">
-                                    <a class="page-link" href="?page={{ matches.previous_page_number }}{% if request.GET.filter %}&filter={{ request.GET.filter }}{% endif %}">&lsaquo; <span class="d-none d-sm-inline">Anterior</span></a>
+                                    <a class="page-link" href="?page={{ matches.previous_page_number }}{% if request.GET.filter %}&filter={{ request.GET.filter }}{% endif %}">&lsaquo; <span class="d-none d-sm-inline">{% translate "Anterior" %}</span></a>
                                 </li>
                             {% endif %}
             
                             <li class="page-item active">
-                                <span class="page-link">Página {{ matches.number }} de {{ matches.paginator.num_pages }}</span>
+                                <span class="page-link">{% translate "Página" %} {{ matches.number }} {% translate "de" %} {{ matches.paginator.num_pages }}</span>
                             </li>
             
                             {% if matches.has_next %}
                                 <li class="page-item">
-                                    <a class="page-link" href="?page={{ matches.next_page_number }}{% if request.GET.filter %}&filter={{ request.GET.filter }}{% endif %}"><span class="d-none d-sm-inline">Próxima</span> &rsaquo;</a>
+                                    <a class="page-link" href="?page={{ matches.next_page_number }}{% if request.GET.filter %}&filter={{ request.GET.filter }}{% endif %}"><span class="d-none d-sm-inline">{% translate "Próxima" %}</span> &rsaquo;</a>
                                 </li>
                                 <li class="page-item">
-                                    <a class="page-link" href="?page={{ matches.paginator.num_pages }}{% if request.GET.filter %}&filter={{ request.GET.filter }}{% endif %}"><span class="d-none d-sm-inline">Última</span> &raquo;</a>
+                                    <a class="page-link" href="?page={{ matches.paginator.num_pages }}{% if request.GET.filter %}&filter={{ request.GET.filter }}{% endif %}"><span class="d-none d-sm-inline">{% translate "Última" %}</span> &raquo;</a>
                                 </li>
                             {% endif %}
                         </ul>
