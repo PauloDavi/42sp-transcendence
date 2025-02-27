@@ -129,7 +129,7 @@ class UserEditProfileForm(BaseUserChangeForm):
             user.avatar = self.cleaned_data["avatar"]
 
         if commit:
-            user.save()
+            user.save(update_fields=["email", "password", "avatar"])
             if request:
                 update_session_auth_hash(request, user)
 

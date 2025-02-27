@@ -19,4 +19,4 @@ def save_42_avatar(_sender: type[SocialAccount], instance: SocialAccount, create
             image.name = "avatar.jpg"
             avatar_file = InMemoryUploadedFile(image, None, image.name, "image/jpeg", len(image.getvalue()), None)
             user.avatar.save(avatar_file.name, avatar_file, save=True)
-            user.save()
+            user.save(update_fields=["avatar"])

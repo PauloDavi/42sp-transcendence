@@ -71,7 +71,7 @@ def register(request: HttpRequest) -> HttpResponse:
 @login_required
 def update_user(request: HttpRequest) -> HttpResponse:
     if request.method == "POST":
-        form = UserEditProfileForm(request.POST, instance=request.user)
+        form = UserEditProfileForm(request.POST, request.FILES, instance=request.user)
         if form.is_valid():
             form.save(request=request)
             messages.success(request, _("Seu perfil foi atualizado com sucesso!"))
@@ -213,7 +213,7 @@ def accept_friend(request: HttpRequest, friend_id: UUID) -> HttpResponse:
         return redirect("profile")
 
     friendship.status = FriendshipStatus.ACCEPTED
-    friendship.save()
+    friendship.save(update_fields=["status"])
     messages.success(request, _("Amigo aceito com sucesso!"))
     return redirect("profile")
 
@@ -234,7 +234,7 @@ def reject_friend(request: HttpRequest, friend_id: UUID) -> HttpResponse:
         return redirect("profile")
 
     friendship.status = FriendshipStatus.REJECTED
-    friendship.save()
+    friendship.save(update_fields=["status"])
     messages.success(request, _("Amigo rejeitado com sucesso!"))
     return redirect("profile")
 

@@ -121,6 +121,26 @@ class PongConsumer(AsyncWebsocketConsumer):
 
         if all(p is None for p in game["players"].values()):
             del self.games[self.room_group_name]
+            self.match.score_user1 = game["score"]["left_score"]
+            self.match.score_user2 = game["score"]["right_score"]
+            self.match.finished_date_played = now()
+            await self.match.asave(update_fields=["score_user1", "score_user2", "finished_date_played"])
+
+            if game["score"]["left_score"] == game["score"]["right_score"]:
+                return
+
+            winner = (
+                self.match.user1 if game["score"]["left_score"] > game["score"]["right_score"] else self.match.user2
+            )
+            losser = (
+                self.match.user2 if game["score"]["left_score"] > game["score"]["right_score"] else self.match.user1
+            )
+            winner.wins += 1
+            losser.losses += 1
+            self.match.winner = winner
+            await self.match.asave(update_fields=["winner"])
+            await winner.asave(update_fields=["wins"])
+            await losser.asave(update_fields=["losses"])
 
     async def receive(self, text_data: str) -> None:
         data = json.loads(text_data)
@@ -229,7 +249,7 @@ class PongConsumer(AsyncWebsocketConsumer):
                 "x": GRID_WIDTH / 2 - BALL_SIZE / 2,
                 "y": GRID_HEIGHT / 2 - BALL_SIZE / 2,
                 "vx": (1 if secrets.randbelow(2) == 1 else -1) * BALL_SPEED,
-                "vy": (1 if secrets.randbelow(2) else -1) * BALL_SPEED * secrets.SystemRandom().uniform(0.5, 1.5),
+                "vy": (1 if secrets.randbelow(2) == 1 else -1) * BALL_SPEED * secrets.SystemRandom().uniform(0.5, 1.5),
                 "width": BALL_SIZE,
                 "height": BALL_SIZE,
                 "resseting": True,
@@ -238,18 +258,22 @@ class PongConsumer(AsyncWebsocketConsumer):
 
             if game["score"][scoring_player] >= WIN_SCORE:
                 winner = self.match.user1 if scoring_player == "left_score" else self.match.user2
-                self.update_match_winner_task = asyncio.create_task(
-                    self.update_match_winner(self.match, winner, game["score"]),
-                )
+                losser = self.match.user2 if scoring_player == "left_score" else self.match.user1
+                asyncio.create_task(self.update_match_winner(self.match, winner, losser, game["score"]))  # noqa: RUF006
                 game["running"] = False
                 events.append({"type": "game_over", "winner": winner.username})
 
-    async def update_match_winner(self, match: Match, winner: User, scores: dict) -> None:
+    async def update_match_winner(self, match: Match, winner: User, losser: User, scores: dict) -> None:
         match.winner = winner
         match.score_user1 = scores["left_score"]
         match.score_user2 = scores["right_score"]
         match.finished_date_played = now()
-        await match.asave()
+        await match.asave(update_fields=["winner", "score_user1", "score_user2", "finished_date_played"])
+
+        winner.wins += 1
+        losser.losses += 1
+        await winner.asave(update_fields=["wins"])
+        await losser.asave(update_fields=["losses"])
 
     async def send_game_state(self, event: dict) -> None:
         await self.send(text_data=json.dumps({"game": event["game"], "events": event["events"]}))

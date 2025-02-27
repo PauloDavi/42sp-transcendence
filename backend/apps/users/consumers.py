@@ -28,4 +28,4 @@ class OnlineStatusConsumer(AsyncWebsocketConsumer):
 @database_sync_to_async
 def update_status_online(user: User, status_online: bool) -> None:
     user.status_online = status_online
-    user.save()
+    user.save(update_fields=["status_online"])

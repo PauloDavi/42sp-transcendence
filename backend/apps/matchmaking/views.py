@@ -37,10 +37,9 @@ def create_match(request: HttpRequest, opponent_id: UUID) -> HttpResponse:
         user1=request.user,
         user2=opponent,
     )
-    match.save()
 
     channel_layer = get_channel_layer()
-    async_to_sync(channel_layer.group_send)(
+    result = async_to_sync(channel_layer.group_send)(
         str(opponent.id),
         {
             "type": "send_toast",
@@ -57,6 +56,11 @@ def create_match(request: HttpRequest, opponent_id: UUID) -> HttpResponse:
         },
     )
 
+    if result is not None:
+        messages.error(request, _("Falha ao enviar o convite"))
+        return redirect(next_url)
+
+    match.save()
     return redirect(reverse("match_game", kwargs={"match_id": match.id}))
 
 

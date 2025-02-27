@@ -9,8 +9,8 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-02-25 19:54-0300\n"
-"PO-Revision-Date: 2025-02-22 17:54-0300\n"
-"Last-Translator:   <super@gmail.com>\n"
+"PO-Revision-Date: 2025-02-26 23:55-0300\n"
+"Last-Translator:   <super@gmail.co>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "Language: \n"
 "MIME-Version: 1.0\n"
@@ -21,15 +21,15 @@ msgstr ""
 
 #: apps/matchmaking/forms.py:12 apps/matchmaking/forms.py:38
 msgid "Digite seu nome de exibição"
-msgstr ""
+msgstr "Enter your display name"
 
 #: apps/matchmaking/forms.py:15 apps/matchmaking/forms.py:41
 msgid "Seu nome de exibição"
-msgstr ""
+msgstr "Your display name"
 
 #: apps/matchmaking/forms.py:25
 msgid "Ex: Torneio 42"
-msgstr ""
+msgstr "Ex: Tournament 42"
 
 #: apps/matchmaking/models.py:11
 msgid "Pontuação do usuário 1"
@@ -64,17 +64,16 @@ msgstr "Matches"
 
 #: apps/matchmaking/models.py:27
 msgid "Nome de exibição"
-msgstr ""
+msgstr "Display name"
 
 #: apps/matchmaking/models.py:28
 msgid "Entrou em"
-msgstr ""
+msgstr "Entered in"
 
 #: apps/matchmaking/models.py:35
-#, fuzzy
 #| msgid "Nome de usuário"
 msgid "Nome do torneio"
-msgstr "User name"
+msgstr "Tournament Name"
 
 #: apps/matchmaking/models.py:40 apps/users/models.py:21
 #: apps/users/models.py:51 templates/matchmaking/tournaments.html:23
@@ -83,18 +82,17 @@ msgid "Criado em"
 msgstr "Created at"
 
 #: apps/matchmaking/models.py:41 templates/matchmaking/tournaments.html:21
-#, fuzzy
 #| msgid "Criado em"
 msgid "Iniciado em"
-msgstr "Created at"
+msgstr "Started at"
 
 #: apps/matchmaking/models.py:45
 msgid "Torneio"
-msgstr ""
+msgstr "Tournament"
 
 #: apps/matchmaking/models.py:46 templates/matchmaking/tournaments.html:8
 msgid "Torneios"
-msgstr ""
+msgstr "Tournaments"
 
 #: apps/matchmaking/views.py:22
 msgid "Opponent not found"
@@ -137,38 +135,33 @@ msgid "Match already finished"
 msgstr "Match already finished"
 
 #: apps/matchmaking/views.py:109
-#, fuzzy
 #| msgid "Match created successfully"
 msgid "Tournament created successfully"
-msgstr "Match created successfully"
+msgstr "Tournament created successfully"
 
 #: apps/matchmaking/views.py:146
-#, fuzzy
 #| msgid "You are not part of this match"
 msgid "You are not the creator of this tournament"
-msgstr "You are not part of this match"
+msgstr "You are not the creator of this tournament"
 
 #: apps/matchmaking/views.py:150
-#, fuzzy
 #| msgid "Match created successfully"
 msgid "Tournament already started"
-msgstr "Match created successfully"
+msgstr "Tournament already started"
 
 #: apps/matchmaking/views.py:154
-#, fuzzy
 #| msgid "Match created successfully"
 msgid "Tournament deleted successfully"
-msgstr "Match created successfully"
+msgstr "Tournament deleted successfully"
 
 #: apps/matchmaking/views.py:162
 msgid "Você já está participando deste torneio."
-msgstr ""
+msgstr "You are already participating in this tournament."
 
 #: apps/matchmaking/views.py:170
-#, fuzzy
 #| msgid "Usuário criado com sucesso"
 msgid "Você entrou no torneio com sucesso!"
-msgstr "User created successfully"
+msgstr "You have successfully entered the tournament!"
 
 #: apps/users/forms.py:8
 msgid "Nome de login"
@@ -330,15 +323,15 @@ msgstr "Spanish"
 
 #: templates/chat/index.html:8
 msgid "Create chat room"
-msgstr ""
+msgstr "Create chat room"
 
 #: templates/chat/index.html:13
 msgid "Enter chat room code"
-msgstr ""
+msgstr "Enter chat room code"
 
 #: templates/chat/room.html:6
 msgid "Room code"
-msgstr ""
+msgstr "Room code"
 
 #: templates/chat/room.html:9 templates/users/chat.html:15
 msgid "Enviar"
@@ -354,74 +347,72 @@ msgstr "Waiting for the opponent to enter the match"
 
 #: templates/matchmaking/tournaments.html:19
 msgid "Nome"
-msgstr ""
+msgstr "Name"
 
 #: templates/matchmaking/tournaments.html:20
-#, fuzzy
 #| msgid "Jogado em"
 msgid "Jogadores"
-msgstr "Played in"
+msgstr "Players"
 
 #: templates/matchmaking/tournaments.html:24
 msgid "Ações"
-msgstr ""
+msgstr "Actions"
 
 #: templates/matchmaking/tournaments.html:39
 msgid "Nenhum jogador"
-msgstr ""
+msgstr "No player"
 
 #: templates/matchmaking/tournaments.html:50
 msgid "Deletar"
-msgstr ""
+msgstr "Delete"
 
 #: templates/matchmaking/tournaments.html:53
 #: templates/matchmaking/tournaments.html:57
 msgid "Ver"
-msgstr ""
+msgstr "See"
 
 #: templates/matchmaking/tournaments.html:60
 #: templates/matchmaking/tournaments.html:186
 msgid "Entrar"
-msgstr ""
+msgstr "Enter"
 
 #: templates/matchmaking/tournaments.html:78 templates/users/profile.html:123
 msgid "Primeira"
-msgstr ""
+msgstr "First"
 
 #: templates/matchmaking/tournaments.html:85 templates/users/profile.html:126
 msgid "Anterior"
-msgstr ""
+msgstr "Previous"
 
 #: templates/matchmaking/tournaments.html:91 templates/users/profile.html:131
 msgid "Página"
-msgstr ""
+msgstr "Page"
 
 #: templates/matchmaking/tournaments.html:91 templates/users/profile.html:131
 msgid "de"
-msgstr ""
+msgstr "of"
 
 #: templates/matchmaking/tournaments.html:99 templates/users/profile.html:136
 msgid "Próxima"
-msgstr ""
+msgstr "Next"
 
 #: templates/matchmaking/tournaments.html:106 templates/users/profile.html:139
 msgid "Última"
-msgstr ""
+msgstr "Last"
 
 #: templates/matchmaking/tournaments.html:113
-#, fuzzy
 #| msgid "Nenhum usuário encontrado"
 msgid "Nenhum torneio encontrado."
-msgstr "No users found"
+msgstr "No tournaments found."
 
 #: templates/matchmaking/tournaments.html:123
 msgid "Novo torneio"
-msgstr ""
+msgstr "New tournament"
 
 #: templates/matchmaking/tournaments.html:145
 #: templates/matchmaking/tournaments.html:185
 msgid "Fechar"
-msgstr ""
+msgstr "Close"
 
 #: templates/matchmaking/tournaments.html:146
 #: templates/users/update_user.html:31
@@ -430,7 +421,7 @@ msgstr "Save"
 
 #: templates/matchmaking/tournaments.html:157
 msgid "Entrar no torneio"
-msgstr ""
+msgstr "Enter the tournament"
 
 #: templates/shared/partials/_messages.html:20
 msgid "Sucesso"
@@ -450,7 +441,7 @@ msgstr "Information"
 
 #: templates/shared/partials/_navbar.html:12
 msgid "Tournaments"
-msgstr ""
+msgstr "Tournaments"
 
 #: templates/shared/partials/_navbar.html:17
 msgid "Foto do usuário"
