@@ -1,6 +1,6 @@
 from django.urls import path
-from apps.chat.views import index, create_room, enter_room
 
+from apps.chat.views import create_room, enter_room, index
 
 urlpatterns = [
     path("index", index, name="chat_index"),

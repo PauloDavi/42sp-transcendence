@@ -1,20 +1,25 @@
-from django.db import models
-from apps.users.models import User
 import uuid
+from typing import ClassVar
+
+from django.db import models
+
+from apps.users.models import User
+
 
 class Chat(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    name = models.CharField(max_length=255, blank=True, null=True)
+    name = models.CharField(max_length=255, blank=True)
     is_group_chat = models.BooleanField(default=False)
-    participants = models.ManyToManyField(User, through='ChatParticipants', related_name='chats')
+    participants = models.ManyToManyField(User, through="ChatParticipants", related_name="chats")
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
-    def __str__(self):
+    class Meta:
+        ordering: ClassVar[list[str]] = ["-updated_at"]
+
+    def __str__(self) -> str:
         return self.name if self.name else f"Chat {self.id}"
 
-    class Meta:
-        ordering = ['-updated_at']
 
 class ChatParticipants(models.Model):
     chat = models.ForeignKey(Chat, on_delete=models.CASCADE)
@@ -22,7 +27,11 @@ class ChatParticipants(models.Model):
     joined_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        unique_together = ['chat', 'user']
+        unique_together: ClassVar[list[str]] = ["chat", "user"]
+
+    def __str__(self) -> str:
+        return f"{self.user} in {self.chat}"
+
 
 class Message(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
@@ -30,3 +39,6 @@ class Message(models.Model):
     sender = models.ForeignKey(User, related_name="sent_messages", on_delete=models.CASCADE)
     content = models.TextField()
     sent_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self) -> str:
+        return f"{self.sender}: {self.content[:50]}"

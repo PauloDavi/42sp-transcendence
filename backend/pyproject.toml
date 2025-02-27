@@ -1,0 +1,36 @@
+[tool.ruff]
+line-length = 120
+target-version = "py313"
+lint.select = ["ALL"]
+lint.ignore = [
+  "ERA001",
+  "D100",
+  "D101",
+  "D102",
+  "D103",
+  "D104",
+  "D105",
+  "D106",
+  "D107",
+  "D203",
+  "D213",
+  "COM812",
+  "EXE002",
+  "FBT001",
+  "ARG002",
+  "PTH118",
+]
+exclude = ["**/migrations/**", "manage.py"]
+fix = true
+
+[tool.ruff.format]
+quote-style = "double"
+
+[tool.mypy]
+python_version = "3.13"
+exclude = ["(^|/)migrations/", "manage.py"]
+warn_return_any = true
+warn_unused_ignores = true
+disallow_untyped_defs = true
+disallow_untyped_calls = true
+ignore_missing_imports = true
