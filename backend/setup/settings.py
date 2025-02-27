@@ -1,5 +1,6 @@
 import os
 from pathlib import Path
+
 from django.contrib.messages import constants as messages
 from django.utils.translation import gettext_lazy as _
 
@@ -83,8 +84,8 @@ SOCIALACCOUNT_PROVIDERS = {
         "APP": {
             "client_id": str(os.getenv("CLIENT_ID_42")),
             "secret": str(os.getenv("SECRET_42")),
-        }
-    }
+        },
+    },
 }
 
 # Database
@@ -97,7 +98,7 @@ DATABASES = {
         "PASSWORD": os.getenv("POSTGRES_PASSWORD"),
         "HOST": "db",
         "PORT": 5432,
-    }
+    },
 }
 
 # Password validation

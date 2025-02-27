@@ -22,16 +22,12 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name="user",
             name="date_joined",
-            field=models.DateTimeField(
-                default=django.utils.timezone.now, verbose_name="date joined"
-            ),
+            field=models.DateTimeField(default=django.utils.timezone.now, verbose_name="date joined"),
         ),
         migrations.AddField(
             model_name="user",
             name="first_name",
-            field=models.CharField(
-                blank=True, max_length=150, verbose_name="first name"
-            ),
+            field=models.CharField(blank=True, max_length=150, verbose_name="first name"),
         ),
         migrations.AddField(
             model_name="user",
@@ -75,16 +71,12 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name="user",
             name="last_login",
-            field=models.DateTimeField(
-                blank=True, null=True, verbose_name="last login"
-            ),
+            field=models.DateTimeField(blank=True, null=True, verbose_name="last login"),
         ),
         migrations.AddField(
             model_name="user",
             name="last_name",
-            field=models.CharField(
-                blank=True, max_length=150, verbose_name="last name"
-            ),
+            field=models.CharField(blank=True, max_length=150, verbose_name="last name"),
         ),
         migrations.AddField(
             model_name="user",

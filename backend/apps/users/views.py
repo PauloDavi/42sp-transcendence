@@ -1,22 +1,24 @@
-from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib import auth
-from django.core.paginator import Paginator
-from django.http import JsonResponse
-from apps.users.forms import UserLoginForm, UserCreationForm, UserEditProfileForm
-from apps.users.models import User, Friendship, FriendshipStatus
-from apps.matchmaking.models import Match
-from django.contrib import messages
+from uuid import UUID
+
+from django.contrib import auth, messages
 from django.contrib.auth.decorators import login_required
-from django.utils.translation import gettext_lazy as _
+from django.core.paginator import Paginator
 from django.db.models import Q
+from django.http import HttpRequest, HttpResponse, JsonResponse
+from django.shortcuts import get_object_or_404, redirect, render
+from django.utils.translation import gettext_lazy as _
+
+from apps.matchmaking.models import Match
+from apps.users.forms import UserCreationForm, UserEditProfileForm, UserLoginForm
+from apps.users.models import Friendship, FriendshipStatus, User
 
 
 @login_required
-def home(request):
+def home(request: HttpRequest) -> HttpResponse:
     return render(request, "users/home.html")
 
 
-def login(request):
+def login(request: HttpRequest) -> HttpResponse:
     if request.user.is_authenticated:
         return redirect("home")
 
@@ -44,13 +46,13 @@ def login(request):
     return render(request, "users/login.html", {"form": form})
 
 
-def logout(request):
+def logout(request: HttpRequest) -> HttpResponse:
     messages.success(request, _("Usuário deslogado com sucesso"))
     auth.logout(request)
     return redirect("login")
 
 
-def register(request):
+def register(request: HttpRequest) -> HttpResponse:
     if request.user.is_authenticated:
         return redirect("home")
 
@@ -59,7 +61,7 @@ def register(request):
         form = UserCreationForm(request.POST)
         if form.is_valid():
             user = form.save()
-            auth.login(request, user)
+            auth.login(request, user, backend="django.contrib.auth.backends.ModelBackend")
             messages.success(request, _("Usuário criado com sucesso"))
             return redirect("home")
 
@@ -67,49 +69,36 @@ def register(request):
 
 
 @login_required
-def update_user(request):
+def update_user(request: HttpRequest) -> HttpResponse:
     if request.method == "POST":
-        form = UserEditProfileForm(request.POST, request.FILES)
+        form = UserEditProfileForm(request.POST, instance=request.user)
         if form.is_valid():
-            form.save(user=request.user)
+            form.save(request=request)
             messages.success(request, _("Seu perfil foi atualizado com sucesso!"))
-            return redirect("home")
+            return redirect("profile")
     else:
-        print(request.user.avatar)
-        initial_data = {
-            "email": request.user.email,
-            "avatar": request.user.avatar,
-        }
-        form = UserEditProfileForm(initial=initial_data)
+        form = UserEditProfileForm(instance=request.user)
 
     return render(request, "users/update_user.html", {"form": form})
 
 
 @login_required
-def profile(request):
+def profile(request: HttpRequest) -> HttpResponse:
     friends = Friendship.objects.filter(Q(user1=request.user) | Q(user2=request.user))
 
     friends = [
         {
             "id": friend.user1.id if friend.user1 != request.user else friend.user2.id,
-            "username": friend.user1.username
-            if friend.user1 != request.user
-            else friend.user2.username,
-            "avatar": friend.user1.avatar.url
-            if friend.user1 != request.user
-            else friend.user2.avatar.url,
+            "username": friend.user1.username if friend.user1 != request.user else friend.user2.username,
+            "avatar": friend.user1.avatar.url if friend.user1 != request.user else friend.user2.avatar.url,
             "is_request": friend.requestd_by == request.user,
-            "status_online": friend.user1.status_online
-            if friend.user1 != request.user
-            else friend.user2.status_online,
+            "status_online": friend.user1.status_online if friend.user1 != request.user else friend.user2.status_online,
             "status": friend.status,
         }
         for friend in friends
     ]
 
-    matches = Match.objects.filter(
-        Q(user1=request.user) | Q(user2=request.user)
-    ).order_by("-started_date_played")
+    matches = Match.objects.filter(Q(user1=request.user) | Q(user2=request.user)).order_by("-started_date_played")
 
     match_filter = request.GET.get("match_filter", "")
     if match_filter == "wins":
@@ -121,12 +110,8 @@ def profile(request):
         {
             "id": match.id,
             "opponent": match.user1 if match.user1 != request.user else match.user2,
-            "points": match.score_user1
-            if match.user1 == request.user
-            else match.score_user2,
-            "opponent_points": match.score_user1
-            if match.user1 != request.user
-            else match.score_user2,
+            "points": match.score_user1 if match.user1 == request.user else match.score_user2,
+            "opponent_points": match.score_user1 if match.user1 != request.user else match.score_user2,
             "started_date_played": match.started_date_played,
             "finished_date_played": match.finished_date_played,
         }
@@ -137,13 +122,11 @@ def profile(request):
     page_number = request.GET.get("page")
     matches = paginator.get_page(page_number)
 
-    return render(
-        request, "users/profile.html", {"friends": friends, "matches": matches}
-    )
+    return render(request, "users/profile.html", {"friends": friends, "matches": matches})
 
 
 @login_required
-def add_friend(request):
+def add_friend(request: HttpRequest) -> HttpResponse:
     friend_id = request.POST.get("friend_id")
     friend = User.objects.get(id=friend_id)
 
@@ -165,14 +148,14 @@ def add_friend(request):
 
 
 @login_required
-def remove_friend(request, friend_id):
+def remove_friend(request: HttpRequest, friend_id: UUID) -> HttpResponse:
     friend = User.objects.get(id=friend_id)
     if friend is None:
         messages.error(request, _("Usuário não encontrado!"))
         return redirect("profile")
 
     friendship = Friendship.objects.filter(
-        Q(user1=request.user, user2=friend) | Q(user1=friend, user2=request.user)
+        Q(user1=request.user, user2=friend) | Q(user1=friend, user2=request.user),
     ).first()
 
     if friendship is None:
@@ -185,21 +168,16 @@ def remove_friend(request, friend_id):
 
 
 @login_required
-def search_user(request):
+def search_user(request: HttpRequest) -> HttpResponse:
     query = request.GET.get("q", "").strip()
     if query:
-        friendships = Friendship.objects.filter(
-            Q(user1=request.user) | Q(user2=request.user)
-        )
+        friendships = Friendship.objects.filter(Q(user1=request.user) | Q(user2=request.user))
         already_friends = [
-            friend.user1.id if friend.user1 != request.user else friend.user2.id
-            for friend in friendships
+            friend.user1.id if friend.user1 != request.user else friend.user2.id for friend in friendships
         ]
 
         users = (
-            User.objects.filter(
-                Q(email__icontains=query) | Q(username__icontains=query)
-            )
+            User.objects.filter(Q(email__icontains=query) | Q(username__icontains=query))
             .exclude(id=request.user.id)
             .exclude(id__in=already_friends)
             .distinct()[:10]
@@ -220,14 +198,14 @@ def search_user(request):
 
 
 @login_required
-def accept_friend(request, friend_id):
+def accept_friend(request: HttpRequest, friend_id: UUID) -> HttpResponse:
     friend = User.objects.get(id=friend_id)
     if friend is None:
         messages.error(request, _("Usuário não encontrado!"))
         return redirect("profile")
 
     friendship = Friendship.objects.filter(
-        Q(user1=request.user, user2=friend) | Q(user1=friend, user2=request.user)
+        Q(user1=request.user, user2=friend) | Q(user1=friend, user2=request.user),
     ).first()
 
     if friendship is None:
@@ -241,14 +219,14 @@ def accept_friend(request, friend_id):
 
 
 @login_required
-def reject_friend(request, friend_id):
+def reject_friend(request: HttpRequest, friend_id: UUID) -> HttpResponse:
     friend = User.objects.get(id=friend_id)
     if friend is None:
         messages.error(request, _("Usuário não encontrado!"))
         return redirect("profile")
 
     friendship = Friendship.objects.filter(
-        Q(user1=request.user, user2=friend) | Q(user1=friend, user2=request.user)
+        Q(user1=request.user, user2=friend) | Q(user1=friend, user2=request.user),
     ).first()
 
     if friendship is None:
@@ -262,7 +240,7 @@ def reject_friend(request, friend_id):
 
 
 @login_required
-def friend_profile(request, friend_id):
+def friend_profile(request: HttpRequest, friend_id: UUID) -> HttpResponse:
     friend = get_object_or_404(User, id=friend_id)
 
     return render(request, "users/friend.html", {"friend": friend})

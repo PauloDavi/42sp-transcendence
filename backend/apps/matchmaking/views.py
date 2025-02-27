@@ -1,21 +1,23 @@
-from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib import messages
-from django.urls import reverse
-from django.utils.translation import gettext_lazy as _
-from django.contrib.auth.decorators import login_required
-from apps.users.models import User
-from apps.matchmaking.models import Match
+from uuid import UUID
+
 from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
-from django.http import JsonResponse
+from django.contrib import messages
+from django.contrib.auth.decorators import login_required
+from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
+from django.http import HttpRequest, HttpResponse, JsonResponse
+from django.shortcuts import get_object_or_404, redirect, render
+from django.urls import reverse
+from django.utils.translation import gettext_lazy as _
 from django.views.decorators.http import require_http_methods, require_POST
-from apps.matchmaking.models import Tournament, TournamentPlayer
+
 from apps.matchmaking.forms import CreateTournament, JoinTournament
-from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
+from apps.matchmaking.models import Match, Tournament, TournamentPlayer
+from apps.users.models import User
 
 
 @login_required
-def create_match(request, opponent_id):
+def create_match(request: HttpRequest, opponent_id: UUID) -> HttpResponse:
     next_url = request.GET.get("next", "/")
     opponent = User.objects.get(id=opponent_id)
 
@@ -55,16 +57,15 @@ def create_match(request, opponent_id):
         },
     )
 
-    messages.success(request, _("Match created successfully"))
     return redirect(reverse("match_game", kwargs={"match_id": match.id}))
 
 
 @login_required
 @require_http_methods(["DELETE"])
-def match_refuse(request, match_id):
+def match_refuse(request: HttpRequest, match_id: UUID) -> HttpResponse:
     match = get_object_or_404(Match, id=match_id)
 
-    if match.user1 != request.user and match.user2 != request.user:
+    if request.user not in {match.user1, match.user2}:
         messages.error(request, _("You are not part of this match"))
         return redirect("/")
 
@@ -87,14 +88,14 @@ def match_refuse(request, match_id):
     return JsonResponse({"status": "success"})
 
 
-def match_game(request, match_id):
+def match_game(request: HttpRequest, match_id: UUID) -> HttpResponse:
     match = get_object_or_404(Match, id=match_id)
 
     if match.finished_date_played:
         messages.error(request, _("Match already finished"))
         return redirect("/")
 
-    if match.user1 != request.user and match.user2 != request.user:
+    if request.user not in {match.user1, match.user2}:
         messages.error(request, _("You are not part of this match"))
         return redirect("/")
 
@@ -107,7 +108,7 @@ def match_game(request, match_id):
 
 @login_required
 @require_POST
-def create_tournament(request):
+def create_tournament(request: HttpRequest) -> HttpResponse:
     tournament = Tournament(
         name=request.POST["name"],
         created_by=request.user,
@@ -115,13 +116,11 @@ def create_tournament(request):
     tournament.save()
 
     messages.success(request, _("Tournament created successfully"))
-    return redirect(
-        reverse("tournament_detail", kwargs={"tournament_id": tournament.id})
-    )
+    return redirect(reverse("tournament_detail", kwargs={"tournament_id": tournament.id}))
 
 
 @login_required
-def tournaments(request):
+def tournaments(request: HttpRequest) -> HttpResponse:
     join_form = JoinTournament()
     form = CreateTournament()
     if request.method == "POST":
@@ -155,7 +154,7 @@ def tournaments(request):
 
 
 @login_required
-def delete_tournament(request, tournament_id):
+def delete_tournament(request: HttpRequest, tournament_id: UUID) -> HttpResponse:
     tournament = get_object_or_404(Tournament, id=tournament_id)
 
     if tournament.created_by != request.user:
@@ -172,7 +171,7 @@ def delete_tournament(request, tournament_id):
 
 
 @login_required
-def join_tournament(request, tournament_id):
+def join_tournament(request: HttpRequest, tournament_id: UUID) -> HttpResponse:
     tournament = get_object_or_404(Tournament, id=tournament_id)
 
     if tournament.players.filter(player=request.user).exists():
@@ -189,8 +188,6 @@ def join_tournament(request, tournament_id):
 
 
 @login_required
-def tournament_detail(request, tournament_id):
+def tournament_detail(request: HttpRequest, tournament_id: UUID) -> HttpResponse:
     tournament = get_object_or_404(Tournament, id=tournament_id)
-    return render(
-        request, "matchmaking/tournament_detail.html", {"tournament": tournament}
-    )
+    return render(request, "matchmaking/tournament_detail.html", {"tournament": tournament})

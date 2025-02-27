@@ -1,17 +1,18 @@
 from django.urls import path
+
 from apps.users.views import (
+    accept_friend,
+    add_friend,
+    friend_profile,
     home,
     login,
     logout,
-    register,
-    update_user,
-    search_user,
     profile,
-    add_friend,
-    remove_friend,
-    accept_friend,
+    register,
     reject_friend,
-    friend_profile,
+    remove_friend,
+    search_user,
+    update_user,
 )
 
 urlpatterns = [

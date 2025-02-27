@@ -1,4 +1,6 @@
 import uuid
+from typing import ClassVar
+
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.utils.translation import gettext_lazy as _
@@ -23,13 +25,13 @@ class User(AbstractUser):
     updated_at = models.DateTimeField(auto_now=True, verbose_name=_("Atualizado em"))
 
     USERNAME_FIELD = "username"
-    REQUIRED_FIELDS = ["email", "password"]
+    REQUIRED_FIELDS: ClassVar[list[str]] = ["email", "password"]
 
     class Meta:
         verbose_name = _("Usuário")
         verbose_name_plural = _("Usuários")
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.username
 
 
@@ -41,15 +43,9 @@ class FriendshipStatus(models.TextChoices):
 
 class Friendship(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    user1 = models.ForeignKey(
-        User, related_name="friendships1", on_delete=models.CASCADE
-    )
-    user2 = models.ForeignKey(
-        User, related_name="friendships2", on_delete=models.CASCADE
-    )
-    requestd_by = models.ForeignKey(
-        User, related_name="friendship_requests", on_delete=models.CASCADE
-    )
+    user1 = models.ForeignKey(User, related_name="friendships1", on_delete=models.CASCADE)
+    user2 = models.ForeignKey(User, related_name="friendships2", on_delete=models.CASCADE)
+    requestd_by = models.ForeignKey(User, related_name="friendship_requests", on_delete=models.CASCADE)
     status = models.CharField(
         max_length=10,
         choices=FriendshipStatus.choices,
@@ -62,7 +58,7 @@ class Friendship(models.Model):
     class Meta:
         verbose_name = _("Amizade")
         verbose_name_plural = _("Amizades")
-        unique_together = ["user1", "user2"]
+        unique_together: ClassVar = ["user1", "user2"]
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f"{self.user1.username} e {self.user2.username}"

@@ -61,6 +61,7 @@ function showToast(title, message, action, extraData, bgClass = "bg-primary", co
   toastElement.setAttribute("aria-live", "assertive");
   toastElement.setAttribute("data-bs-autohide", "false");
 
+  console.log("to aqui")
   let actions = ""
   if (action === "match") {
     actions = `

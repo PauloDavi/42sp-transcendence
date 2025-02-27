@@ -12,8 +12,6 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name="tournament",
             name="name",
-            field=models.CharField(
-                max_length=255, unique=True, verbose_name="Nome do torneio"
-            ),
+            field=models.CharField(max_length=255, unique=True, verbose_name="Nome do torneio"),
         ),
     ]
