@@ -5,8 +5,10 @@ from apps.matchmaking.views import (
     create_tournament,
     delete_tournament,
     join_tournament,
+    leave_tournament,
     match_game,
     match_refuse,
+    start_tournament,
     tournament_detail,
     tournaments,
 )
@@ -24,4 +26,6 @@ urlpatterns = [
         name="delete_tournament",
     ),
     path("tournament/<uuid:tournament_id>/join", join_tournament, name="join_tournament"),
+    path("tournament/<uuid:tournament_id>/leave/", leave_tournament, name="leave_tournament"),
+    path("tournament/<uuid:tournament_id>/start/", start_tournament, name="start_tournament"),
 ]

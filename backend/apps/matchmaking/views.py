@@ -8,12 +8,16 @@ from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 from django.http import HttpRequest, HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
+from django.utils.timezone import now
 from django.utils.translation import gettext_lazy as _
 from django.views.decorators.http import require_http_methods, require_POST
 
 from apps.matchmaking.forms import CreateTournament, JoinTournament
 from apps.matchmaking.models import Match, Tournament, TournamentPlayer
 from apps.users.models import User
+
+# Configurações do torneio
+MIN_TOURNAMENT_PLAYERS = 3
 
 
 @login_required
@@ -127,7 +131,13 @@ def create_tournament(request: HttpRequest) -> HttpResponse:
 def tournaments(request: HttpRequest) -> HttpResponse:
     join_form = JoinTournament()
     form = CreateTournament()
+    active_tournament = Tournament.objects.filter(players__player=request.user, finished_at__isnull=True).first()
+
     if request.method == "POST":
+        if active_tournament:
+            messages.error(request, _("Você já está participando de um torneio ativo"))
+            return redirect(reverse("tournaments"))
+
         form = CreateTournament(request.POST)
         if form.is_valid():
             tournament = form.save(commit=False)
@@ -153,7 +163,13 @@ def tournaments(request: HttpRequest) -> HttpResponse:
     return render(
         request,
         "matchmaking/tournaments.html",
-        {"tournaments": tournaments, "form": form, "join_form": join_form},
+        {
+            "tournaments": tournaments,
+            "form": form,
+            "join_form": join_form,
+            "active_tournament": active_tournament,
+            "MIN_TOURNAMENT_PLAYERS": MIN_TOURNAMENT_PLAYERS,
+        },
     )
 
 
@@ -176,6 +192,14 @@ def delete_tournament(request: HttpRequest, tournament_id: UUID) -> HttpResponse
 
 @login_required
 def join_tournament(request: HttpRequest, tournament_id: UUID) -> HttpResponse:
+    active_tournament = Tournament.objects.filter(players__player=request.user, finished_at__isnull=True).first()
+
+    if active_tournament:
+        messages.error(
+            request, _("Você não pode entrar em um novo torneio enquanto estiver participando de outro torneio ativo")
+        )
+        return redirect(reverse("tournaments"))
+
     tournament = get_object_or_404(Tournament, id=tournament_id)
 
     if tournament.players.filter(player=request.user).exists():
@@ -185,7 +209,8 @@ def join_tournament(request: HttpRequest, tournament_id: UUID) -> HttpResponse:
     player = TournamentPlayer.objects.get_or_create(
         player=request.user,
         display_name=request.user.username,
-    )
+    )[0]
+
     tournament.players.add(player)
     messages.success(request, _("Você entrou no torneio com sucesso!"))
     return redirect(reverse("tournaments"))
@@ -195,3 +220,44 @@ def join_tournament(request: HttpRequest, tournament_id: UUID) -> HttpResponse:
 def tournament_detail(request: HttpRequest, tournament_id: UUID) -> HttpResponse:
     tournament = get_object_or_404(Tournament, id=tournament_id)
     return render(request, "matchmaking/tournament_detail.html", {"tournament": tournament})
+
+
+@login_required
+def leave_tournament(request: HttpRequest, tournament_id: UUID) -> HttpResponse:
+    tournament = get_object_or_404(Tournament, id=tournament_id)
+
+    if tournament.started_at:
+        messages.error(request, _("Não é possível sair de um torneio que já começou"))
+        return redirect(reverse("tournaments"))
+
+    tournament_player = tournament.players.filter(player=request.user).first()
+    if tournament_player:
+        tournament_player.delete()
+        messages.success(request, _("Você saiu do torneio com sucesso"))
+    else:
+        messages.error(request, _("Você não está neste torneio"))
+
+    return redirect(reverse("tournaments"))
+
+
+@login_required
+def start_tournament(request: HttpRequest, tournament_id: UUID) -> HttpResponse:
+    tournament = get_object_or_404(Tournament, id=tournament_id)
+
+    if tournament.created_by != request.user:
+        messages.error(request, _("Apenas o criador pode iniciar o torneio"))
+        return redirect(reverse("tournaments"))
+
+    if tournament.started_at:
+        messages.error(request, _("Este torneio já foi iniciado"))
+        return redirect(reverse("tournaments"))
+
+    if tournament.players.count() < MIN_TOURNAMENT_PLAYERS:
+        messages.error(request, _("São necessários pelo menos 3 jogadores para iniciar o torneio"))
+        return redirect(reverse("tournaments"))
+
+    tournament.started_at = now()
+    tournament.save(update_fields=["started_at"])
+
+    messages.success(request, _("Torneio iniciado com sucesso!"))
+    return redirect(reverse("tournaments"))
