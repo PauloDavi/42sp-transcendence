@@ -9,7 +9,7 @@ from channels.db import database_sync_to_async
 from channels.generic.websocket import AsyncWebsocketConsumer
 from django.utils.timezone import now
 
-from apps.matchmaking.models import Match
+from apps.matchmaking.models import Match, Tournament
 from apps.users.models import User
 
 GRID_WIDTH = 50
@@ -313,8 +313,22 @@ class PongConsumer(AsyncWebsocketConsumer):
         await winner.asave(update_fields=["wins"])
         await losser.asave(update_fields=["losses"])
 
+        tournament_matches = await get_tournament_matches(match)
+        if tournament_matches:
+            await tournament_check_round_finished(tournament_matches[0])
+
     async def send_game_state(self, event: dict) -> None:
         await self.send(text_data=json.dumps({"game": event["game"], "events": event["events"]}))
+
+
+@database_sync_to_async
+def tournament_check_round_finished(tournament: Tournament) -> None:
+    tournament.check_round_finished()
+
+
+@database_sync_to_async
+def get_tournament_matches(match: Match) -> list[Match]:
+    return list(match.tournament_matches.all())
 
 
 @database_sync_to_async

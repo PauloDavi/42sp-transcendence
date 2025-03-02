@@ -1,23 +1,18 @@
 from uuid import UUID
 
-from asgiref.sync import async_to_sync
-from channels.layers import get_channel_layer
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 from django.http import HttpRequest, HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
-from django.utils.timezone import now
 from django.utils.translation import gettext_lazy as _
 from django.views.decorators.http import require_http_methods, require_POST
 
 from apps.matchmaking.forms import CreateTournament, JoinTournament
 from apps.matchmaking.models import Match, Tournament, TournamentPlayer
 from apps.users.models import User
-
-# Configurações do torneio
-MIN_TOURNAMENT_PLAYERS = 3
+from apps.users.schemas import ToastMessage
 
 
 @login_required
@@ -42,23 +37,18 @@ def create_match(request: HttpRequest, opponent_id: UUID) -> HttpResponse:
         user2=opponent,
     )
 
-    channel_layer = get_channel_layer()
-    result = async_to_sync(channel_layer.group_send)(
-        str(opponent.id),
-        {
-            "type": "send_toast",
-            "message": f"{request.user.username} {_('quer jogar contra você')}",
-            "tag": "warning",
-            "title": str(_("Convite de partida")),
-            "action": "match",
-            "extra_data": {
-                "accept_url": reverse("match_game", kwargs={"match_id": match.id}),
-                "accept_text": str(_("Aceitar")),
-                "reject_url": reverse("match_refuse", kwargs={"match_id": match.id}),
-                "reject_text": str(_("Rejeitar")),
-            },
+    result = ToastMessage(
+        title=str(_("Convite de partida")),
+        message=f"{request.user.username} {_('quer jogar contra você')}",
+        tag="warning",
+        action="match",
+        extra_data={
+            "accept_url": reverse("match_game", kwargs={"match_id": match.id}),
+            "accept_text": str(_("Aceitar")),
+            "reject_url": reverse("match_refuse", kwargs={"match_id": match.id}),
+            "reject_text": str(_("Rejeitar")),
         },
-    )
+    ).send_to_group(opponent.id)
 
     if result is not None:
         messages.error(request, _("Falha ao enviar o convite"))
@@ -81,17 +71,12 @@ def match_refuse(request: HttpRequest, match_id: UUID) -> HttpResponse:
 
     match.delete()
 
-    channel_layer = get_channel_layer()
-    async_to_sync(channel_layer.group_send)(
-        str(opponent.id),
-        {
-            "type": "send_toast",
-            "message": f"{request.user.username} {_('recusou a partida')}",
-            "tag": "danger",
-            "title": str(_("Partida recusada")),
-            "action": "match_refuse",
-        },
-    )
+    ToastMessage(
+        title=str(_("Partida recusada")),
+        message=f"{request.user.username} {_('recusou a partida')}",
+        tag="danger",
+        action="match_refuse",
+    ).send_to_group(opponent.id)
 
     return JsonResponse({"status": "success"})
 
@@ -168,7 +153,6 @@ def tournaments(request: HttpRequest) -> HttpResponse:
             "form": form,
             "join_form": join_form,
             "active_tournament": active_tournament,
-            "MIN_TOURNAMENT_PLAYERS": MIN_TOURNAMENT_PLAYERS,
         },
     )
 
@@ -217,12 +201,6 @@ def join_tournament(request: HttpRequest, tournament_id: UUID) -> HttpResponse:
 
 
 @login_required
-def tournament_detail(request: HttpRequest, tournament_id: UUID) -> HttpResponse:
-    tournament = get_object_or_404(Tournament, id=tournament_id)
-    return render(request, "matchmaking/tournament_detail.html", {"tournament": tournament})
-
-
-@login_required
 def leave_tournament(request: HttpRequest, tournament_id: UUID) -> HttpResponse:
     tournament = get_object_or_404(Tournament, id=tournament_id)
 
@@ -241,23 +219,6 @@ def leave_tournament(request: HttpRequest, tournament_id: UUID) -> HttpResponse:
 
 
 @login_required
-def start_tournament(request: HttpRequest, tournament_id: UUID) -> HttpResponse:
+def tournament_room(request: HttpRequest, tournament_id: UUID) -> HttpResponse:
     tournament = get_object_or_404(Tournament, id=tournament_id)
-
-    if tournament.created_by != request.user:
-        messages.error(request, _("Apenas o criador pode iniciar o torneio"))
-        return redirect(reverse("tournaments"))
-
-    if tournament.started_at:
-        messages.error(request, _("Este torneio já foi iniciado"))
-        return redirect(reverse("tournaments"))
-
-    if tournament.players.count() < MIN_TOURNAMENT_PLAYERS:
-        messages.error(request, _("São necessários pelo menos 3 jogadores para iniciar o torneio"))
-        return redirect(reverse("tournaments"))
-
-    tournament.started_at = now()
-    tournament.save(update_fields=["started_at"])
-
-    messages.success(request, _("Torneio iniciado com sucesso!"))
-    return redirect(reverse("tournaments"))
+    return render(request, "matchmaking/tournament.html", {"tournament": tournament})

@@ -45,34 +45,30 @@
                 <td>
                   {% if tournament.created_by == user %}
                     {% if not tournament.started_at %}
-                      <div class="btn-group">
-                        {% if tournament.players.count >= MIN_TOURNAMENT_PLAYERS %}
-                          <form method="post" action="{% url 'start_tournament' tournament.id %}">
-                            {% csrf_token %}
-                            <button type="submit" class="btn btn-success btn-sm">
-                              {% translate "Iniciar" %}
-                            </button>
-                          </form>
-                        {% endif %}
+                      <div class="btn-group" role="group" aria-label="Basic mixed styles example">
+                        <a href="{% url 'tournament_room' tournament.id %}" class="btn btn-primary btn-sm">{% translate "Entra na sala" %}</a>
                         <form method="post" action="{% url 'delete_tournament' tournament.id %}">
                           {% csrf_token %}
                           <button type="submit" class="btn btn-danger btn-sm">{% translate "Deletar" %}</button>
                         </form>
                       </div>
                     {% else %}
-                      <a href="{% url 'tournament_detail' tournament.id %}" class="btn btn-primary btn-sm">{% translate "Ver" %}</a>
+                      <a href="{% url 'tournament_room' tournament.id %}" class="btn btn-primary btn-sm">{% translate "Entra na sala" %}</a>
                     {% endif %}
                   {% else %}
                     {% if tournament.started_at %}
-                      <a href="{% url 'tournament_detail' tournament.id %}" class="btn btn-primary btn-sm">{% translate "Ver" %}</a>
+                      <a href="{% url 'tournament_room' tournament.id %}" class="btn btn-primary btn-sm">{% translate "Entra na sala" %}</a>
                     {% else %}
                       {% if active_tournament == tournament %}
-                        <form method="post" action="{% url 'leave_tournament' tournament.id %}">
-                          {% csrf_token %}
-                          <button type="submit" class="btn btn-danger btn-sm">
-                            {% translate "Sair" %}
-                          </button>
-                        </form>
+                        <div class="btn-group" role="group">
+                          <a href="{% url 'tournament_room' tournament.id %}" class="btn btn-primary btn-sm">{% translate "Entra na sala" %}</a>
+                          <form method="post" action="{% url 'leave_tournament' tournament.id %}">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-danger btn-sm">
+                              {% translate "Sair" %}
+                            </button>
+                          </form>
+                        </div>
                       {% else %}
                         <button 
                           class="btn btn-success btn-sm" 
