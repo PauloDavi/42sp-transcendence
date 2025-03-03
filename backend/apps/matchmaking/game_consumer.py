@@ -292,7 +292,6 @@ class PongConsumer(AsyncWebsocketConsumer):
             events.append({"type": "score_update"})
             ball.reset()
 
-            # Verifica se alguém ganhou
             current_score = game.score.right_score if scoring_player == "right_score" else game.score.left_score
             if current_score >= WIN_SCORE:
                 winner = self.match.user1 if scoring_player == "left_score" else self.match.user2
@@ -315,15 +314,22 @@ class PongConsumer(AsyncWebsocketConsumer):
 
         tournament_matches = await get_tournament_matches(match)
         if tournament_matches:
-            await tournament_check_round_finished(tournament_matches[0])
+            tournament = tournament_matches[0]
+            has_update = await tournament_check_round_finished(tournament)
+            if has_update:
+                tournament_group = f"tournament_{tournament.id}"
+                await self.channel_layer.group_send(
+                    tournament_group,
+                    {"type": "handle_match_finished"},
+                )
 
     async def send_game_state(self, event: dict) -> None:
         await self.send(text_data=json.dumps({"game": event["game"], "events": event["events"]}))
 
 
 @database_sync_to_async
-def tournament_check_round_finished(tournament: Tournament) -> None:
-    tournament.check_round_finished()
+def tournament_check_round_finished(tournament: Tournament) -> bool:
+    return tournament.check_round_finished()
 
 
 @database_sync_to_async

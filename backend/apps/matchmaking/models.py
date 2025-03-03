@@ -78,9 +78,11 @@ class Tournament(models.Model):
     def __str__(self) -> str:
         return self.name
 
-    def check_round_finished(self) -> None:
+    def check_round_finished(self) -> bool:
         if not self.matches.filter(round_number=self.current_round_number, winner__isnull=True).exists():
             self.create_next_round()
+            return True
+        return False
 
     def get_round_winners(self) -> list[TournamentPlayer]:
         winners_ids = self.matches.filter(round_number=self.current_round_number, winner__isnull=False).values_list(
@@ -91,21 +93,19 @@ class Tournament(models.Model):
         return list(self.players.filter(Q(player__id__in=winners_ids) | Q(id__in=bye_players)))
 
     def create_next_round(self) -> None:
-        print("create_next_round")
         winners = self.get_round_winners()
         if len(winners) <= 1:
             if winners:
                 self.winner = winners[0]
             self.finished_at = now()
             self.save(update_fields=["winner", "finished_at"])
-            return []
+            return
 
         random.shuffle(winners)
         matches: list[Match] = []
 
         self.current_round_number += 1
         self.save(update_fields=["current_round_number"])
-        print("current_round_number", self.current_round_number)
 
         if len(winners) % 2 != 0:
             bye_player = winners.pop()
@@ -114,7 +114,6 @@ class Tournament(models.Model):
 
         for i in range(0, len(winners), 2):
             if i + 1 < len(winners):
-                print("create_match", winners[i].player, winners[i + 1].player)
                 match = Match.objects.create(
                     user1=winners[i].player, user2=winners[i + 1].player, round_number=self.current_round_number
                 )
@@ -123,4 +122,48 @@ class Tournament(models.Model):
         if matches:
             self.matches.add(*matches)
 
-        return None
+    def get_rounds_data(self) -> list[dict]:
+        rounds_data = []
+        max_round = max(
+            self.matches.aggregate(models.Max("round_number"))["round_number__max"] or 0,
+            self.byes.aggregate(models.Max("round_number"))["round_number__max"] or 0,
+        )
+
+        for round_num in range(1, max_round + 1):
+            round_matches = self.matches.filter(round_number=round_num)
+            round_byes = self.byes.filter(round_number=round_num)
+
+            rounds_data.append(
+                {
+                    "round_number": round_num,
+                    "matches": [
+                        {
+                            "id": str(match.id),
+                            "player1": {
+                                "display_name": self.players.get(player__id=match.user1.id).display_name,
+                                "username": match.user1.username,
+                                "score": match.score_user1,
+                            },
+                            "player2": {
+                                "display_name": self.players.get(player__id=match.user2.id).display_name,
+                                "username": match.user2.username,
+                                "score": match.score_user2,
+                            },
+                            "winner": match.winner.username if match.winner else None,
+                            "is_finished": match.winner is not None,
+                        }
+                        for match in round_matches
+                    ],
+                    "byes": [
+                        {
+                            "display_name": bye.player.display_name,
+                            "username": bye.player.player.username,
+                        }
+                        for bye in round_byes
+                    ],
+                    "is_current": round_num == self.current_round_number,
+                    "is_finished": self.finished_at is not None,
+                }
+            )
+
+        return rounds_data

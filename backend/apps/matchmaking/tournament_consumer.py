@@ -91,10 +91,20 @@ class TournamentConsumer(AsyncWebsocketConsumer):
         await self.update_tournament_start(tournament)
         await self.remove_offline_players(tournament)
 
-        matches = await self.create_tournament_matches(connected_players)
+        rounds_data = await self.create_tournament_matches(connected_players)
+        players = await self.get_tournament_players_with_status()
         await self.channel_layer.group_send(
             self.tournament_group_name,
-            {"type": "tournament_message", "message": {"action": "matches_created", "matches": matches}},
+            {
+                "type": "tournament_message",
+                "message": {
+                    "action": "matches_created",
+                    "rounds_data": rounds_data,
+                    "players": players,
+                    "started_at": tournament.started_at.isoformat() if tournament.started_at else None,
+                    "finished_at": tournament.finished_at.isoformat() if tournament.finished_at else None,
+                },
+            },
         )
 
     async def tournament_message(self, event: dict) -> None:
@@ -114,7 +124,6 @@ class TournamentConsumer(AsyncWebsocketConsumer):
         tournament = Tournament.objects.get(id=self.tournament_id)
         random.shuffle(players)
         matches: list[Match] = []
-        matches_data: list[dict] = []
 
         tournament.current_round_number += 1
         tournament.save(update_fields=["current_round_number"])
@@ -124,13 +133,6 @@ class TournamentConsumer(AsyncWebsocketConsumer):
             tournament_bye = TournamentBye.objects.create(
                 player=bye_player, round_number=tournament.current_round_number
             )
-            matches_data.append(
-                {
-                    "player": bye_player.display_name,
-                    "is_bye": True,
-                    "round": tournament.current_round_number,
-                }
-            )
 
         for i in range(0, len(players), 2):
             if i + 1 < len(players):
@@ -138,21 +140,13 @@ class TournamentConsumer(AsyncWebsocketConsumer):
                     user1=players[i].player, user2=players[i + 1].player, round_number=tournament.current_round_number
                 )
                 matches.append(match)
-                matches_data.append(
-                    {
-                        "id": str(match.id),
-                        "player1": players[i].display_name,
-                        "player2": players[i + 1].display_name,
-                        "round": tournament.current_round_number,
-                    }
-                )
 
         if matches:
             tournament.matches.add(*matches)
         if tournament_bye:
             tournament.byes.add(tournament_bye)
 
-        return matches_data
+        return tournament.get_rounds_data()
 
     @database_sync_to_async
     def get_connected_players(self) -> list[TournamentPlayer]:
@@ -172,3 +166,24 @@ class TournamentConsumer(AsyncWebsocketConsumer):
         tournament.started_at = now()
         tournament.save(update_fields=["started_at"])
 
+    @database_sync_to_async
+    def get_rounds_data(self, tournament: Tournament) -> list[dict]:
+        return tournament.get_rounds_data()
+
+    async def handle_match_finished(self, event: dict) -> None:
+        tournament = await self.get_tournament()
+        rounds_data = await self.get_rounds_data(tournament)
+        players = await self.get_tournament_players_with_status()
+        await self.channel_layer.group_send(
+            self.tournament_group_name,
+            {
+                "type": "tournament_message",
+                "message": {
+                    "action": "next_round",
+                    "rounds_data": rounds_data,
+                    "players": players,
+                    "started_at": tournament.started_at.isoformat() if tournament.started_at else None,
+                    "finished_at": tournament.finished_at.isoformat() if tournament.finished_at else None,
+                },
+            },
+        )
