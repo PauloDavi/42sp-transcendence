@@ -315,13 +315,12 @@ class PongConsumer(AsyncWebsocketConsumer):
         tournament_matches = await get_tournament_matches(match)
         if tournament_matches:
             tournament = tournament_matches[0]
-            has_update = await tournament_check_round_finished(tournament)
-            if has_update:
-                tournament_group = f"tournament_{tournament.id}"
-                await self.channel_layer.group_send(
-                    tournament_group,
-                    {"type": "handle_match_finished"},
-                )
+            await tournament_check_round_finished(tournament)
+            tournament_group = f"tournament_{tournament.id}"
+            await self.channel_layer.group_send(
+                tournament_group,
+                {"type": "handle_match_finished"},
+            )
 
     async def send_game_state(self, event: dict) -> None:
         await self.send(text_data=json.dumps({"game": event["game"], "events": event["events"]}))

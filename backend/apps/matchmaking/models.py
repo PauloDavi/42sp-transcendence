@@ -3,10 +3,12 @@ import uuid
 
 from django.db import models
 from django.db.models import Q
+from django.urls import reverse
 from django.utils.timezone import now
 from django.utils.translation import gettext_lazy as _
 
 from apps.users.models import User
+from apps.users.schemas import RedirectMessage
 
 
 class Match(models.Model):
@@ -90,6 +92,8 @@ class Tournament(models.Model):
         )
         bye_players = self.byes.filter(round_number=self.current_round_number).values_list("player", flat=True)
 
+        if not winners_ids and not bye_players:
+            return list(self.players.all())
         return list(self.players.filter(Q(player__id__in=winners_ids) | Q(id__in=bye_players)))
 
     def create_next_round(self) -> None:
@@ -121,6 +125,16 @@ class Tournament(models.Model):
 
         if matches:
             self.matches.add(*matches)
+            for match in matches:
+                RedirectMessage(
+                    url=f"{reverse('match_game', args=[match.id])}?next={reverse('tournament_room', args=[self.id])}",
+                    delay=500,
+                ).send_to_group(match.user1.id)
+
+                RedirectMessage(
+                    url=f"{reverse('match_game', args=[match.id])}?next={reverse('tournament_room', args=[self.id])}",
+                    delay=500,
+                ).send_to_group(match.user2.id)
 
     def get_rounds_data(self) -> list[dict]:
         rounds_data = []

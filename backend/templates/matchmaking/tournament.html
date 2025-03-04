@@ -92,7 +92,7 @@
                       <span class="badge bg-primary">{% translate "Atual" %}</span>
                     {% endif %}
                   </h6>
-                  
+
                   <div class="row g-3">
                     {% for match in round.matches %}
                       <div class="col-md-6">
@@ -181,31 +181,30 @@
 
       if (started_at) {
         tournamentStatus.textContent = "{% translate "Em andamento" %}";
-        tournamentStatus.classList.add("bg-primary");
+        tournamentStatus.className = "badge bg-primary ms-2"
         if (startTournamentButton) {
           startTournamentButton.remove();
         }
       } else if (finished_at) {
         tournamentStatus.textContent = "{% translate "Finalizado" %}";
-        tournamentStatus.classList.add("bg-secondary");
+        tournamentStatus.className = "badge bg-secondary ms-2"
         if (startTournamentButton) {
           startTournamentButton.remove();
         }
       } else {
         tournamentStatus.textContent = "{% translate "Aguardando início" %}";
-        tournamentStatus.classList.add("bg-warning");
+        tournamentStatus.className = "badge bg-warning ms-2"
       }
     }
 
     updateMatches(rounds_data) {
-      console.log(rounds_data);
       const container = document.getElementById("matches-container");
       container.innerHTML = "";
 
       rounds_data.forEach(round => {
         const roundSection = document.createElement("div");
-        roundSection.className = `round-section mb-4 ${round.is_current ? 'current-round' : ''}`;
-        
+        roundSection.className = `round-section mb-3 p-3 rounded-1 ${round.is_current ? 'current-round' : 'previous-round'}`;
+
         roundSection.innerHTML = `
           <h6 class="border-bottom pb-2 mb-3">
             {% translate "Rodada" %} ${round.round_number}
@@ -241,7 +240,7 @@
                 </div>
               </div>
             `).join('')}
-            
+
             ${round.byes.map(bye => `
               <div class="col-md-6">
                 <div class="card">
@@ -258,7 +257,7 @@
             `).join('')}
           </div>
         `;
-        
+
         container.appendChild(roundSection);
       });
     }

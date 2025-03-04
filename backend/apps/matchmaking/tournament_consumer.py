@@ -1,5 +1,4 @@
 import json
-import random
 from typing import ClassVar
 from uuid import UUID
 
@@ -8,7 +7,7 @@ from channels.generic.websocket import AsyncWebsocketConsumer
 from django.db.models import Q
 from django.utils.timezone import now
 
-from apps.matchmaking.models import Match, Tournament, TournamentBye, TournamentPlayer
+from apps.matchmaking.models import Tournament, TournamentPlayer
 
 MIN_TOURNAMENT_PLAYERS = 3
 
@@ -91,7 +90,7 @@ class TournamentConsumer(AsyncWebsocketConsumer):
         await self.update_tournament_start(tournament)
         await self.remove_offline_players(tournament)
 
-        rounds_data = await self.create_tournament_matches(connected_players)
+        rounds_data = await self.create_tournament_matches()
         players = await self.get_tournament_players_with_status()
         await self.channel_layer.group_send(
             self.tournament_group_name,
@@ -120,32 +119,9 @@ class TournamentConsumer(AsyncWebsocketConsumer):
         return list(tournament.players.all())
 
     @database_sync_to_async
-    def create_tournament_matches(self, players: list[TournamentPlayer]) -> list[dict]:
+    def create_tournament_matches(self) -> list[dict]:
         tournament = Tournament.objects.get(id=self.tournament_id)
-        random.shuffle(players)
-        matches: list[Match] = []
-
-        tournament.current_round_number += 1
-        tournament.save(update_fields=["current_round_number"])
-
-        if len(players) % 2 != 0:
-            bye_player = players.pop()
-            tournament_bye = TournamentBye.objects.create(
-                player=bye_player, round_number=tournament.current_round_number
-            )
-
-        for i in range(0, len(players), 2):
-            if i + 1 < len(players):
-                match = Match.objects.create(
-                    user1=players[i].player, user2=players[i + 1].player, round_number=tournament.current_round_number
-                )
-                matches.append(match)
-
-        if matches:
-            tournament.matches.add(*matches)
-        if tournament_bye:
-            tournament.byes.add(tournament_bye)
-
+        tournament.create_next_round()
         return tournament.get_rounds_data()
 
     @database_sync_to_async

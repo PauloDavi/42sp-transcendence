@@ -109,7 +109,7 @@ def create_tournament(request: HttpRequest) -> HttpResponse:
     tournament.save()
 
     messages.success(request, _("Tournament created successfully"))
-    return redirect(reverse("tournament_detail", kwargs={"tournament_id": tournament.id}))
+    return redirect(reverse("tournament_room", kwargs={"tournament_id": tournament.id}))
 
 
 @login_required
@@ -135,6 +135,7 @@ def tournaments(request: HttpRequest) -> HttpResponse:
             )
 
             tournament.players.add(player)
+            return redirect(reverse("tournament_room", kwargs={"tournament_id": tournament.id}))
 
     page = request.GET.get("page", 1)
     paginator = Paginator(Tournament.objects.all().order_by("-created_at"), 5)
@@ -190,13 +191,18 @@ def join_tournament(request: HttpRequest, tournament_id: UUID) -> HttpResponse:
         messages.warning(request, _("Você já está participando deste torneio."))
         return redirect(reverse("tournaments"))
 
-    player = TournamentPlayer.objects.get_or_create(
-        player=request.user,
-        display_name=request.user.username,
-    )[0]
+    if request.method == "POST":
+        form = JoinTournament(request.POST)
+        if form.is_valid():
+            player = TournamentPlayer.objects.create(
+                player=request.user,
+                display_name=form.cleaned_data["display_name"],
+            )
+            tournament.players.add(player)
+            messages.success(request, _("Você entrou no torneio com sucesso!"))
+            return redirect(reverse("tournament_room", kwargs={"tournament_id": tournament.id}))
 
-    tournament.players.add(player)
-    messages.success(request, _("Você entrou no torneio com sucesso!"))
+    messages.error(request, _("Erro ao entrar no torneio"))
     return redirect(reverse("tournaments"))
 
 

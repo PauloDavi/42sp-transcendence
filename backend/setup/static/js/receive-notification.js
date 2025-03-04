@@ -7,7 +7,11 @@ class NotificationClient extends BaseWebSocket {
   setupMessageHandler() {
     this.socket.onmessage = (event) => {
       const data = JSON.parse(event.data);
-      if (data.message) {
+      if (data.action === "redirect") {
+        setTimeout(() => {
+          window.location.href = data.url;
+        }, data.delay || 0);
+      } else if (data.message) {
         showToast(
           data.title,
           data.message,

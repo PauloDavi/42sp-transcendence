@@ -94,7 +94,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function createBackground() {
     const backgroundContext = backgroundCanvas.getContext("2d");
-
     backgroundCanvas.width = canvas.width;
     backgroundCanvas.height = canvas.height;
 
@@ -102,6 +101,14 @@ document.addEventListener("DOMContentLoaded", () => {
     backgroundContext.fillRect(0, 0, backgroundCanvas.width, grid);
     backgroundContext.fillRect(0, backgroundCanvas.height - grid, backgroundCanvas.width, backgroundCanvas.height);
 
+    backgroundContext.font = `${grid * 0.8}px Arial`;
+    backgroundContext.fillStyle = "#222";
+    backgroundContext.textAlign = "center";
+    backgroundContext.textBaseline = "middle";
+    backgroundContext.fillText("{{ match.user1.username }}", canvas.width * 0.25, grid/2);
+    backgroundContext.fillText("{{ match.user2.username }}", canvas.width * 0.75, grid/2);
+
+    backgroundContext.fillStyle = "lightgrey";
     for (let i = grid; i < backgroundCanvas.height - grid; i += grid * 2) {
       backgroundContext.fillRect(backgroundCanvas.width / 2 - grid / 2, i, grid, grid);
     }
