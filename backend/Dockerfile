@@ -14,12 +14,9 @@ COPY . /app/
 RUN chmod +x entrypoint.sh \
   && apt update \
   && apt install -y gettext \
-  && rm -rf /var/lib/apt/lists/* \
-  && mkdir -p ./ssl \
-  && openssl req -x509 -nodes -days 365 \
-    -newkey rsa:2048 -keyout /app/ssl/django.key \
-    -out ./ssl/django.crt \
-    -subj "/C=BR/ST=SP/L=SP/O=42/CN=localhost"
+  && rm -rf /var/lib/apt/lists/*
+
+EXPOSE 8000
 
 ENTRYPOINT ["./entrypoint.sh"]
-CMD ["gunicorn", "--certfile=/app/ssl/django.crt", "--keyfile=./ssl/django.key", "--reload", "--bind", "0.0.0.0:443", "setup.wsgi:application"]
+CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
