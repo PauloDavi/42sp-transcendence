@@ -17,12 +17,14 @@ GRID_HEIGHT = 25
 PADDLE_HEIGHT = 5.0
 PADDLE_WIDTH = 1.0
 BALL_SIZE = 1.0
-BALL_SPEED = 0.4
+BALL_SPEED = 0.5
 PADDLE_X_OFFSET = 2.0
 FRAME_DELAY = 1 / 30
 PADDLE_SPEED = 0.3
 WIN_SCORE = 3
 REQUIRED_NUMBER_OF_PLAYERS = 2
+INITIAL_SPEED_HITS = 4
+MEDIUM_SPEED_HITS = 8
 
 
 @dataclass
@@ -45,6 +47,8 @@ class Paddle(GameObject):
 class Ball(GameObject):
     resseting: bool = False
     reset_timer: float = 0.0
+    speed_multiplier: float = 1.0
+    hits: int = 0
 
     def __init__(self) -> None:
         super().__init__(
@@ -63,6 +67,22 @@ class Ball(GameObject):
         self.vy = (1 if secrets.randbelow(2) == 1 else -1) * BALL_SPEED * secrets.SystemRandom().uniform(0.5, 1.5)
         self.resseting = True
         self.reset_timer = time.perf_counter() + secrets.SystemRandom().uniform(0.5, 1.5)
+        self.speed_multiplier = 1.0
+        self.hits = 0
+
+    def increase_speed(self, normalized_impact: float) -> None:
+        if self.hits < INITIAL_SPEED_HITS:
+            speed_increase = 0.15
+        elif self.hits < MEDIUM_SPEED_HITS:
+            speed_increase = 0.10
+        else:
+            speed_increase = 0.05
+
+        self.speed_multiplier += speed_increase
+        self.hits += 1
+
+        self.vx = (self.vx / abs(self.vx)) * -1 * BALL_SPEED * self.speed_multiplier
+        self.vy = (self.vy / abs(self.vy)) * normalized_impact * BALL_SPEED * self.speed_multiplier
 
 
 @dataclass
@@ -173,10 +193,12 @@ class PongConsumer(AsyncWebsocketConsumer):
             await self.match.asave(update_fields=["score_user1", "score_user2", "finished_date_played"])
 
             if game.score.left_score == game.score.right_score:
-                return
+                winner = self.match.user1 if self.is_left_user else self.match.user2
+                losser = self.match.user2 if self.is_left_user else self.match.user1
+            else:
+                winner = self.match.user1 if game.score.left_score > game.score.right_score else self.match.user2
+                losser = self.match.user2 if game.score.left_score > game.score.right_score else self.match.user1
 
-            winner = self.match.user1 if game.score.left_score > game.score.right_score else self.match.user2
-            losser = self.match.user2 if game.score.left_score > game.score.right_score else self.match.user1
             winner.wins += 1
             losser.losses += 1
             self.match.winner = winner
@@ -262,8 +284,7 @@ class PongConsumer(AsyncWebsocketConsumer):
         def update_ball_when_collide_with_paddle(paddle: Paddle, new_ball_x: int) -> None:
             impact_point = ball.y + ball.height / 2 - (paddle.y + paddle.height / 2)
             normalized_impact = impact_point / (paddle.height / 2)
-            ball.vx *= -1.05
-            ball.vy = normalized_impact * BALL_SPEED
+            ball.increase_speed(normalized_impact)
             ball.x = new_ball_x
 
         if (

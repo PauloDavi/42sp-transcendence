@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-03-03 23:59-0300\n"
-"PO-Revision-Date: 2025-03-04 00:09-0300\n"
+"POT-Creation-Date: 2025-03-04 13:40-0300\n"
+"PO-Revision-Date: 2025-03-05 00:28-0300\n"
 "Last-Translator:   <super@gmail.co>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "Language: \n"
@@ -64,7 +64,7 @@ msgid "Partida"
 msgstr "Partido"
 
 #: apps/matchmaking/models.py:28 templates/matchmaking/tournament.html:84
-#: templates/users/profile.html:182
+#: templates/users/profile.html:182 templates/users/stats.html:127
 msgid "Partidas"
 msgstr "Partidos"
 
@@ -84,12 +84,10 @@ msgid "Criado em"
 msgstr "Creado en"
 
 #: apps/matchmaking/models.py:51
-#| msgid "Nome do torneio"
 msgid "Bye do Torneio"
 msgstr "Bye torneo"
 
 #: apps/matchmaking/models.py:52
-#| msgid "Nome do torneio"
 msgid "Byes do Torneio"
 msgstr "Byes torneo"
 
@@ -186,7 +184,6 @@ msgid "Você entrou no torneio com sucesso!"
 msgstr "¡Has entrado al torneo con éxito!"
 
 #: apps/matchmaking/views.py:205
-#| msgid "Entrar no torneio"
 msgid "Erro ao entrar no torneio"
 msgstr "Error al ingresar al torneo"
 
@@ -195,12 +192,10 @@ msgid "Não é possível sair de um torneio que já começou"
 msgstr "No es posible abandonar un torneo que ya ha comenzado"
 
 #: apps/matchmaking/views.py:220
-#| msgid "Você entrou no torneio com sucesso!"
 msgid "Você saiu do torneio com sucesso"
 msgstr "Has salido del torneo con éxito."
 
 #: apps/matchmaking/views.py:222
-#| msgid "Você já está participando deste torneio."
 msgid "Você não está neste torneio"
 msgstr "No estás en este torneo"
 
@@ -256,11 +251,13 @@ msgstr "Avatar"
 
 #: apps/users/models.py:22 templates/users/friend.html:19
 #: templates/users/profile.html:111 templates/users/profile.html:185
+#: templates/users/stats.html:22 templates/users/stats.html:107
 msgid "Vitórias"
 msgstr "Victorias"
 
 #: apps/users/models.py:23 templates/users/friend.html:20
 #: templates/users/profile.html:112 templates/users/profile.html:186
+#: templates/users/stats.html:30 templates/users/stats.html:112
 msgid "Derrotas"
 msgstr "Derrotas"
 
@@ -296,52 +293,52 @@ msgstr "Amistad"
 msgid "Amizades"
 msgstr "Amistades"
 
-#: apps/users/views.py:40
+#: apps/users/views.py:41
 msgid "Login realizado com sucesso"
 msgstr "Inicio de sesión exitoso"
 
-#: apps/users/views.py:43
+#: apps/users/views.py:44
 msgid "Usuário ou senha inválidos"
 msgstr "Nombre de usuario o contraseña no válidos"
 
-#: apps/users/views.py:50
+#: apps/users/views.py:51
 msgid "Usuário deslogado com sucesso"
 msgstr "El usuario ha cerrado sesión correctamente"
 
-#: apps/users/views.py:65
+#: apps/users/views.py:66
 msgid "Usuário criado com sucesso"
 msgstr "El usuario ha cerrado sesión correctamente"
 
-#: apps/users/views.py:77
+#: apps/users/views.py:78
 msgid "Seu perfil foi atualizado com sucesso!"
 msgstr "¡Tu perfil ha sido actualizado exitosamente!"
 
-#: apps/users/views.py:134
+#: apps/users/views.py:135
 msgid "Você não pode adicionar a si mesmo como amigo!"
 msgstr "¡No puedes agregarte como amigo!"
 
-#: apps/users/views.py:138 apps/users/views.py:154 apps/users/views.py:204
-#: apps/users/views.py:225
+#: apps/users/views.py:139 apps/users/views.py:155 apps/users/views.py:205
+#: apps/users/views.py:226
 msgid "Usuário não encontrado!"
 msgstr "¡Usuario no encontrado!"
 
-#: apps/users/views.py:146
+#: apps/users/views.py:147
 msgid "Solicitação de amizade enviada com sucesso!"
 msgstr "¡Solicitud de amistad enviada exitosamente!"
 
-#: apps/users/views.py:162 apps/users/views.py:212 apps/users/views.py:233
+#: apps/users/views.py:163 apps/users/views.py:213 apps/users/views.py:234
 msgid "Amigo não encontrado!"
 msgstr "¡Amigo no encontrado!"
 
-#: apps/users/views.py:166
+#: apps/users/views.py:167
 msgid "Amigo removido com sucesso!"
 msgstr "¡Amigo eliminado exitosamente!"
 
-#: apps/users/views.py:217
+#: apps/users/views.py:218
 msgid "Amigo aceito com sucesso!"
 msgstr "¡Amigo aceptado exitosamente!"
 
-#: apps/users/views.py:238
+#: apps/users/views.py:239
 msgid "Amigo rejeitado com sucesso!"
 msgstr "¡Amigo rechazado exitosamente!"
 
@@ -383,7 +380,6 @@ msgstr "Esperando que el oponente entre al partido"
 
 #: templates/matchmaking/tournament.html:16
 #: templates/matchmaking/tournament.html:189
-#| msgid "Finalizado em"
 msgid "Finalizado"
 msgstr "Completado"
 
@@ -398,7 +394,6 @@ msgid "Aguardando início"
 msgstr "Aguardando início"
 
 #: templates/matchmaking/tournament.html:27
-#| msgid "Torneio"
 msgid "Iniciar Torneio"
 msgstr "Iniciar torneo"
 
@@ -456,7 +451,7 @@ msgstr "Pasó directamente"
 
 #: templates/matchmaking/tournament.html:282
 msgid "Na sala"
-msgstr "En la habitación"
+msgstr "En la sala"
 
 #: templates/matchmaking/tournament.html:286
 msgid "Em jogo"
@@ -475,7 +470,7 @@ msgstr "Ningún jugador"
 #: templates/matchmaking/tournaments.html:62
 #: templates/matchmaking/tournaments.html:66
 msgid "Sala"
-msgstr "Habitación"
+msgstr "Sala"
 
 #: templates/matchmaking/tournaments.html:54
 msgid "Deletar"
@@ -552,39 +547,43 @@ msgstr "Alerta"
 msgid "Informação"
 msgstr "Información"
 
-#: templates/shared/partials/_navbar.html:12
+#: templates/shared/partials/_navbar.html:13
 msgid "Tournaments"
 msgstr "Torneos"
 
-#: templates/shared/partials/_navbar.html:17
+#: templates/shared/partials/_navbar.html:14
+msgid "Estatísticas"
+msgstr "Estadística"
+
+#: templates/shared/partials/_navbar.html:19
 msgid "Foto do usuário"
 msgstr "Foto de usuario"
 
-#: templates/shared/partials/_navbar.html:21
+#: templates/shared/partials/_navbar.html:23
 msgid "Perfil"
 msgstr "Perfil"
 
-#: templates/shared/partials/_navbar.html:25
+#: templates/shared/partials/_navbar.html:27
 msgid "Tema"
 msgstr "Tema"
 
-#: templates/shared/partials/_navbar.html:30
+#: templates/shared/partials/_navbar.html:32
 msgid "Claro"
 msgstr "Claro"
 
-#: templates/shared/partials/_navbar.html:35
+#: templates/shared/partials/_navbar.html:37
 msgid "Escuro"
 msgstr "Oscuro"
 
-#: templates/shared/partials/_navbar.html:40
+#: templates/shared/partials/_navbar.html:42
 msgid "Automático"
 msgstr "Automático"
 
-#: templates/shared/partials/_navbar.html:48
+#: templates/shared/partials/_navbar.html:50
 msgid "Lingua"
 msgstr "idioma"
 
-#: templates/shared/partials/_navbar.html:73
+#: templates/shared/partials/_navbar.html:75
 msgid "Logout"
 msgstr "Logout"
 
@@ -692,9 +691,68 @@ msgstr "Error al buscar usuarios"
 msgid "Cadastro"
 msgstr "Registro"
 
+#: templates/users/stats.html:14
+#| msgid "Convite de partida"
+msgid "Total de Partidas"
+msgstr "Total de Partidos"
+
+#: templates/users/stats.html:38
+#| msgid "Vitórias"
+msgid "Taxa de Vitória"
+msgstr "Porcentaje de victorias"
+
+#: templates/users/stats.html:49
+#| msgid "Convite de partida"
+msgid "Histórico de Partidas"
+msgstr "Historial de Partidos"
+
+#: templates/users/stats.html:58
+msgid "Rivais Mais Frequentes"
+msgstr "Rivales más frecuentes"
+
+#: templates/users/stats.html:67
+msgid "Desempenho em Torneios"
+msgstr "Rendimiento en torneos"
+
+#: templates/users/stats.html:76
+msgid "Tempo de Jogo por Dia"
+msgstr "Tiempo de juego por día"
+
+#: templates/users/stats.html:139
+msgid "1º Lugar"
+msgstr "1er lugar"
+
+#: templates/users/stats.html:139
+msgid "2º Lugar"
+msgstr "2do Lugar"
+
+#: templates/users/stats.html:139
+msgid "Outros"
+msgstr "Otros"
+
+#: templates/users/stats.html:157
+msgid "Minutos Jogados"
+msgstr "Minutos jugados"
+
 #: templates/users/update_user.html:65
 msgid "Atualize seu perfil"
 msgstr "Actualiza tu perfil"
+
+#, fuzzy
+#~ msgid "Últimas Partidas"
+#~ msgstr "Partidos"
+
+#, fuzzy
+#~ msgid "Duração"
+#~ msgstr "Información"
+
+#, fuzzy
+#~ msgid "Vitória"
+#~ msgstr "Victorias"
+
+#, fuzzy
+#~ msgid "Derrota"
+#~ msgstr "Derrotas"
 
 #, fuzzy
 #~ msgid "Torneio iniciado com sucesso!"

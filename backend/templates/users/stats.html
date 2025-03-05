@@ -1,0 +1,228 @@
+{% extends 'shared/base.html' %}
+{% load static %}
+{% load i18n %}
+{% block content %}
+<div class="container my-4">
+  <div class="row g-3">
+    <div class="col-12">
+      <div class="row g-3">
+        <div class="col-md-3">
+          <div class="card text-bg-primary">
+            <div class="card-body">
+              <h6 class="card-title">{% translate "Total de Partidas" %}</h6>
+              <h2 class="card-text">{{ total_matches }}</h2>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="card text-bg-success">
+            <div class="card-body">
+              <h6 class="card-title">{% translate "Vitórias" %}</h6>
+              <h2 class="card-text">{{ total_wins }}</h2>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="card text-bg-danger">
+            <div class="card-body">
+              <h6 class="card-title">{% translate "Derrotas" %}</h6>
+              <h2 class="card-text">{{ total_losses }}</h2>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="card text-bg-info">
+            <div class="card-body">
+              <h6 class="card-title">{% translate "Taxa de Vitória" %}</h6>
+              <h2 class="card-text">{{ win_rate }}%</h2>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-6">
+      <div class="card h-100">
+        <div class="card-header">{% translate "Histórico de Partidas" %}</div>
+        <div class="card-body">
+          <canvas id="matchHistory"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-6">
+      <div class="card h-100">
+        <div class="card-header">{% translate "Rivais Mais Frequentes" %}</div>
+        <div class="card-body">
+          <canvas id="topRivals"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-6">
+      <div class="card h-100">
+        <div class="card-header">{% translate "Desempenho em Torneios" %}</div>
+        <div class="card-body">
+          <canvas id="tournamentPerformance"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-6">
+      <div class="card h-100">
+        <div class="card-header">{% translate "Tempo de Jogo por Dia" %}</div>
+        <div class="card-body">
+          <canvas id="playTime"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    let charts = [];
+
+    function getChartColors(isDark) {
+      return {
+        text: isDark ? '#fff' : '#666',
+        grid: isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)',
+        wins: '#198754',
+        losses: '#dc3545',
+        rivals: '#0d6efd',
+        playTime: '#0dcaf0',
+        tournament: ['#ffd700', '#c0c0c0', '#6c757d']
+      };
+    }
+
+    function createCharts() {
+      charts.forEach(chart => chart.destroy());
+      charts = [];
+
+      const isDarkTheme = document.documentElement.getAttribute('data-bs-theme') === 'dark';
+      const chartColors = getChartColors(isDarkTheme);
+
+      const chartOptions = {
+        responsive: true,
+        maintainAspectRatio: true,
+        aspectRatio: 2,
+        plugins: {
+          legend: {
+            position: 'bottom',
+            labels: {
+              color: chartColors.text
+            }
+          }
+        },
+        scales: {
+          x: {
+            grid: {
+              color: chartColors.grid,
+              offset: true
+            },
+            offset: true,
+            ticks: {
+              color: chartColors.text
+            }
+          },
+          y: {
+            grid: {
+              color: chartColors.grid
+            },
+            ticks: {
+              color: chartColors.text
+            }
+          }
+        }
+      };
+
+      charts.push(new Chart(document.getElementById('matchHistory'), {
+        type: 'line',
+        data: {
+          labels: {{ dates|safe }},
+          datasets: [{
+            label: '{% translate "Vitórias" %}',
+            data: {{ wins_data|safe }},
+            borderColor: chartColors.wins,
+            backgroundColor: `${chartColors.wins}33`,
+            fill: true,
+            tension: 0.1
+          }, {
+            label: '{% translate "Derrotas" %}',
+            data: {{ losses_data|safe }},
+            borderColor: chartColors.losses,
+            backgroundColor: `${chartColors.losses}33`,
+            fill: true,
+            tension: 0.1
+          }]
+        },
+        options: chartOptions
+      }));
+
+      charts.push(new Chart(document.getElementById('topRivals'), {
+        type: 'bar',
+        data: {
+          labels: {{ rival_names|safe }},
+          datasets: [{
+            label: '{% translate "Partidas" %}',
+            data: {{ rival_matches|safe }},
+            backgroundColor: chartColors.rivals,
+            borderColor: chartColors.rivals,
+            borderWidth: 1
+          }]
+        },
+        options: chartOptions
+      }));
+
+      charts.push(new Chart(document.getElementById('tournamentPerformance'), {
+        type: 'doughnut',
+        data: {
+          labels: ['{% translate "1º Lugar" %}', '{% translate "2º Lugar" %}', '{% translate "Outros" %}'],
+          datasets: [{
+            data: {{ tournament_positions|safe }},
+            backgroundColor: chartColors.tournament,
+            borderWidth: 2,
+          }]
+        },
+        options: {
+          ...chartOptions,
+          scales: null,
+        }
+      }));
+
+      console.log({{ play_dates|safe }})
+      console.log({{ play_minutes|safe }})
+      charts.push(new Chart(document.getElementById('playTime'), {
+        type: 'bar',
+        data: {
+          labels: {{ play_dates|safe }},
+          datasets: [{
+            label: '{% translate "Minutos Jogados" %}',
+            data: {{ play_minutes|safe }},
+            backgroundColor: chartColors.playTime,
+            borderColor: chartColors.playTime,
+            borderWidth: 1
+          }]
+        },
+        options: chartOptions,
+      }));
+    }
+
+    const observer = new MutationObserver((mutations) => {
+      mutations.forEach((mutation) => {
+        if (mutation.attributeName === 'data-bs-theme') {
+          createCharts();
+        }
+      });
+    });
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ['data-bs-theme']
+    });
+    createCharts();
+  });
+</script>
+{% endblock %}

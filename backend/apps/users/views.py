@@ -3,12 +3,13 @@ from uuid import UUID
 from django.contrib import auth, messages
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
-from django.db.models import Q
+from django.db.models import Case, Count, Q, When
 from django.http import HttpRequest, HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
+from django.utils.timezone import now, timedelta
 from django.utils.translation import gettext_lazy as _
 
-from apps.matchmaking.models import Match
+from apps.matchmaking.models import Match, Tournament
 from apps.users.forms import UserCreationForm, UserEditProfileForm, UserLoginForm
 from apps.users.models import Friendship, FriendshipStatus, User
 
@@ -244,3 +245,78 @@ def friend_profile(request: HttpRequest, friend_id: UUID) -> HttpResponse:
     friend = get_object_or_404(User, id=friend_id)
 
     return render(request, "users/friend.html", {"friend": friend})
+
+
+@login_required
+def stats(request: HttpRequest) -> HttpResponse:
+    user = request.user
+    today = now()
+    last_30_days = today - timedelta(days=30)
+
+    matches = Match.objects.filter(Q(user1=user) | Q(user2=user))
+    total_matches = matches.count()
+    total_wins = matches.filter(winner=user).count()
+    total_losses = total_matches - total_wins
+    win_rate = round((total_wins / total_matches * 100) if total_matches > 0 else 0, 1)
+
+    dates = []
+    wins_data = []
+    losses_data = []
+    for i in range(30):
+        date = last_30_days + timedelta(days=i)
+        day_matches = matches.filter(finished_date_played__date=date.date())
+        dates.append(date.strftime("%d/%m"))
+        wins_data.append(day_matches.filter(winner=user).count())
+        losses_data.append(day_matches.exclude(winner=user).count())
+
+    rivals = (
+        matches.values(rival_name=Case(When(user1=user, then="user2__username"), default="user1__username"))
+        .annotate(total=Count("id"))
+        .order_by("total")[:5]
+    )
+
+    tournament_positions = [0, 0, 0]
+    for tournament in Tournament.objects.filter(players__player=user):
+        if tournament.winner and tournament.winner.player == user:
+            tournament_positions[0] += 1
+        elif tournament.finished_at:
+            last_match = tournament.matches.order_by("-finished_date_played").first()
+            if last_match and (user in (last_match.user1, last_match.user2)):
+                tournament_positions[1] += 1
+            else:
+                tournament_positions[2] += 1
+
+    play_dates = []
+    play_minutes = []
+    for i in range(7, -1, -1):
+        date = today - timedelta(days=i)
+        day_matches = matches.filter(finished_date_played__date=date.date())
+        play_dates.append(date.strftime("%d/%m"))
+        minutes = sum(
+            (
+                match.finished_date_played - match.started_date_played
+                if match.finished_date_played > match.started_date_played
+                else match.started_date_played - match.finished_date_played
+            ).seconds
+            for match in day_matches
+        )
+        play_minutes.append(minutes // 60)
+
+    return render(
+        request,
+        "users/stats.html",
+        {
+            "total_matches": total_matches,
+            "total_wins": total_wins,
+            "total_losses": total_losses,
+            "win_rate": win_rate,
+            "dates": dates,
+            "wins_data": wins_data,
+            "losses_data": losses_data,
+            "rival_names": [r["rival_name"] for r in rivals],
+            "rival_matches": [r["total"] for r in rivals],
+            "tournament_positions": tournament_positions,
+            "play_dates": play_dates,
+            "play_minutes": play_minutes,
+        },
+    )
