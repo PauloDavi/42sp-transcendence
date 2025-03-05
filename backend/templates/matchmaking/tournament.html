@@ -1,0 +1,322 @@
+{% extends 'shared/base.html' %}
+{% load static %}
+{% load i18n %}
+{% block content %}
+<div class="container my-4">
+  <div class="card">
+    <div class="card-header d-flex justify-content-between align-items-center">
+      <h2 class="mb-0">
+        {{ tournament.name }}
+        <span
+          id="tournament-status"
+          class="badge {% if tournament.finished_at %}bg-secondary{% elif tournament.started_at %}bg-primary{% else %}bg-warning{% endif %} ms-2"
+          style="font-size: 0.5em; vertical-align: middle;"
+        >
+          {% if tournament.finished_at %}
+            {% translate "Finalizado" %}
+          {% elif tournament.started_at %}
+            {% translate "Em andamento" %}
+          {% else %}
+            {% translate "Aguardando início" %}
+          {% endif %}
+        </span>
+      </h2>
+
+      {% if tournament.created_by == user and not tournament.started_at %}
+        <button id="start-tournament-button" type="button" class="btn btn-success" onclick="startTournament()">
+          {% translate "Iniciar Torneio" %}
+        </button>
+      {% endif %}
+    </div>
+
+    <div class="card-body">
+      <div class="alert alert-warning alert-dismissible fade show" role="alert">
+        <i class="bi bi-exclamation-triangle-fill me-2"></i>
+        {% translate "Se você sair de uma partida ou perder a conexão com a internet, volte para esta sala para continuar jogando." %}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+      </div>
+
+      <div class="row g-3">
+        <div class="col-lg-4">
+          <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+              <h5 class="mb-0">{% translate "Jogadores" %}</h5>
+              <span class="badge bg-primary">{{ tournament.players.count }}</span>
+            </div>
+            <div class="table-responsive">
+              <table class="table table-striped table-hover align-middle mb-0">
+                <thead>
+                  <tr>
+                    <th scope="col">{% translate "Nome" %}</th>
+                    <th scope="col">{% translate "Usuário" %}</th>
+                    <th scope="col" class="text-end">{% translate "Status" %}</th>
+                  </tr>
+                </thead>
+                <tbody id="players-list" class="table-group-divider">
+                  {% for player in tournament.players.all %}
+                    <tr data-player-id="{{ player.player.id }}">
+                      <td class="fw-semibold">{{ player.display_name }}</td>
+                      <td>{{ player.player.username }}</td>
+                      <td class="text-end">
+                        {% if not tournament.finished_at %}
+                          <span class="status-badge badge bg-secondary">{% translate "Offline" %}</span>
+                        {% elif player.player.id == tournament.winner.player.id %}
+                          <span class="status-badge badge bg-success">
+                            {% translate "Vencedor" %}
+                          </span>
+                        {% else %}
+                          <span class="status-badge badge bg-danger">
+                            {% translate "Perdedor" %}
+                          </span>
+                        {% endif %}
+                      </td>
+                    </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-lg-8">
+          <div class="card">
+            <div class="card-header">
+              <h5 class="mb-0">{% translate "Partidas" %}</h5>
+            </div>
+            <div id="matches-container" class="card-body">
+              {% for round in tournament.get_rounds_data %}
+                <div class="round-section mb-3 p-3 rounded-1 {% if round.is_current %}current-round{% else %}previous-round{% endif %}">
+                  <h6 class="border-bottom pb-2 mb-3">
+                    {% translate "Rodada" %} {{ round.round_number }}
+                    {% if round.is_current and not round.is_finished %}
+                      <span class="badge bg-primary">{% translate "Atual" %}</span>
+                    {% endif %}
+                  </h6>
+
+                  <div class="row g-3">
+                    {% for match in round.matches %}
+                      <div class="col-md-6">
+                        <div class="card">
+                          <ul class="list-group list-group-flush">
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                              {{ match.player1.display_name }}
+                              <span class="badge {% if not match.winner %}bg-secondary{% elif match.winner == match.player1.username %}bg-success{% else %}bg-danger{% endif %}">
+                                {{ match.player1.score }}
+                              </span>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                              {{ match.player2.display_name }}
+                              <span class="badge {% if not match.winner %}bg-secondary{% elif match.winner == match.player2.username %}bg-success{% else %}bg-danger{% endif %}">
+                                {{ match.player2.score }}
+                              </span>
+                            </li>
+                          </ul>
+
+                          {% if not match.is_finished %}
+                            {% if user.username == match.player1.username or user.username == match.player2.username %}
+                              <p class="match-status text-center mb-0">
+                                <a href="{% url 'match_game' match.id %}?next={{ request.path }}" class="btn btn-primary btn-sm my-2">
+                                  {% translate "Ir para partida" %}
+                                </a>
+                              </p>
+                            {% endif %}
+                          {% endif %}
+                        </div>
+                      </div>
+                    {% endfor %}
+
+                    {% for bye in round.byes %}
+                      <div class="col-md-6">
+                        <div class="card">
+                          <ul class="list-group list-group-flush">
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                              {{ bye.display_name }}
+                              <span class="badge bg-secondary">
+                                {% translate "Passou direto" %}
+                              </span>
+                            </li>
+                          </ul>
+                        </div>
+                      </div>
+                    {% endfor %}
+                  </div>
+                </div>
+              {% endfor %}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  class TournamentClient extends BaseWebSocket {
+    constructor() {
+      super("tournament/{{ tournament.id }}");
+      this.setupMessageHandler();
+    }
+
+    setupMessageHandler() {
+      this.socket.onmessage = (e) => {
+        const data = JSON.parse(e.data);
+
+        if (data.action === "matches_created" || data.action === "next_round") {
+          this.updateMatches(data.rounds_data);
+          this.updateTournamentStatus(data.started_at, data.finished_at);
+          if (data.players) {
+            this.updatePlayersStatus(data.players);
+          }
+        } else if (data.action === "players_status_update") {
+          this.updatePlayersStatus(data.players);
+        }
+      };
+    }
+
+    updateTournamentStatus(started_at, finished_at) {
+      const tournamentStatus = document.getElementById("tournament-status");
+      const startTournamentButton = document.getElementById("start-tournament-button");
+
+      if (started_at) {
+        tournamentStatus.textContent = "{% translate "Em andamento" %}";
+        tournamentStatus.className = "badge bg-primary ms-2"
+        if (startTournamentButton) {
+          startTournamentButton.remove();
+        }
+      } else if (finished_at) {
+        tournamentStatus.textContent = "{% translate "Finalizado" %}";
+        tournamentStatus.className = "badge bg-secondary ms-2"
+        if (startTournamentButton) {
+          startTournamentButton.remove();
+        }
+      } else {
+        tournamentStatus.textContent = "{% translate "Aguardando início" %}";
+        tournamentStatus.className = "badge bg-warning ms-2"
+      }
+    }
+
+    updateMatches(rounds_data) {
+      const container = document.getElementById("matches-container");
+      container.innerHTML = "";
+
+      rounds_data.forEach(round => {
+        const roundSection = document.createElement("div");
+        roundSection.className = `round-section mb-3 p-3 rounded-1 ${round.is_current ? 'current-round' : 'previous-round'}`;
+
+        roundSection.innerHTML = `
+          <h6 class="border-bottom pb-2 mb-3">
+            {% translate "Rodada" %} ${round.round_number}
+            ${round.is_current && !round.is_finished ? 
+              `<span class="badge bg-primary">{% translate "Atual" %}</span>` : 
+              ''}
+          </h6>
+          <div class="row g-3">
+            ${round.matches.map(match => `
+              <div class="col-md-6">
+                <div class="card">
+                  <ul class="list-group list-group-flush">
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                      ${match.player1.display_name}
+                      <span class="badge ${match.winner ? (match.winner === match.player1.username ? 'bg-success' : 'bg-danger') : 'bg-secondary'}">
+                        ${match.player1.score}
+                      </span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                      ${match.player2.display_name}
+                      <span class="badge ${match.winner ? (match.winner === match.player2.username ? 'bg-success' : 'bg-danger') : 'bg-secondary'}">
+                        ${match.player2.score}
+                      </span>
+                    </li>
+                  </ul>
+                  ${!match.is_finished && ("{{ user.username }}" === match.player1.username || "{{ user.username }}" === match.player2.username) ?
+                    `<p class="match-status text-center mb-0">
+                      <a href="/matchmaking/game/${match.id}?next={{ request.path }}" class="btn btn-primary btn-sm my-2">
+                        {% translate "Ir para partida" %}
+                      </a>
+                    </p>` : ''
+                  }
+                </div>
+              </div>
+            `).join('')}
+
+            ${round.byes.map(bye => `
+              <div class="col-md-6">
+                <div class="card">
+                  <ul class="list-group list-group-flush">
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                      ${bye.display_name}
+                      <span class="badge bg-secondary">
+                        {% translate "Passou direto" %}
+                      </span>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            `).join('')}
+          </div>
+        `;
+
+        container.appendChild(roundSection);
+      });
+    }
+
+    updatePlayersStatus(players) {
+      const playersList = document.getElementById("players-list");
+      playersList.innerHTML = "";
+
+      players.forEach(player => {
+        const row = document.createElement("tr");
+        const nameCell = document.createElement("td");
+        const usernameCell = document.createElement("td");
+        const statusCell = document.createElement("td");
+
+        row.dataset.playerId = player.id;
+        nameCell.textContent = player.display_name;
+        nameCell.className = "fw-semibold";
+        usernameCell.textContent = player.username;
+        statusCell.className = "text-end";
+
+        let statusClass = player.is_connected ? "bg-success" : "bg-secondary";
+        let statusText = player.is_connected ? "{% translate "Na sala" %}" : "{% translate "Offline" %}";
+
+        if (player.in_match) {
+          statusClass = "bg-warning";
+          statusText = "{% translate "Em jogo" %}";
+        }
+
+        const statusBadge = document.createElement("span");
+        statusBadge.className = `status-badge badge ${statusClass}`;
+        statusBadge.textContent = statusText;
+
+        statusCell.appendChild(statusBadge);
+        row.appendChild(nameCell);
+        row.appendChild(usernameCell);
+        row.appendChild(statusCell);
+        playersList.appendChild(row);
+      });
+    }
+  }
+
+  {% if not tournament.finished_at %}
+    const tournamentSocket = new TournamentClient();
+  {% endif %}
+
+  function startTournament() {
+    tournamentSocket.socket.send(JSON.stringify({ action: "start_matches" }));
+  }
+</script>
+{% endblock %}
+
+{% block styles %}
+<style>
+  .current-round {
+    background-color: rgba(13, 110, 253, 0.05);
+    margin-bottom: 0 !important;
+  }
+  .previous-round {
+    background-color: rgba(108, 117, 125, 0.05);
+  }
+</style>
+{% endblock %}

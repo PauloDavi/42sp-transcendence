@@ -18,6 +18,7 @@
               <tr>
                 <th>{% translate "Nome" %}</th>
                 <th>{% translate "Jogadores" %}</th>
+                <th>{% translate "Vencedor" %}</th>
                 <th>{% translate "Iniciado em" %}</th>
                 <th>{% translate "Finalizado em" %}</th>
                 <th>{% translate "Criado em" %}</th>
@@ -39,26 +40,47 @@
                     <span>{% translate "Nenhum jogador" %}</span>
                   {% endfor %}
                 </td>
+                <td>{{ tournament.winner.display_name|default:"-" }}</td>
                 <td>{{ tournament.started_at|date:"d/m/Y H:i:s"|default:"-" }}</td>
                 <td>{{ tournament.finished_at|date:"d/m/Y H:i:s"|default:"-" }}</td>
                 <td>{{ tournament.created_at|date:"d/m/Y H:i:s"|default:"-" }}</td>
                 <td>
                   {% if tournament.created_by == user %}
                     {% if not tournament.started_at %}
-                      <form method="post" action="{% url 'delete_tournament' tournament.id %}">
-                        {% csrf_token %}
-                        <button type="submit" class="btn btn-danger btn-sm">{% translate "Deletar" %}</button>
-                      </form>
+                      <div class="btn-group" role="group" aria-label="Basic mixed styles example">
+                        <a href="{% url 'tournament_room' tournament.id %}" class="btn btn-primary btn-sm">{% translate "Sala" %}</a>
+                        <form method="post" action="{% url 'delete_tournament' tournament.id %}">
+                          {% csrf_token %}
+                          <button type="submit" class="btn btn-danger btn-sm">{% translate "Deletar" %}</button>
+                        </form>
+                      </div>
                     {% else %}
-                      <a href="{% url 'tournament_detail' tournament.id %}" class="btn btn-primary btn-sm">{% translate "Ver" %}</a>
+                      <a href="{% url 'tournament_room' tournament.id %}" class="btn btn-primary btn-sm">{% translate "Sala" %}</a>
                     {% endif %}
                   {% else %}
                     {% if tournament.started_at %}
-                      <a href="{% url 'tournament' tournament.id %}" class="btn btn-primary btn-sm">{% translate "Ver" %}</a>
+                      <a href="{% url 'tournament_room' tournament.id %}" class="btn btn-primary btn-sm">{% translate "Sala" %}</a>
                     {% else %}
-                      <button class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#joinTournamentModal">
-                        {% translate "Entrar" %}
-                      </button>
+                      {% if active_tournament == tournament %}
+                        <div class="btn-group" role="group">
+                          <a href="{% url 'tournament_room' tournament.id %}" class="btn btn-primary btn-sm">{% translate "Sala" %}</a>
+                          <form method="post" action="{% url 'leave_tournament' tournament.id %}">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-danger btn-sm">
+                              {% translate "Sair" %}
+                            </button>
+                          </form>
+                        </div>
+                      {% else %}
+                        <button 
+                          class="btn btn-success btn-sm" 
+                          data-bs-toggle="modal" 
+                          data-bs-target="#joinTournamentModal"
+                          data-tournament-url="{% url 'join_tournament' tournament.id %}"
+                        >
+                          {% translate "Entrar" %}
+                        </button>
+                      {% endif %}
                     {% endif %}
                   {% endif %}
                 </td>
@@ -161,14 +183,7 @@
         <div class="modal-body">
           {% csrf_token %}
           {% for field in join_form.visible_fields %}
-          <div c{% if form.errors %}
-          <script type="text/javascript">
-            document.addEventListener('DOMContentLoaded', function() {
-              var myModal = new bootstrap.Modal(document.getElementById('createTournamentModal'));
-              myModal.show();
-            });
-          </script>
-          {% endif %}lass="form-floating mt-3">
+          <div class="form-floating mt-3">
             {{ field }}
             <label for="{{ field.id_for_label }}">{{ field.label }}</label>
             {% if field.errors %}
@@ -192,12 +207,16 @@
 {% endblock %}
 
 {% block scripts %}
-<script type="text/javascript">
-{% if form.errors %}
-  document.addEventListener('DOMContentLoaded', function() {
-    var myModal = new bootstrap.Modal(document.getElementById('createTournamentModal'));
-    myModal.show();
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const joinModal = document.getElementById('joinTournamentModal');
+  const joinForm = document.getElementById('joinTournamentForm');
+
+  joinModal.addEventListener('show.bs.modal', function(event) {
+    const button = event.relatedTarget;
+    const tournamentUrl = button.getAttribute('data-tournament-url');
+    joinForm.action = tournamentUrl;
   });
-{% endif %}
+});
 </script>
 {% endblock %}
