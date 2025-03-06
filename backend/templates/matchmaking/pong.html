@@ -10,20 +10,20 @@
 {% block scripts %}
 <script>
 document.addEventListener("DOMContentLoaded", () => {
-  const wsScheme = window.location.protocol === "https:" ? "wss" : "ws";
-  const socket = new WebSocket(`${wsScheme}://${window.location.host}/ws/game/{{ match.id }}/`);
+  class GameWebSocket extends BaseWebSocket {
+    constructor(matchId, isSinglePlayer) {
+      const urlParams = new URLSearchParams(window.location.search);
+      const difficulty = urlParams.get('difficulty') || 'medium';
+      const path = isSinglePlayer 
+        ? `game/${matchId}/single_player/${difficulty}`
+        : `game/${matchId}`;
+      super(path);
+    }
+  }
 
-  socket.onopen = function () {
-    console.log("WebSocket do game conectado!");
-  };
-
-  socket.onerror = function (error) {
-    console.error("Erro no WebSocket do game:", error);
-  };
-
-  socket.onclose = function () {
-    console.log("WebSocket do game desconectado!");
-  };
+  const urlParams = new URLSearchParams(window.location.search);
+  const isSinglePlayer = urlParams.has('single_player');
+  const socket = new GameWebSocket("{{ match.id }}", isSinglePlayer);
 
   const canvas = document.getElementById("game");
   const context = canvas.getContext("2d");
@@ -60,15 +60,15 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function verifyKeys() {
     if (keysPressed["KeyW"] && !lastKeysPressed["KeyW"]) {
-      socket.send(JSON.stringify({ type: "up", event: "keydown" }));
+      socket.socket.send(JSON.stringify({ type: "up", event: "keydown" }));
     } else if (!keysPressed["KeyW"] && lastKeysPressed["KeyW"]) {
-      socket.send(JSON.stringify({ type: "up", event: "keyup" }));
+      socket.socket.send(JSON.stringify({ type: "up", event: "keyup" }));
     }
     
     if (keysPressed["KeyS"] && !lastKeysPressed["KeyS"]) {
-      socket.send(JSON.stringify({ type: "down", event: "keydown" }));
+      socket.socket.send(JSON.stringify({ type: "down", event: "keydown" }));
     } else if (!keysPressed["KeyS"] && lastKeysPressed["KeyS"]) {
-      socket.send(JSON.stringify({ type: "down", event: "keyup" }));
+      socket.socket.send(JSON.stringify({ type: "down", event: "keyup" }));
     }
 
     lastKeysPressed = { ...keysPressed };
@@ -192,7 +192,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  socket.onmessage = (event) => {
+  socket.socket.onmessage = (event) => {
     const data = JSON.parse(event.data);
 
     rightPaddle.x = data.game.paddles.right_paddle.x * grid;

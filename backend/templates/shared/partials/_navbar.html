@@ -2,6 +2,7 @@
 {% url 'home' as home_url %}
 {% url 'tournaments' as tournaments_url %}
 {% url 'stats' as stats_url %}
+{% url 'create_ai_match' as create_ai_match_url %}
 {% if user.is_authenticated %}
 <header class="p-3 mb-3 border-bottom bg-body-tertiary">
   <div class="container">
@@ -11,7 +12,34 @@
       <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
         <li><a href="{{ home_url }}" class="nav-link px-2 {% if request.path == home_url %}active{% else %}link-secondary{% endif %}">Home</a></li>
         <li><a href="{{ tournaments_url }}" class="nav-link px-2 {% if request.path == tournaments_url %}active{% else %}link-secondary{% endif %}">{% translate "Tournaments" %}</a></li>
-        <li><a href="{% url 'stats' %}" class="nav-link px-2 {% if request.path == stats_url %}active{% else %}link-secondary{% endif %}">{% translate "Estatísticas" %}</a></li>
+        <li><a href="{{ stats_url }}" class="nav-link px-2 {% if request.path == stats_url %}active{% else %}link-secondary{% endif %}">{% translate "Estatísticas" %}</a></li>
+        <li class="nav-item dropdown">
+          <a class="nav-link px-2 dropdown-toggle {% if request.path == create_ai_match_url %}active{% else %}link-secondary{% endif %}" 
+            href="#" 
+            role="button" 
+            data-bs-toggle="dropdown" 
+            aria-expanded="false"
+          >
+            {% translate "Jogar contra IA" %}
+          </a>
+          <ul class="dropdown-menu">
+            <li>
+              <a class="dropdown-item" href="{{ create_ai_match_url }}?difficulty=easy&next={{ request.path }}">
+                {% translate "Fácil" %}
+              </a>
+            </li>
+            <li>
+              <a class="dropdown-item" href="{{ create_ai_match_url }}?difficulty=medium&next={{ request.path }}">
+                {% translate "Médio" %}
+              </a>
+            </li>
+            <li>
+              <a class="dropdown-item" href="{{ create_ai_match_url }}?difficulty=hard&next={{ request.path }}">
+                {% translate "Difícil" %}
+              </a>
+            </li>
+          </ul>
+        </li>
       </ul>
 
       <div class="dropdown text-end">

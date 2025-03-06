@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-03-05 00:37-0300\n"
+"POT-Creation-Date: 2025-03-05 23:18-0300\n"
 "PO-Revision-Date: 2025-03-04 23:58-0300\n"
 "Last-Translator:   <super@gmail.co>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -342,15 +342,15 @@ msgstr "Amigo aceito com sucesso!"
 msgid "Amigo rejeitado com sucesso!"
 msgstr "Amigo rejeitado com sucesso!"
 
-#: setup/settings.py:129
+#: setup/settings.py:132
 msgid "Português"
 msgstr "Português"
 
-#: setup/settings.py:130
+#: setup/settings.py:133
 msgid "Inglês"
 msgstr "Inglês"
 
-#: setup/settings.py:131
+#: setup/settings.py:134
 msgid "Espanhol"
 msgstr "Espanhol"
 
