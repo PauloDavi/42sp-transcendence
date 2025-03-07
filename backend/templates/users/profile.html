@@ -1,103 +1,6 @@
 {% extends 'shared/base.html' %}
 {% load static %}
 {% load i18n %}
-
-{% block styles %}
-<style>
-  body {
-    background: url('../../media/backgrounds/profile.jpg');
-    background-position: center;
-    background-attachment: fixed;
-    animation: moveBackground 60s linear infinite alternate;
-    color: white;
-  }
-
-  @keyframes moveBackground {
-    0% {
-        background-position: 0% 0%;
-    }
-    100% {
-        background-position: 100% 100%;
-    }
-  }
-
-  .card {
-    background: rgba(0, 0, 0, 0.5);
-    border-radius: 15px;
-    box-shadow: 0 0 15px rgba(0, 255, 128, 0.5);
-    border: 2px solid rgba(0, 255, 128, 0.7);
-    overflow: hidden;
-  }
-
-  .card-header {
-    background: linear-gradient(45deg, #00FFA3, #00CFFF);
-    color: black;
-    font-weight: bold;
-  }
-
-  .card-body {
-    color: white;
-  }
-
-  .btn-primary {
-    border-radius: 50px;
-    background: linear-gradient(45deg, #00FFA3, #00CFFF);
-    border: none;
-    color: white;
-    transition: 0.3s;
-  }
-
-  .btn-primary:hover {
-    background: linear-gradient(45deg, #00CFFF, #00FFA3);
-    box-shadow: 0 0 10px rgba(0, 255, 128, 1);
-  }
-
-  .btn-outline-success {
-    border-color: rgba(0, 255, 128, 0.8);
-    color: rgba(0, 255, 128, 0.8);
-  }
-
-  .btn-outline-success:hover {
-    background: rgba(0, 255, 128, 0.8);
-    color: black;
-    box-shadow: 0 0 10px rgba(0, 255, 128, 1);
-  }
-
-  .table {
-    color: white;
-  }
-
-  .table th {
-    background: rgba(0, 255, 128, 0.3);
-  }
-
-  .table-hover tbody tr:hover {
-    background: rgba(0, 255, 128, 0.2);
-  }
-
-  .rounded-circle {
-    border: 2px solid rgba(0, 255, 128, 0.7);
-    box-shadow: 0 0 10px rgba(0, 255, 128, 0.5);
-  }
-
-  .badge {
-    padding: 8px;
-    font-size: 14px;
-  }
-
-  .bg-success {
-    background-color: rgba(0, 255, 128, 0.7) !important;
-    box-shadow: 0 0 10px rgba(0, 255, 128, 0.5);
-  }
-
-  .bg-danger {
-    background-color: rgba(255, 0, 0, 0.7) !important;
-    box-shadow: 0 0 10px rgba(255, 0, 0, 0.5);
-  }
-</style>
-{% endblock %}
-
-
 {% block content %}
 <div class="w-100 ps-4 pb-4 pt-2 row">
     <div class="container col-12 col-md-4">
@@ -110,8 +13,8 @@
                 <h5 class="card-title">{{ user.email }}</h5>
                 <p class="card-text">{% translate "Vitórias" %}: <strong>{{ user.wins }}</strong></p>
                 <p class="card-text">{% translate "Derrotas" %}: <strong>{{ user.losses }}</strong></p>
-                <p class="text-muted">{% translate "Criado em" %}: {{ user.created_at|date:"d/m/Y H:i" }}</p>
-                <p class="text-muted">{% translate "Atualizado em" %}: {{ user.updated_at|date:"d/m/Y H:i" }}</p>
+                <p class="card-text">{% translate "Criado em" %}: {{ user.created_at|date:"d/m/Y H:i" }}</p>
+                <p class="card-text">{% translate "Atualizado em" %}: {{ user.updated_at|date:"d/m/Y H:i" }}</p>
                 <a href="{% url 'update_user' %}" class="btn btn-primary mt-3">{% translate "Editar Perfil" %}</a>
             </div>
         </div>
@@ -130,7 +33,7 @@
                             <div id="user-dropdown" class="dropdown-menu w-100 shadow" style="display: none; max-height: 250px; overflow-y: auto;"></div>
                         </div>
                         
-                        <button id="add-friend-button" disabled class="btn btn-outline-success ms-2" type="submit">
+                        <button id="add-friend-button" disabled class="btn btn-outline-success ms-2" type="submit" data-bs-toggle="tooltip" data-bs-title="{% translate "Adicionar amigo" %}">
                             <i class="bi bi-person-add"></i>
                         </button>
                     </form>
@@ -160,7 +63,7 @@
                                         <span class="badge bg-warning text-dark">{% translate "Convite pendente" %}</span>
                                     {% else %}
                                         <div class="d-flex gap-2">
-                                            <a href="{% url 'add_match' friend.id %}?next={{ request.get_full_path }}" class="btn btn-primary">
+                                            <a href="{% url 'add_match' friend.id %}?next={{ request.get_full_path }}" class="btn btn-primary" data-bs-toggle="tooltip" data-bs-title="{% translate "Iniciar partida" %}">
                                                 <i class="bi bi-play"></i>
                                             </a>
                                             <a href="{% url 'remove_friend' friend.id %}" class="btn btn-danger">
@@ -194,18 +97,34 @@
                                 <thead>
                                     <tr>
                                         <th>{% translate "Oponente" %}</th>
+                                        <th>{% translate "Vencedor" %}</th>
                                         <th style="min-width: 85px;">{% translate "Placar" %}</th>
                                         <th style="min-width: 175px;">{% translate "Início" %}</th>
                                         <th style="min-width: 175px;">{% translate "Fim" %}</th>
+                                        <th>{% translate "Ações" %}</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     {% for match in matches %}
                                         <tr>
                                             <td><a href="{% url 'friend_profile' match.opponent.id %}">{{ match.opponent.username }}</a></td>
+                                            <td>
+                                                {% if match.winner == user %}
+                                                    {% translate "Você" %}
+                                                {% else %}
+                                                    {{ match.winner|default:"-" }}
+                                                {% endif %}
+                                            </td>
                                             <td><span class="badge bg-success">{{ match.points }}</span> x <span class="badge bg-danger">{{ match.opponent_points }}</span></td>
                                             <td>{{ match.started_date_played|date:"d/m/Y H:i:s"|default:"-" }}</td>
                                             <td>{{ match.finished_date_played|date:"d/m/Y H:i:s"|default:"-" }}</td>
+                                            <td>
+                                                {% if not match.finished_date_played %}
+                                                    <a href="{% url 'match_game' match.id %}?next={{ request.get_full_path }}" class="btn btn-primary" data-bs-toggle="tooltip" data-bs-title="{% translate "Continuar partida" %}">
+                                                        <i class="bi bi-play"></i>
+                                                    </a>
+                                                {% endif %}
+                                            </td>
                                         </tr>
                                     {% endfor %}
                                 </tbody>

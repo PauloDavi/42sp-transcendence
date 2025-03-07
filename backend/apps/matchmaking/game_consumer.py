@@ -3,6 +3,7 @@ import json
 import secrets
 import time
 from dataclasses import dataclass, field
+from enum import Enum
 from typing import ClassVar
 
 from channels.db import database_sync_to_async
@@ -18,13 +19,56 @@ PADDLE_HEIGHT = 5.0
 PADDLE_WIDTH = 1.0
 BALL_SIZE = 1.0
 BALL_SPEED = 0.5
-PADDLE_X_OFFSET = 2.0
+PADDLE_X_OFFSET = 0.1
 FRAME_DELAY = 1 / 30
 PADDLE_SPEED = 0.3
 WIN_SCORE = 3
 REQUIRED_NUMBER_OF_PLAYERS = 2
 INITIAL_SPEED_HITS = 4
 MEDIUM_SPEED_HITS = 8
+MAX_SPEED_MULTIPLIER = 1.5
+
+
+class AIDifficulty(Enum):
+    EASY = "easy"
+    MEDIUM = "medium"
+    HARD = "hard"
+
+
+@dataclass
+class AIConfig:
+    prediction_interval: float
+    max_bounces: int
+    reaction_delay: float
+    speed_multiplier: float
+    return_to_center: bool
+
+    @classmethod
+    def get_config(cls, difficulty: str) -> "AIConfig":
+        configs = {
+            AIDifficulty.EASY.value: cls(
+                prediction_interval=2.0,
+                max_bounces=1,
+                reaction_delay=0.3,
+                speed_multiplier=0.7,
+                return_to_center=False,
+            ),
+            AIDifficulty.MEDIUM.value: cls(
+                prediction_interval=1.5,
+                max_bounces=2,
+                reaction_delay=0.1,
+                speed_multiplier=1.0,
+                return_to_center=True,
+            ),
+            AIDifficulty.HARD.value: cls(
+                prediction_interval=1.0,
+                max_bounces=4,
+                reaction_delay=0.0,
+                speed_multiplier=1.2,
+                return_to_center=True,
+            ),
+        }
+        return configs.get(difficulty, configs[AIDifficulty.MEDIUM.value])
 
 
 @dataclass
@@ -75,8 +119,10 @@ class Ball(GameObject):
             speed_increase = 0.15
         elif self.hits < MEDIUM_SPEED_HITS:
             speed_increase = 0.10
-        else:
+        elif self.speed_multiplier < MAX_SPEED_MULTIPLIER:
             speed_increase = 0.05
+        else:
+            speed_increase = 0.0
 
         self.speed_multiplier += speed_increase
         self.hits += 1
@@ -98,6 +144,12 @@ class GameState:
     ball: Ball = field(default_factory=Ball)
     score: Score = field(default_factory=Score)
     running: bool = False
+    is_single_player: bool = False
+    last_prediction_time: float = 0.0
+    ai_target_y: float | None = None
+    last_ball_direction: float | None = None
+    ai_config: AIConfig | None = None
+    last_ai_move_time: float = 0.0
 
     def __init__(self) -> None:
         self.players = {}
@@ -110,6 +162,12 @@ class GameState:
         self.ball = Ball()
         self.score = Score()
         self.running = False
+        self.is_single_player = False
+        self.last_prediction_time = 0.0
+        self.ai_target_y = None
+        self.last_ball_direction = None
+        self.ai_config = None
+        self.last_ai_move_time = 0.0
 
     def to_dict(self) -> dict:
         return {
@@ -119,6 +177,14 @@ class GameState:
             "score": vars(self.score),
             "running": self.running,
         }
+
+    def should_update_prediction(self, current_time: float) -> bool:
+        if not self.ai_config:
+            return False
+        return current_time - self.last_prediction_time >= self.ai_config.prediction_interval
+
+    def update_prediction_time(self, current_time: float) -> None:
+        self.last_prediction_time = current_time
 
 
 class PongConsumer(AsyncWebsocketConsumer):
@@ -136,11 +202,7 @@ class PongConsumer(AsyncWebsocketConsumer):
 
         self.match = await database_sync_to_async(Match.objects.get)(id=self.match_id)
 
-        if self.match.finished_date_played:
-            await self.close()
-            return
-
-        if not await verify_if_user_in_match(self.match, self.user):
+        if self.match.finished_date_played or not await verify_if_user_in_match(self.match, self.user):
             await self.close()
             return
 
@@ -162,7 +224,24 @@ class PongConsumer(AsyncWebsocketConsumer):
         if self.user.username not in game.players:
             game.players[self.user.username] = self.channel_name
 
-        if len(game.players.values()) == REQUIRED_NUMBER_OF_PLAYERS and not game.running:
+        self.is_single_player = "single_player" in self.scope["url_route"]["kwargs"]
+        if self.is_single_player:
+            difficulty = self.scope["url_route"]["kwargs"].get("difficulty", AIDifficulty.MEDIUM.value)
+            game.ai_config = AIConfig.get_config(difficulty)
+            game.is_single_player = True
+            game.players["AI"] = "AI"
+            if len(game.players) >= 1 and not game.running:
+                game.running = True
+                await self.channel_layer.group_send(
+                    self.room_group_name,
+                    {
+                        "type": "send_game_state",
+                        "game": game.to_dict(),
+                        "events": [{"type": "game_start"}],
+                    },
+                )
+                self.game_task = asyncio.create_task(self.game_loop())
+        elif len(game.players.values()) == REQUIRED_NUMBER_OF_PLAYERS and not game.running:
             game.running = True
             if not hasattr(self, "game_task") or self.game_task.done():
                 await self.channel_layer.group_send(
@@ -174,6 +253,15 @@ class PongConsumer(AsyncWebsocketConsumer):
                     },
                 )
                 self.game_task = asyncio.create_task(self.game_loop())
+        elif game.running:
+            await self.channel_layer.group_send(
+                self.room_group_name,
+                {
+                    "type": "send_game_state",
+                    "game": game.to_dict(),
+                    "events": [{"type": "game_start"}],
+                },
+            )
 
     async def disconnect(self, message: dict) -> None:
         await self.channel_layer.group_discard(self.room_group_name, self.channel_name)
@@ -185,7 +273,8 @@ class PongConsumer(AsyncWebsocketConsumer):
             if channel == self.channel_name:
                 game.players[username] = None
 
-        if all(p is None for p in game.players.values()):
+        human_players = [p for p in game.players.values() if p != "AI"]
+        if all(p is None for p in human_players):
             del self.games[self.room_group_name]
             self.match.score_user1 = game.score.left_score
             self.match.score_user2 = game.score.right_score
@@ -240,6 +329,10 @@ class PongConsumer(AsyncWebsocketConsumer):
         async with self.game_locks[self.room_group_name]:
             await self.update_ball_position(ball)
             await self.update_paddle_positions(paddles)
+
+            if game.is_single_player:
+                await self.update_ai_paddle(game)
+
             await self.check_wall_collisions(ball, events)
             await self.check_paddle_collisions(ball, paddles, events)
             await self.check_score(ball, game, events)
@@ -281,21 +374,21 @@ class PongConsumer(AsyncWebsocketConsumer):
         left_paddle = paddles["left_paddle"]
         right_paddle = paddles["right_paddle"]
 
-        def update_ball_when_collide_with_paddle(paddle: Paddle, new_ball_x: int) -> None:
+        def update_ball_when_collide_with_paddle(paddle: Paddle, new_ball_x: float) -> None:
             impact_point = ball.y + ball.height / 2 - (paddle.y + paddle.height / 2)
             normalized_impact = impact_point / (paddle.height / 2)
             ball.increase_speed(normalized_impact)
             ball.x = new_ball_x
 
         if (
-            left_paddle.x < ball.x < left_paddle.x + left_paddle.width
+            ball.x < left_paddle.x + left_paddle.width
             and (left_paddle.y - ball.height) < ball.y < left_paddle.y + left_paddle.height
         ):
             update_ball_when_collide_with_paddle(left_paddle, left_paddle.x + left_paddle.width)
             events.append({"type": "paddle_hit"})
 
         if (
-            right_paddle.x < (ball.x + BALL_SIZE) < right_paddle.x + right_paddle.width
+            right_paddle.x < (ball.x + BALL_SIZE)
             and (right_paddle.y - ball.height) < ball.y < right_paddle.y + right_paddle.height
         ):
             update_ball_when_collide_with_paddle(right_paddle, right_paddle.x - ball.width)
@@ -345,6 +438,73 @@ class PongConsumer(AsyncWebsocketConsumer):
 
     async def send_game_state(self, event: dict) -> None:
         await self.send(text_data=json.dumps({"game": event["game"], "events": event["events"]}))
+
+    async def update_ai_paddle(self, game: GameState) -> None:
+        ball = game.ball
+        ai_paddle = game.paddles["right_paddle"]
+
+        if self.should_stop_ai(ball):
+            ai_paddle.vy = 0
+            return
+
+        current_time = time.perf_counter()
+        if game.should_update_prediction(current_time):
+            game.update_prediction_time(current_time)
+            await self.update_ai_target(game, ball)
+
+        await self.move_ai_paddle(game, ai_paddle)
+
+    def should_stop_ai(self, ball: Ball) -> bool:
+        return ball.vx == 0 or ball.vy == 0 or ball.x < 0 or ball.x > GRID_WIDTH - BALL_SIZE or ball.resseting
+
+    async def update_ai_target(self, game: GameState, ball: Ball) -> None:
+        if game.last_ball_direction != ball.vx:
+            game.last_ball_direction = ball.vx
+            if ball.vx < 0 and game.ai_config.return_to_center:
+                game.ai_target_y = GRID_HEIGHT / 2
+            else:
+                game.ai_target_y = await self.predict_ball_y_position(game)
+
+    async def predict_ball_y_position(self, game: GameState) -> float:
+        ball = game.ball
+        ai_paddle = game.paddles["right_paddle"]
+
+        time_to_reach = (ai_paddle.x - ball.x) / ball.vx
+        predicted_y = ball.y + (ball.vy * time_to_reach)
+
+        return await self.adjust_for_bounces(predicted_y, game.ai_config.max_bounces)
+
+    async def adjust_for_bounces(self, predicted_y: float, max_bounces: int) -> float:
+        num_bounces = 0
+        while predicted_y < 1.0 or predicted_y > GRID_HEIGHT - 2.0:
+            if predicted_y < 1.0:
+                predicted_y = 2.0 - predicted_y
+            elif predicted_y > GRID_HEIGHT - 2.0:
+                predicted_y = 2 * (GRID_HEIGHT - 2.0) - predicted_y
+
+            num_bounces += 1
+            if num_bounces > max_bounces:
+                break
+
+        return predicted_y
+
+    async def move_ai_paddle(self, game: GameState, ai_paddle: Paddle) -> None:
+        if game.ai_target_y is None:
+            return
+
+        current_time = time.perf_counter()
+        if current_time - game.last_ai_move_time < game.ai_config.reaction_delay:
+            return
+        game.last_ai_move_time = current_time
+
+        paddle_center = ai_paddle.y + (PADDLE_HEIGHT / 2)
+        distance_to_target = abs(paddle_center - game.ai_target_y)
+
+        if distance_to_target < PADDLE_SPEED * game.ai_config.speed_multiplier:
+            ai_paddle.vy = 0
+        else:
+            speed = PADDLE_SPEED * game.ai_config.speed_multiplier
+            ai_paddle.vy = speed if paddle_center < game.ai_target_y else -speed
 
 
 @database_sync_to_async

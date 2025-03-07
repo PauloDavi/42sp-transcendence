@@ -1,10 +1,10 @@
-from django.urls import path
+from django.shortcuts import redirect
+from django.urls import path, reverse
 
 from apps.users.views import (
     accept_friend,
     add_friend,
     friend_profile,
-    home,
     login,
     logout,
     profile,
@@ -17,7 +17,7 @@ from apps.users.views import (
 )
 
 urlpatterns = [
-    path("", home, name="home"),
+    path("", lambda _: redirect(reverse("profile")), name="home"),
     path("login", login, name="login"),
     path("logout", logout, name="logout"),
     path("register", register, name="register"),

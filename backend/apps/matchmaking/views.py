@@ -55,7 +55,7 @@ def create_match(request: HttpRequest, opponent_id: UUID) -> HttpResponse:
         return redirect(next_url)
 
     match.save()
-    return redirect(reverse("match_game", kwargs={"match_id": match.id}))
+    return redirect(f"{reverse('match_game', kwargs={'match_id': match.id})}?next={next_url}")
 
 
 @login_required
@@ -228,3 +228,21 @@ def leave_tournament(request: HttpRequest, tournament_id: UUID) -> HttpResponse:
 def tournament_room(request: HttpRequest, tournament_id: UUID) -> HttpResponse:
     tournament = get_object_or_404(Tournament, id=tournament_id)
     return render(request, "matchmaking/tournament.html", {"tournament": tournament})
+
+
+@login_required
+def create_ai_match(request: HttpRequest) -> HttpResponse:
+    next_url = request.GET.get("next", "/")
+    difficulty = request.GET.get("difficulty", "medium")
+    ai_user = get_object_or_404(User, username="AI")
+
+    match = Match.objects.create(
+        user1=request.user,
+        user2=ai_user,
+    )
+
+    return redirect(
+        f"{reverse('match_game', kwargs={'match_id': match.id})}?single_player=true&difficulty={difficulty}&next={
+            next_url
+        }"
+    )

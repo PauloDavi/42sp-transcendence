@@ -67,7 +67,7 @@ function showToast(
   if (action === "match") {
     actions = `
       <div class="mt-2 pt-2 border-top d-flex flex-row">
-        <a href="${extraData.accept_url}" class="me-2 ms-auto btn btn-sm btn-success">${extraData.accept_text}</a>
+        <a href="${extraData.accept_url}?next=${window.location.pathname}" class="me-2 ms-auto btn btn-sm btn-success">${extraData.accept_text}</a>
         <button onclick="handleReject('${extraData.reject_url}')" class="btn btn-sm btn-danger" data-bs-dismiss="toast" aria-label="Close">${extraData.reject_text}</button>
       </div>
     `;
