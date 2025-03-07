@@ -8,16 +8,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-03-05 23:18-0300\n"
-"PO-Revision-Date: 2025-03-05 00:28-0300\n"
+"POT-Creation-Date: 2025-03-06 20:00-0300\n"
+"PO-Revision-Date: 2025-03-06 21:59-0300\n"
 "Last-Translator:   <super@gmail.co>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=3; plural=n == 1 ? 0 : n != 0 && n % 1000000 == 0 ? "
-"1 : 2;\n"
+"Plural-Forms: nplurals=3; plural=n == 1 ? 0 : n != 0 && n % 1000000 == 0 ? 1 : 2;\n"
 "X-Translated-Using: django-rosetta 0.10.1\n"
 
 #: apps/matchmaking/forms.py:16 apps/matchmaking/forms.py:42
@@ -553,43 +552,59 @@ msgstr "Alerta"
 msgid "Informação"
 msgstr "Información"
 
-#: templates/shared/partials/_navbar.html:13
+#: templates/shared/partials/_navbar.html:14
 msgid "Tournaments"
 msgstr "Torneos"
 
-#: templates/shared/partials/_navbar.html:14
+#: templates/shared/partials/_navbar.html:15
 msgid "Estatísticas"
 msgstr "Estadística"
 
-#: templates/shared/partials/_navbar.html:19
+#: templates/shared/partials/_navbar.html:23
+msgid "Jogar contra IA"
+msgstr "Juega contra la IA"
+
+#: templates/shared/partials/_navbar.html:28
+msgid "Fácil"
+msgstr "Fácil"
+
+#: templates/shared/partials/_navbar.html:33
+msgid "Médio"
+msgstr "Media"
+
+#: templates/shared/partials/_navbar.html:38
+msgid "Difícil"
+msgstr "Difícil"
+
+#: templates/shared/partials/_navbar.html:47
 msgid "Foto do usuário"
 msgstr "Foto de usuario"
 
-#: templates/shared/partials/_navbar.html:23
+#: templates/shared/partials/_navbar.html:51
 msgid "Perfil"
 msgstr "Perfil"
 
-#: templates/shared/partials/_navbar.html:27
+#: templates/shared/partials/_navbar.html:55
 msgid "Tema"
 msgstr "Tema"
 
-#: templates/shared/partials/_navbar.html:32
+#: templates/shared/partials/_navbar.html:60
 msgid "Claro"
 msgstr "Claro"
 
-#: templates/shared/partials/_navbar.html:37
+#: templates/shared/partials/_navbar.html:65
 msgid "Escuro"
 msgstr "Oscuro"
 
-#: templates/shared/partials/_navbar.html:42
+#: templates/shared/partials/_navbar.html:70
 msgid "Automático"
 msgstr "Automático"
 
-#: templates/shared/partials/_navbar.html:50
+#: templates/shared/partials/_navbar.html:78
 msgid "Lingua"
 msgstr "idioma"
 
-#: templates/shared/partials/_navbar.html:75
+#: templates/shared/partials/_navbar.html:103
 msgid "Logout"
 msgstr "Logout"
 

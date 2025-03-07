@@ -202,11 +202,7 @@ class PongConsumer(AsyncWebsocketConsumer):
 
         self.match = await database_sync_to_async(Match.objects.get)(id=self.match_id)
 
-        if self.match.finished_date_played:
-            await self.close()
-            return
-
-        if not await verify_if_user_in_match(self.match, self.user):
+        if self.match.finished_date_played or not await verify_if_user_in_match(self.match, self.user):
             await self.close()
             return
 
@@ -257,6 +253,15 @@ class PongConsumer(AsyncWebsocketConsumer):
                     },
                 )
                 self.game_task = asyncio.create_task(self.game_loop())
+        elif game.running:
+            await self.channel_layer.group_send(
+                self.room_group_name,
+                {
+                    "type": "send_game_state",
+                    "game": game.to_dict(),
+                    "events": [{"type": "game_start"}],
+                },
+            )
 
     async def disconnect(self, message: dict) -> None:
         await self.channel_layer.group_discard(self.room_group_name, self.channel_name)
@@ -268,7 +273,8 @@ class PongConsumer(AsyncWebsocketConsumer):
             if channel == self.channel_name:
                 game.players[username] = None
 
-        if all(p is None for p in game.players.values()):
+        human_players = [p for p in game.players.values() if p != "AI"]
+        if all(p is None for p in human_players):
             del self.games[self.room_group_name]
             self.match.score_user1 = game.score.left_score
             self.match.score_user2 = game.score.right_score

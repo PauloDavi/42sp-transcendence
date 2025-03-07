@@ -1,5 +1,5 @@
 {% load i18n %}
-{% url 'home' as home_url %}
+{% url 'profile' as profile_url %}
 {% url 'tournaments' as tournaments_url %}
 {% url 'stats' as stats_url %}
 {% url 'create_ai_match' as create_ai_match_url %}
@@ -7,14 +7,14 @@
 <header class="p-3 mb-3 border-bottom bg-body-tertiary">
   <div class="container">
     <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start">
-      <h2 class="m-0">Pong 42</h2>
+      <h2 class="m-0 text-body">Pong 42</h2>
 
       <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
-        <li><a href="{{ home_url }}" class="nav-link px-2 {% if request.path == home_url %}active{% else %}link-secondary{% endif %}">Home</a></li>
+        <li><a href="{{ profile_url }}" class="nav-link px-2 {% if request.path == profile_url %}active{% else %}link-secondary{% endif %}">{% translate "Perfil" %}</a></li>
         <li><a href="{{ tournaments_url }}" class="nav-link px-2 {% if request.path == tournaments_url %}active{% else %}link-secondary{% endif %}">{% translate "Tournaments" %}</a></li>
         <li><a href="{{ stats_url }}" class="nav-link px-2 {% if request.path == stats_url %}active{% else %}link-secondary{% endif %}">{% translate "Estatísticas" %}</a></li>
         <li class="nav-item dropdown">
-          <a class="nav-link px-2 dropdown-toggle {% if request.path == create_ai_match_url %}active{% else %}link-secondary{% endif %}" 
+          <a class="nav-link px-2 dropdown-toggle {% if "single_player=true" in request.get_full_path and "matchmaking/game" in request.get_full_path %}active{% else %}link-secondary{% endif %}" 
             href="#" 
             role="button" 
             data-bs-toggle="dropdown" 
@@ -48,7 +48,6 @@
           <span class="d-none d-sm-inline ms-1">{{ user.username }}</span>
         </button>
         <ul class="dropdown-menu text-small">
-          <li><a href="{% url 'profile' %}" class="dropdown-item">{% translate "Perfil" %}</a></li>
           <li class="dropdown">
             <button class="dropdown-item dropdown-toggle" id="bd-theme" type="button" data-bs-toggle="dropdown" aria-expanded="false">
               <i class="theme-icon-active bi bi-circle-half"></i>

@@ -14,11 +14,6 @@ from apps.users.forms import UserCreationForm, UserEditProfileForm, UserLoginFor
 from apps.users.models import Friendship, FriendshipStatus, User
 
 
-@login_required
-def home(request: HttpRequest) -> HttpResponse:
-    return render(request, "users/home.html")
-
-
 def login(request: HttpRequest) -> HttpResponse:
     if request.user.is_authenticated:
         return redirect("home")
@@ -113,6 +108,7 @@ def profile(request: HttpRequest) -> HttpResponse:
             "opponent": match.user1 if match.user1 != request.user else match.user2,
             "points": match.score_user1 if match.user1 == request.user else match.score_user2,
             "opponent_points": match.score_user1 if match.user1 != request.user else match.score_user2,
+            "winner": match.winner,
             "started_date_played": match.started_date_played,
             "finished_date_played": match.finished_date_played,
         }
