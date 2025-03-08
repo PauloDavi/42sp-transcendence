@@ -10,9 +10,76 @@ from django.utils.translation import gettext_lazy as _
 from django.views.decorators.http import require_http_methods, require_POST
 
 from apps.matchmaking.forms import CreateTournament, JoinTournament
-from apps.matchmaking.models import Match, Tournament, TournamentPlayer
+from apps.matchmaking.models import Match, MatchType, Tournament, TournamentPlayer
 from apps.users.models import User
 from apps.users.schemas import ToastMessage
+
+
+@login_required
+def create_tictactoe_match(request: HttpRequest, opponent_id: UUID) -> HttpResponse:
+    next_url = request.GET.get("next", "/")
+    opponent = User.objects.get(id=opponent_id)
+
+    if opponent is None:
+        messages.error(request, _("Opponent not found"))
+        return redirect(next_url)
+
+    if opponent == request.user:
+        messages.error(request, _("You can't play against yourself"))
+        return redirect(next_url)
+
+    if not opponent.status_online:
+        messages.error(request, _("Opponent is offline"))
+        return redirect(next_url)
+
+    match = Match(
+        user1=request.user,
+        user2=opponent,
+        match_type=MatchType.TICTACTOE,
+    )
+
+    result = ToastMessage(
+        title=str(_("Convite de partida")),
+        message=f"{request.user.username} {_('quer jogar jogo da velha contra você')}",
+        tag="warning",
+        action="match",
+        extra_data={
+            "accept_url": reverse("tictactoe_game", kwargs={"match_id": match.id}),
+            "accept_text": str(_("Aceitar")),
+            "reject_url": reverse("match_refuse", kwargs={"match_id": match.id}),
+            "reject_text": str(_("Rejeitar")),
+        },
+    ).send_to_group(opponent.id)
+
+    if result is not None:
+        messages.error(request, _("Falha ao enviar o convite"))
+        return redirect(next_url)
+
+    match.save()
+    return redirect(f"{reverse('tictactoe_game', kwargs={'match_id': match.id})}?next={next_url}")
+
+
+@login_required
+def tictactoe(request: HttpRequest, match_id: UUID) -> HttpResponse:
+    match = get_object_or_404(Match, id=match_id)
+
+    if match.match_type != MatchType.TICTACTOE:
+        messages.error(request, _("This is not a tictactoe match"))
+        return redirect("/")
+
+    if match.finished_date_played:
+        messages.error(request, _("Match already finished"))
+        return redirect("/")
+
+    if request.user not in {match.user1, match.user2}:
+        messages.error(request, _("You are not part of this match"))
+        return redirect("/")
+
+    return render(
+        request,
+        "matchmaking/tictactoe.html",
+        {"match": match, "is_player1": match.user1 == request.user},
+    )
 
 
 @login_required
@@ -81,8 +148,13 @@ def match_refuse(request: HttpRequest, match_id: UUID) -> HttpResponse:
     return JsonResponse({"status": "success"})
 
 
+@login_required
 def match_game(request: HttpRequest, match_id: UUID) -> HttpResponse:
     match = get_object_or_404(Match, id=match_id)
+
+    if match.match_type != MatchType.PONG:
+        messages.error(request, _("This is not a pong match"))
+        return redirect("/")
 
     if match.finished_date_played:
         messages.error(request, _("Match already finished"))

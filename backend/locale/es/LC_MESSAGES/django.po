@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-03-06 20:00-0300\n"
+"POT-Creation-Date: 2025-03-07 19:19-0300\n"
 "PO-Revision-Date: 2025-03-06 21:59-0300\n"
 "Last-Translator:   <super@gmail.co>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,7 +16,8 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=3; plural=n == 1 ? 0 : n != 0 && n % 1000000 == 0 ? 1 : 2;\n"
+"Plural-Forms: nplurals=3; plural=n == 1 ? 0 : n != 0 && n % 1000000 == 0 ? "
+"1 : 2;\n"
 "X-Translated-Using: django-rosetta 0.10.1\n"
 
 #: apps/matchmaking/forms.py:16 apps/matchmaking/forms.py:42
@@ -31,143 +32,158 @@ msgstr "Tu nombre para mostrar"
 msgid "Ex: Torneio 42"
 msgstr "Ej: Torneo 42"
 
-#: apps/matchmaking/models.py:19
+#: apps/matchmaking/models.py:24
 msgid "Pontuação do usuário 1"
 msgstr "Puntuación de usuario 1"
 
-#: apps/matchmaking/models.py:20
+#: apps/matchmaking/models.py:25
 msgid "Pontuação do usuário 2"
 msgstr "Puntuación de usuario 2"
 
-#: apps/matchmaking/models.py:21 apps/matchmaking/models.py:47
-#: apps/matchmaking/models.py:61
+#: apps/matchmaking/models.py:26 apps/matchmaking/models.py:55
+#: apps/matchmaking/models.py:69
 msgid "Número da rodada"
 msgstr "Número redondo"
 
-#: apps/matchmaking/models.py:22
+#: apps/matchmaking/models.py:27
 msgid "Jogado em"
 msgstr "Jugó en"
 
-#: apps/matchmaking/models.py:23 apps/matchmaking/models.py:74
-#: templates/matchmaking/tournaments.html:23
+#: apps/matchmaking/models.py:28 apps/matchmaking/models.py:82
+#: templates/matchmaking/tournaments.html:27
 msgid "Finalizado em"
 msgstr "Completado el"
 
-#: apps/matchmaking/models.py:24 apps/users/models.py:25
+#: apps/matchmaking/models.py:29 apps/users/models.py:25
 #: apps/users/models.py:56 templates/users/friend.html:22
-#: templates/users/profile.html:114
+#: templates/users/profile.html:17
 msgid "Atualizado em"
 msgstr "Actualizado el"
 
-#: apps/matchmaking/models.py:27
+#: apps/matchmaking/models.py:31
+#, fuzzy
+#| msgid "Total de Partidas"
+msgid "Tipo de partida"
+msgstr "Total de Partidos"
+
+#: apps/matchmaking/models.py:35
 msgid "Partida"
 msgstr "Partido"
 
-#: apps/matchmaking/models.py:28 templates/matchmaking/tournament.html:84
-#: templates/users/profile.html:182 templates/users/stats.html:170
+#: apps/matchmaking/models.py:36 templates/matchmaking/tournament.html:84
+#: templates/users/profile.html:85 templates/users/stats.html:170
 msgid "Partidas"
 msgstr "Partidos"
 
-#: apps/matchmaking/models.py:37
+#: apps/matchmaking/models.py:45
 msgid "Nome de exibição"
 msgstr "Nombre para mostrar"
 
-#: apps/matchmaking/models.py:38
+#: apps/matchmaking/models.py:46
 msgid "Entrou em"
 msgstr "Ingresó en"
 
-#: apps/matchmaking/models.py:48 apps/matchmaking/models.py:72
+#: apps/matchmaking/models.py:56 apps/matchmaking/models.py:80
 #: apps/users/models.py:24 apps/users/models.py:55
-#: templates/matchmaking/tournaments.html:24 templates/users/friend.html:21
-#: templates/users/profile.html:113
+#: templates/matchmaking/tournaments.html:28 templates/users/friend.html:21
+#: templates/users/profile.html:16
 msgid "Criado em"
 msgstr "Creado en"
 
-#: apps/matchmaking/models.py:51
+#: apps/matchmaking/models.py:59
 msgid "Bye do Torneio"
 msgstr "Bye torneo"
 
-#: apps/matchmaking/models.py:52
+#: apps/matchmaking/models.py:60
 msgid "Byes do Torneio"
 msgstr "Byes torneo"
 
-#: apps/matchmaking/models.py:60
+#: apps/matchmaking/models.py:68
 msgid "Nome do torneio"
 msgstr "Nombre del torneo"
 
-#: apps/matchmaking/models.py:73 templates/matchmaking/tournaments.html:22
+#: apps/matchmaking/models.py:81 templates/matchmaking/tournaments.html:26
 msgid "Iniciado em"
 msgstr "Comenzó en"
 
-#: apps/matchmaking/models.py:77
+#: apps/matchmaking/models.py:85
 msgid "Torneio"
 msgstr "Torneo"
 
-#: apps/matchmaking/models.py:78 templates/matchmaking/tournaments.html:8
+#: apps/matchmaking/models.py:86 templates/matchmaking/tournaments.html:8
 msgid "Torneios"
 msgstr "Torneos"
 
-#: apps/matchmaking/views.py:24
+#: apps/matchmaking/views.py:24 apps/matchmaking/views.py:91
 msgid "Opponent not found"
 msgstr "Oponente no encontrado"
 
-#: apps/matchmaking/views.py:28
+#: apps/matchmaking/views.py:28 apps/matchmaking/views.py:95
 msgid "You can't play against yourself"
 msgstr "No puedes jugar contra ti mismo"
 
-#: apps/matchmaking/views.py:32
+#: apps/matchmaking/views.py:32 apps/matchmaking/views.py:99
 msgid "Opponent is offline"
 msgstr "El oponente está desconectado"
 
-#: apps/matchmaking/views.py:41
+#: apps/matchmaking/views.py:42 apps/matchmaking/views.py:108
 msgid "Convite de partida"
 msgstr "Invitación a un partido"
 
-#: apps/matchmaking/views.py:47
+#: apps/matchmaking/views.py:48 apps/matchmaking/views.py:114
 msgid "Aceitar"
 msgstr "Aceptar"
 
-#: apps/matchmaking/views.py:49
+#: apps/matchmaking/views.py:50 apps/matchmaking/views.py:116
 msgid "Rejeitar"
 msgstr "Rechazar"
 
-#: apps/matchmaking/views.py:54
+#: apps/matchmaking/views.py:55 apps/matchmaking/views.py:121
 msgid "Falha ao enviar o convite"
 msgstr "No se pudo enviar la invitación"
 
-#: apps/matchmaking/views.py:67 apps/matchmaking/views.py:92
-msgid "You are not part of this match"
-msgstr "No eres parte de este partido"
+#: apps/matchmaking/views.py:67
+msgid "This is not a tictactoe match"
+msgstr ""
 
-#: apps/matchmaking/views.py:75
-msgid "Partida recusada"
-msgstr "Partido rechazado"
-
-#: apps/matchmaking/views.py:88
+#: apps/matchmaking/views.py:71 apps/matchmaking/views.py:160
 msgid "Match already finished"
 msgstr "Partido ya terminado"
 
-#: apps/matchmaking/views.py:111
+#: apps/matchmaking/views.py:75 apps/matchmaking/views.py:134
+#: apps/matchmaking/views.py:164
+msgid "You are not part of this match"
+msgstr "No eres parte de este partido"
+
+#: apps/matchmaking/views.py:142
+msgid "Partida recusada"
+msgstr "Partido rechazado"
+
+#: apps/matchmaking/views.py:156
+msgid "This is not a pong match"
+msgstr ""
+
+#: apps/matchmaking/views.py:183
 msgid "Tournament created successfully"
 msgstr "Torneo creado exitosamente"
 
-#: apps/matchmaking/views.py:123
+#: apps/matchmaking/views.py:195
 msgid "Você já está participando de um torneio ativo"
 msgstr "Ya estás participando en un torneo activo"
 
-#: apps/matchmaking/views.py:166
+#: apps/matchmaking/views.py:238
 msgid "You are not the creator of this tournament"
 msgstr "No eres el creador de este torneo"
 
-#: apps/matchmaking/views.py:170
+#: apps/matchmaking/views.py:242
 msgid "Tournament already started"
 msgstr "Torneo ya iniciado"
 
-#: apps/matchmaking/views.py:174
+#: apps/matchmaking/views.py:246
 msgid "Tournament deleted successfully"
 msgstr "Torneo eliminado exitosamente"
 
-#: apps/matchmaking/views.py:184
+#: apps/matchmaking/views.py:256
 msgid ""
 "Você não pode entrar em um novo torneio enquanto estiver participando de "
 "outro torneio ativo"
@@ -175,27 +191,27 @@ msgstr ""
 "No puedes ingresar a un nuevo torneo mientras estés participando en otro "
 "torneo activo."
 
-#: apps/matchmaking/views.py:191
+#: apps/matchmaking/views.py:263
 msgid "Você já está participando deste torneio."
 msgstr "Ya estás participando en este torneo."
 
-#: apps/matchmaking/views.py:202
+#: apps/matchmaking/views.py:274
 msgid "Você entrou no torneio com sucesso!"
 msgstr "¡Has entrado al torneo con éxito!"
 
-#: apps/matchmaking/views.py:205
+#: apps/matchmaking/views.py:277
 msgid "Erro ao entrar no torneio"
 msgstr "Error al ingresar al torneo"
 
-#: apps/matchmaking/views.py:214
+#: apps/matchmaking/views.py:286
 msgid "Não é possível sair de um torneio que já começou"
 msgstr "No es posible abandonar un torneo que ya ha comenzado"
 
-#: apps/matchmaking/views.py:220
+#: apps/matchmaking/views.py:292
 msgid "Você saiu do torneio com sucesso"
 msgstr "Has salido del torneo con éxito."
 
-#: apps/matchmaking/views.py:222
+#: apps/matchmaking/views.py:294
 msgid "Você não está neste torneio"
 msgstr "No estás en este torneo"
 
@@ -244,19 +260,19 @@ msgstr "Crear una contraseña"
 msgid "As senhas não coincidem."
 msgstr "Las contraseñas no coinciden."
 
-#: apps/users/models.py:17 templates/users/profile.html:144
-#: templates/users/profile.html:277
+#: apps/users/models.py:17 templates/users/profile.html:47
+#: templates/users/profile.html:196
 msgid "Avatar"
 msgstr "Avatar"
 
 #: apps/users/models.py:22 templates/users/friend.html:19
-#: templates/users/profile.html:111 templates/users/profile.html:185
+#: templates/users/profile.html:14 templates/users/profile.html:88
 #: templates/users/stats.html:20 templates/users/stats.html:147
 msgid "Vitórias"
 msgstr "Victorias"
 
 #: apps/users/models.py:23 templates/users/friend.html:20
-#: templates/users/profile.html:112 templates/users/profile.html:186
+#: templates/users/profile.html:15 templates/users/profile.html:89
 #: templates/users/stats.html:28 templates/users/stats.html:154
 msgid "Derrotas"
 msgstr "Derrotas"
@@ -293,64 +309,64 @@ msgstr "Amistad"
 msgid "Amizades"
 msgstr "Amistades"
 
-#: apps/users/views.py:41
+#: apps/users/views.py:36
 msgid "Login realizado com sucesso"
 msgstr "Inicio de sesión exitoso"
 
-#: apps/users/views.py:44
+#: apps/users/views.py:39
 msgid "Usuário ou senha inválidos"
 msgstr "Nombre de usuario o contraseña no válidos"
 
-#: apps/users/views.py:51
+#: apps/users/views.py:46
 msgid "Usuário deslogado com sucesso"
 msgstr "El usuario ha cerrado sesión correctamente"
 
-#: apps/users/views.py:66
+#: apps/users/views.py:61
 msgid "Usuário criado com sucesso"
 msgstr "El usuario ha cerrado sesión correctamente"
 
-#: apps/users/views.py:78
+#: apps/users/views.py:73
 msgid "Seu perfil foi atualizado com sucesso!"
 msgstr "¡Tu perfil ha sido actualizado exitosamente!"
 
-#: apps/users/views.py:135
+#: apps/users/views.py:131
 msgid "Você não pode adicionar a si mesmo como amigo!"
 msgstr "¡No puedes agregarte como amigo!"
 
-#: apps/users/views.py:139 apps/users/views.py:155 apps/users/views.py:205
-#: apps/users/views.py:226
+#: apps/users/views.py:135 apps/users/views.py:151 apps/users/views.py:201
+#: apps/users/views.py:222
 msgid "Usuário não encontrado!"
 msgstr "¡Usuario no encontrado!"
 
-#: apps/users/views.py:147
+#: apps/users/views.py:143
 msgid "Solicitação de amizade enviada com sucesso!"
 msgstr "¡Solicitud de amistad enviada exitosamente!"
 
-#: apps/users/views.py:163 apps/users/views.py:213 apps/users/views.py:234
+#: apps/users/views.py:159 apps/users/views.py:209 apps/users/views.py:230
 msgid "Amigo não encontrado!"
 msgstr "¡Amigo no encontrado!"
 
-#: apps/users/views.py:167
+#: apps/users/views.py:163
 msgid "Amigo removido com sucesso!"
 msgstr "¡Amigo eliminado exitosamente!"
 
-#: apps/users/views.py:218
+#: apps/users/views.py:214
 msgid "Amigo aceito com sucesso!"
 msgstr "¡Amigo aceptado exitosamente!"
 
-#: apps/users/views.py:239
+#: apps/users/views.py:235
 msgid "Amigo rejeitado com sucesso!"
 msgstr "¡Amigo rechazado exitosamente!"
 
-#: setup/settings.py:132
+#: setup/settings.py:133
 msgid "Português"
 msgstr "Portugués"
 
-#: setup/settings.py:133
+#: setup/settings.py:134
 msgid "Inglês"
 msgstr "Inglés"
 
-#: setup/settings.py:134
+#: setup/settings.py:135
 msgid "Espanhol"
 msgstr "Español"
 
@@ -406,12 +422,12 @@ msgstr ""
 "esta sala para continuar jogando."
 
 #: templates/matchmaking/tournament.html:43
-#: templates/matchmaking/tournaments.html:20
+#: templates/matchmaking/tournaments.html:24
 msgid "Jogadores"
 msgstr "Jugadores"
 
 #: templates/matchmaking/tournament.html:50
-#: templates/matchmaking/tournaments.html:19
+#: templates/matchmaking/tournaments.html:23
 msgid "Nome"
 msgstr "Nombre"
 
@@ -421,7 +437,7 @@ msgid "Offline"
 msgstr "Desconectado"
 
 #: templates/matchmaking/tournament.html:65
-#: templates/matchmaking/tournaments.html:21
+#: templates/matchmaking/tournaments.html:25 templates/users/profile.html:100
 msgid "Vencedor"
 msgstr "Ganador"
 
@@ -457,82 +473,88 @@ msgstr "En la sala"
 msgid "Em jogo"
 msgstr "En broma"
 
-#: templates/matchmaking/tournaments.html:25
+#: templates/matchmaking/tournaments.html:14
+#, fuzzy
+#| msgid "Entrar no torneio"
+msgid "Criar torneio"
+msgstr "Entrar al torneo"
+
+#: templates/matchmaking/tournaments.html:29 templates/users/profile.html:104
 msgid "Ações"
 msgstr "Acciones"
 
-#: templates/matchmaking/tournaments.html:40
+#: templates/matchmaking/tournaments.html:44
 msgid "Nenhum jogador"
 msgstr "Ningún jugador"
 
-#: templates/matchmaking/tournaments.html:53
-#: templates/matchmaking/tournaments.html:60
-#: templates/matchmaking/tournaments.html:68
-#: templates/matchmaking/tournaments.html:85
+#: templates/matchmaking/tournaments.html:57
+#: templates/matchmaking/tournaments.html:64
+#: templates/matchmaking/tournaments.html:72
+#: templates/matchmaking/tournaments.html:89
 msgid "Sala"
 msgstr "Sala"
 
-#: templates/matchmaking/tournaments.html:54
+#: templates/matchmaking/tournaments.html:58
 msgid "Deletar"
 msgstr "Borrar"
 
-#: templates/matchmaking/tournaments.html:58
-#: templates/matchmaking/tournaments.html:83
+#: templates/matchmaking/tournaments.html:62
+#: templates/matchmaking/tournaments.html:87
 msgid "Ver"
 msgstr "Ver"
 
-#: templates/matchmaking/tournaments.html:69
+#: templates/matchmaking/tournaments.html:73
 msgid "Sair"
 msgstr "Salir"
 
-#: templates/matchmaking/tournaments.html:79
-#: templates/matchmaking/tournaments.html:203
+#: templates/matchmaking/tournaments.html:83
+#: templates/matchmaking/tournaments.html:205
 msgid "Entrar"
 msgstr "Entrar"
 
-#: templates/matchmaking/tournaments.html:102 templates/users/profile.html:220
+#: templates/matchmaking/tournaments.html:106 templates/users/profile.html:139
 msgid "Primeira"
 msgstr "Primero"
 
-#: templates/matchmaking/tournaments.html:109 templates/users/profile.html:223
+#: templates/matchmaking/tournaments.html:113 templates/users/profile.html:142
 msgid "Anterior"
 msgstr "Anterior"
 
-#: templates/matchmaking/tournaments.html:115 templates/users/profile.html:228
+#: templates/matchmaking/tournaments.html:119 templates/users/profile.html:147
 msgid "Página"
 msgstr "Página"
 
-#: templates/matchmaking/tournaments.html:115 templates/users/profile.html:228
+#: templates/matchmaking/tournaments.html:119 templates/users/profile.html:147
 msgid "de"
 msgstr "de"
 
-#: templates/matchmaking/tournaments.html:123 templates/users/profile.html:233
+#: templates/matchmaking/tournaments.html:127 templates/users/profile.html:152
 msgid "Próxima"
 msgstr "Próximo"
 
-#: templates/matchmaking/tournaments.html:130 templates/users/profile.html:236
+#: templates/matchmaking/tournaments.html:134 templates/users/profile.html:155
 msgid "Última"
 msgstr "Último"
 
-#: templates/matchmaking/tournaments.html:137
+#: templates/matchmaking/tournaments.html:141
 msgid "Nenhum torneio encontrado."
 msgstr "No se encontraron torneos."
 
-#: templates/matchmaking/tournaments.html:147
+#: templates/matchmaking/tournaments.html:151
 msgid "Novo torneio"
 msgstr "Nuevo torneo"
 
-#: templates/matchmaking/tournaments.html:169
-#: templates/matchmaking/tournaments.html:202
+#: templates/matchmaking/tournaments.html:172
+#: templates/matchmaking/tournaments.html:204
 msgid "Fechar"
 msgstr "Para cerrar"
 
-#: templates/matchmaking/tournaments.html:170
-#: templates/users/update_user.html:89
+#: templates/matchmaking/tournaments.html:173
+#: templates/users/update_user.html:59
 msgid "Salvar"
 msgstr "Ahorrar"
 
-#: templates/matchmaking/tournaments.html:181
+#: templates/matchmaking/tournaments.html:184
 msgid "Entrar no torneio"
 msgstr "Entrar al torneo"
 
@@ -553,58 +575,62 @@ msgid "Informação"
 msgstr "Información"
 
 #: templates/shared/partials/_navbar.html:14
-msgid "Tournaments"
-msgstr "Torneos"
-
-#: templates/shared/partials/_navbar.html:15
-msgid "Estatísticas"
-msgstr "Estadística"
-
-#: templates/shared/partials/_navbar.html:23
-msgid "Jogar contra IA"
-msgstr "Juega contra la IA"
-
-#: templates/shared/partials/_navbar.html:28
-msgid "Fácil"
-msgstr "Fácil"
-
-#: templates/shared/partials/_navbar.html:33
-msgid "Médio"
-msgstr "Media"
-
-#: templates/shared/partials/_navbar.html:38
-msgid "Difícil"
-msgstr "Difícil"
-
-#: templates/shared/partials/_navbar.html:47
-msgid "Foto do usuário"
-msgstr "Foto de usuario"
-
-#: templates/shared/partials/_navbar.html:51
 msgid "Perfil"
 msgstr "Perfil"
 
-#: templates/shared/partials/_navbar.html:55
+#: templates/shared/partials/_navbar.html:15
+msgid "Tournaments"
+msgstr "Torneos"
+
+#: templates/shared/partials/_navbar.html:16
+msgid "Tic Tac Toe"
+msgstr ""
+
+#: templates/shared/partials/_navbar.html:17
+msgid "Estatísticas"
+msgstr "Estadística"
+
+#: templates/shared/partials/_navbar.html:25
+msgid "Jogar contra IA"
+msgstr "Juega contra la IA"
+
+#: templates/shared/partials/_navbar.html:30
+msgid "Fácil"
+msgstr "Fácil"
+
+#: templates/shared/partials/_navbar.html:35
+msgid "Médio"
+msgstr "Media"
+
+#: templates/shared/partials/_navbar.html:40
+msgid "Difícil"
+msgstr "Difícil"
+
+#: templates/shared/partials/_navbar.html:49
+msgid "Foto do usuário"
+msgstr "Foto de usuario"
+
+#: templates/shared/partials/_navbar.html:56
 msgid "Tema"
 msgstr "Tema"
 
-#: templates/shared/partials/_navbar.html:60
+#: templates/shared/partials/_navbar.html:61
 msgid "Claro"
 msgstr "Claro"
 
-#: templates/shared/partials/_navbar.html:65
+#: templates/shared/partials/_navbar.html:66
 msgid "Escuro"
 msgstr "Oscuro"
 
-#: templates/shared/partials/_navbar.html:70
+#: templates/shared/partials/_navbar.html:71
 msgid "Automático"
 msgstr "Automático"
 
-#: templates/shared/partials/_navbar.html:78
+#: templates/shared/partials/_navbar.html:79
 msgid "Lingua"
 msgstr "idioma"
 
-#: templates/shared/partials/_navbar.html:103
+#: templates/shared/partials/_navbar.html:104
 msgid "Logout"
 msgstr "Logout"
 
@@ -612,7 +638,7 @@ msgstr "Logout"
 msgid "Chat"
 msgstr "Charlar"
 
-#: templates/users/friend.html:9 templates/users/profile.html:106
+#: templates/users/friend.html:9 templates/users/profile.html:9
 msgid "Perfil do Usuário"
 msgstr "Perfil de usuario"
 
@@ -640,71 +666,91 @@ msgstr "Registro"
 msgid "Autenticando"
 msgstr "Autenticando"
 
-#: templates/users/profile.html:115
+#: templates/users/profile.html:18
 msgid "Editar Perfil"
 msgstr "Editar perfil"
 
-#: templates/users/profile.html:124
+#: templates/users/profile.html:27
 msgid "Amigos"
 msgstr "Amigos"
 
-#: templates/users/profile.html:129
+#: templates/users/profile.html:32
 msgid "Buscar usuário..."
 msgstr "Añadir usuario..."
 
-#: templates/users/profile.html:152
+#: templates/users/profile.html:36
+msgid "Adicionar amigo"
+msgstr ""
+
+#: templates/users/profile.html:55
 msgid "Aceitar convite"
 msgstr "Aceptar invitación"
 
-#: templates/users/profile.html:153
+#: templates/users/profile.html:56
 msgid "Recusar convite"
 msgstr "Rechazar invitación"
 
-#: templates/users/profile.html:156
+#: templates/users/profile.html:59
 msgid "Convite recusado"
 msgstr "Invitación rechazada"
 
-#: templates/users/profile.html:158
+#: templates/users/profile.html:61
 msgid "Você recusou a amizade"
 msgstr "Rechazaste la amistad"
 
-#: templates/users/profile.html:160
+#: templates/users/profile.html:63
 msgid "Convite pendente"
 msgstr "Invitación pendiente"
 
-#: templates/users/profile.html:175
+#: templates/users/profile.html:66
+#, fuzzy
+#| msgid "Ir para partida"
+msgid "Iniciar partida"
+msgstr "Ir al partido"
+
+#: templates/users/profile.html:78
 msgid "Você ainda não tem amigos adicionados."
 msgstr "No tienes amigos añadidos todavía"
 
-#: templates/users/profile.html:187
+#: templates/users/profile.html:90
 msgid "Todas"
 msgstr "Todo"
 
-#: templates/users/profile.html:196
+#: templates/users/profile.html:99
 msgid "Oponente"
 msgstr "Adversario"
 
-#: templates/users/profile.html:197
+#: templates/users/profile.html:101
 msgid "Placar"
 msgstr "Marcador"
 
-#: templates/users/profile.html:198
+#: templates/users/profile.html:102
 msgid "Início"
 msgstr "Inicio"
 
-#: templates/users/profile.html:199
+#: templates/users/profile.html:103
 msgid "Fim"
 msgstr "Fin"
 
-#: templates/users/profile.html:243
+#: templates/users/profile.html:113
+msgid "Você"
+msgstr ""
+
+#: templates/users/profile.html:123
+#, fuzzy
+#| msgid "Convite de partida"
+msgid "Continuar partida"
+msgstr "Invitación a un partido"
+
+#: templates/users/profile.html:162
 msgid "Você ainda não jogou nenhuma partida."
 msgstr "Aún no has jugado ningún partido."
 
-#: templates/users/profile.html:298
+#: templates/users/profile.html:217
 msgid "Nenhum usuário encontrado"
 msgstr "No se encontraron usuarios"
 
-#: templates/users/profile.html:306
+#: templates/users/profile.html:225
 msgid "Erro ao buscar usuários"
 msgstr "Error al buscar usuarios"
 
@@ -752,7 +798,7 @@ msgstr "Otros"
 msgid "Minutos Jogados"
 msgstr "Minutos jugados"
 
-#: templates/users/update_user.html:65
+#: templates/users/update_user.html:35
 msgid "Atualize seu perfil"
 msgstr "Actualiza tu perfil"
 

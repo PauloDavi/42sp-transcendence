@@ -63,10 +63,13 @@
                                         <span class="badge bg-warning text-dark">{% translate "Convite pendente" %}</span>
                                     {% else %}
                                         <div class="d-flex gap-2">
-                                            <a href="{% url 'add_match' friend.id %}?next={{ request.get_full_path }}" class="btn btn-primary" data-bs-toggle="tooltip" data-bs-title="{% translate "Iniciar partida" %}">
+                                            <a href="{% url 'create_tictactoe_match' friend.id %}?next={{ request.get_full_path }}" class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-title="{% translate "Iniciar partida de jogo da velha" %}">
+                                                <i class="bi bi-hash"></i>
+                                            </a>
+                                            <a href="{% url 'add_match' friend.id %}?next={{ request.get_full_path }}" class="btn btn-primary" data-bs-toggle="tooltip" data-bs-title="{% translate "Iniciar partida de pong" %}">
                                                 <i class="bi bi-play"></i>
                                             </a>
-                                            <a href="{% url 'remove_friend' friend.id %}" class="btn btn-danger">
+                                            <a href="{% url 'remove_friend' friend.id %}" class="btn btn-danger" data-bs-toggle="tooltip" data-bs-title="{% translate "Remover amigo" %}">
                                                 <i class="bi bi-trash3"></i>
                                             </a>
                                         </div>
