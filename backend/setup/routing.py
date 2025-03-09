@@ -2,8 +2,8 @@ from django.urls import re_path
 
 from apps.chat.consumers import ChatConsumer
 from apps.matchmaking.game_consumer import AIDifficulty, PongConsumer
-from apps.matchmaking.tournament_consumer import TournamentConsumer
 from apps.matchmaking.tictactoe_consumer import TicTacToeConsumer
+from apps.matchmaking.tournament_consumer import TournamentConsumer
 from apps.users.is_online_consumers import OnlineStatusConsumer
 from apps.users.notification_consumer import NotificationConsumer
 

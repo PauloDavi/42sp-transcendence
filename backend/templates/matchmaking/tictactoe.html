@@ -2,14 +2,51 @@
 {% load static %}
 {% load i18n %}
 {% block content %}
-  <div class="mb-3 mx-auto p-0">
-    <canvas id="game"></canvas>
+    <div class="mx-auto card rounded-bottom-0 mb-3" style="background-color: transparent;">
+      <div class="card-header">
+        <div class="card-title m-0 position-relative d-flex justify-content-between">
+          <span id="user1" style="color: red; font-weight: 900;">
+            <img id="user1-avatar" src="{{ match.user1.avatar.url }}" alt="{% translate "Foto do usuário" %}" width="22" height="22" class="me-1 img-user1-box-shadow" style="border-radius: 50%;">
+            {{ match.user1.username }} X
+          </span>
+          <span class="text-light position-absolute start-50 translate-middle-x">VS</span>
+          <span id="user2" style="color: blue; font-weight: 400;">
+            O {{ match.user2.username }}
+            <img id="user2-avatar" src="{{ match.user2.avatar.url }}" alt="{% translate "Foto do usuário" %}" width="22" height="22" class="ms-1" style="border-radius: 50%;">
+          </span>
+        </div>
+      </div>
+      <canvas id="game" class="p-0"></canvas>
   </div>
+{% endblock %}
+
+{% block styles %}
+  <style>
+    .card-header {
+      background: linear-gradient(45deg, blue 30%, red 70%);
+    }
+
+    .img-user1-box-shadow {
+      box-shadow: 0px 0px 20px rgba(255, 20, 20, 0.9) !important;
+      border: 2px solid rgba(255, 20, 20, 0.9) !important;
+    }
+
+    .img-user2-box-shadow {
+      box-shadow: 0px 0px 20px rgba(20, 20, 255, 0.9) !important;
+      border: 2px solid rgba(20, 20, 255, 0.9) !important;
+    }
+  </style>
 {% endblock %}
 
 {% block scripts %}
   <script>
     document.addEventListener("DOMContentLoaded", () => {
+      class TicTacToeWebSocket extends BaseWebSocket {
+        constructor(matchId) {
+          super(`tictactoe/${matchId}`);
+        }
+      }
+
       const socket = new TicTacToeWebSocket("{{ match.id }}");
       const canvas = document.getElementById("game");
       adjustCanvasSize();
@@ -25,8 +62,8 @@
       const BACKGROUND_COLOR = "#f0f0f070";
       const STROKE_COLOR = "#333";
 
-      let board = Array(gridSize * gridSize).fill(null);
-      let currentPlayer = "X";
+      let currentPlayer = null;
+      let gameStarted = false;
       let gameOver = false;
       let blockIndex = null;
 
@@ -51,12 +88,22 @@
       }
 
       function drawBorder() {
-        context.strokeStyle = gameOver ? WINNER_COLOR : currentPlayer === "X" ? X_COLOR : O_COLOR;
+        context.strokeStyle = gameOver
+          ? WINNER_COLOR
+          : currentPlayer === "O"
+          ? O_COLOR
+          : X_COLOR;
         context.beginPath();
         context.moveTo(0, context.lineWidth / 2);
         context.lineTo(canvas.width - context.lineWidth / 2, context.lineWidth / 2);
-        context.lineTo(canvas.width - context.lineWidth / 2, canvas.height - context.lineWidth / 2);
-        context.lineTo(context.lineWidth / 2, canvas.height - context.lineWidth / 2);
+        context.lineTo(
+          canvas.width - context.lineWidth / 2,
+          canvas.height - context.lineWidth / 2
+        );
+        context.lineTo(
+          context.lineWidth / 2,
+          canvas.height - context.lineWidth / 2
+        );
         context.lineTo(context.lineWidth / 2, context.lineWidth / 2);
         context.stroke();
       }
@@ -151,10 +198,8 @@
         let y2 = Math.floor(i2 / gridSize) * cellSize + cellSize / 2;
 
         if (i2 - i1 === 3 || i2 - i1 === 4) {
-          x1 -= (cellSize / 3);
-          y1 -= context.lineWidth;
-          x2 += (cellSize / 3);
-          y2 -= context.lineWidth;
+          x1 -= cellSize / 3;
+          x2 += cellSize / 3;
         } else if (i2 - i1 === 15 || i2 - i1 === 20) {
           y1 -= cellSize / 3;
           y2 += cellSize / 3;
@@ -193,81 +238,70 @@
         setTimeout(() => {
           animate();
           drawBorder();
-        }, 500);
-      }
-
-      function checkWinner() {
-        const winningCombinations = [
-          [0, 1, 2, 3, 4], [0, 1, 2, 3], [1, 2, 3, 4],
-          [5, 6, 7, 8, 9], [5, 6, 7, 8], [6, 7, 8, 9],
-          [10, 11, 12, 13, 14], [10, 11, 12, 13], [11, 12, 13, 14],
-          [15, 16, 17, 18, 19], [15, 16, 17, 18], [16, 17, 18, 19],
-          [20, 21, 22, 23, 24], [20, 21, 22, 23], [21, 22, 23, 24],
-
-          [0, 5, 10, 15, 20], [0, 5, 10, 15], [5, 10, 15, 20],
-          [1, 6, 11, 16, 21], [1, 6, 11, 16], [6, 11, 16, 21],
-          [2, 7, 12, 17, 22], [2, 7, 12, 17], [7, 12, 17, 22],
-          [3, 8, 13, 18, 23], [3, 8, 13, 18], [8, 13, 18, 23],
-          [4, 9, 14, 19, 24], [4, 9, 14, 19], [9, 14, 19, 24],
-
-          [0, 6, 12, 18, 24], [4, 8, 12, 16, 20],
-          [0, 6, 12, 18], [6, 12, 18, 24],
-          [1, 7, 13, 19], [5, 11, 17, 23],
-          [4, 8, 12, 16], [8, 12, 16, 20],
-          [3, 7, 11, 15], [9, 13, 17, 21],
-        ];
-        for (const [a, b, c, d, f] of winningCombinations) {
-          if (board[a] && board[a] === board[b] && board[a] === board[c] && board[a] === board[d] && (f ? board[a] === board[f] : true)) {
-            gameOver = true;
-            drawWinnerLine(a, f || d);
-            return;
-          }
-        }
-        if (!board.includes(null)) {
-          gameOver = true;
-          setTimeout(() => alert("Draw!"), 100);
-        }
+        }, 100);
       }
 
       function drawBlockIndex() {
         context.fillStyle = "gray";
         context.globalAlpha = 0.5;
         const x = (blockIndex % gridSize) * cellSize + context.lineWidth / 2;
-        const y = Math.floor(blockIndex / gridSize) * cellSize + context.lineWidth / 2;
-        context.fillRect(x, y, cellSize - context.lineWidth, cellSize - context.lineWidth);
+        const y =
+          Math.floor(blockIndex / gridSize) * cellSize + context.lineWidth / 2;
+        context.fillRect(
+          x,
+          y,
+          cellSize - context.lineWidth,
+          cellSize - context.lineWidth
+        );
         context.globalAlpha = 1;
         drawBorder();
       }
 
+    function handleGameOver() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const nextUrl = urlParams.get('next') || '/';
+      
+      if (nextUrl) {
+        setTimeout(() => {
+          window.location.href = nextUrl;
+        }, 1000);
+      }
+    }
+
       function cleanBlockIndex() {
         const x = (blockIndex % gridSize) * cellSize + context.lineWidth / 2;
-        const y = Math.floor(blockIndex / gridSize) * cellSize + context.lineWidth / 2;
-        context.clearRect(x, y, cellSize - context.lineWidth, cellSize - context.lineWidth);
+        const y =
+          Math.floor(blockIndex / gridSize) * cellSize + context.lineWidth / 2;
+        context.clearRect(
+          x,
+          y,
+          cellSize - context.lineWidth,
+          cellSize - context.lineWidth
+        );
         context.fillStyle = BACKGROUND_COLOR;
-        context.fillRect(x, y, cellSize - context.lineWidth, cellSize - context.lineWidth);
+        context.fillRect(
+          x,
+          y,
+          cellSize - context.lineWidth,
+          cellSize - context.lineWidth
+        );
         drawBorder();
       }
 
       canvas.addEventListener("click", (e) => {
-        if (gameOver) return;
+        if (gameOver || !gameStarted) return;
 
         const rect = canvas.getBoundingClientRect();
         const x = e.clientX - rect.left;
         const y = e.clientY - rect.top;
         const index = Math.floor(y / cellSize) * gridSize + Math.floor(x / cellSize);
 
-        if (index === blockIndex) return;
-        if (!board[index]) {
-          board[index] = currentPlayer;
-          drawMark(index, currentPlayer);
-          checkWinner();
-          currentPlayer = currentPlayer === "X" ? "O" : "X";
-
-          if (blockIndex) cleanBlockIndex();
-          const availableIndexes = board.map((value, i) => !value && i !== blockIndex ? i : null).filter(Boolean);
-          blockIndex = availableIndexes[Math.floor(Math.random() * availableIndexes.length)];
-          drawBlockIndex();
-        }
+        socket.socket.send(
+          JSON.stringify({
+            action: "click",
+            position: index,
+          })
+        );
       });
 
       function adjustCanvasResolution() {
@@ -285,18 +319,98 @@
         const header = document.querySelector("header");
         const container = canvas.parentElement;
 
-        let availableHeight = window.innerHeight - header.offsetHeight - 32;
+        let availableHeight = window.innerHeight - header.offsetHeight - 32 - 40;
         if (availableHeight > window.innerWidth) {
           availableHeight = window.innerWidth;
         }
 
         container.style.width = `${availableHeight}px`;
-        container.style.height = `${availableHeight}px`;
+        container.style.height = `${availableHeight + 40}px`;
         canvas.width = availableHeight;
         canvas.height = availableHeight;
       }
 
+      function drawStartGameScreen() {
+        context.fillStyle = "rgba(0, 0, 0, 0.7)";
+        context.fillRect(0, 0, canvas.width, canvas.height);
+
+        context.fillStyle = "white";
+        context.font = canvas.height * 0.04 + "px Arial";
+        context.textAlign = "center";
+        context.fillText(
+          "{% translate 'Esperando o adversário entrar na partida' %}",
+          canvas.width / 2,
+          canvas.height / 2
+        );
+      }
+
+      function drawEndGameScreen(winner) {
+        context.fillStyle = "rgba(0, 0, 0, 0.7)";
+        context.fillRect(0, 0, canvas.width, canvas.height);
+
+        context.fillStyle = "white";
+        context.font = canvas.height * 0.06 + "px Arial";
+        context.textAlign = "center";
+        context.fillText(
+          winner + "{% translate ' ganhou!' %}",
+          canvas.width / 2,
+          canvas.height / 2
+        );
+      }
+
+      function updateUser() {
+        const user = currentPlayer === "X" ? "user1" : "user2";
+        const userElement = document.getElementById(user);
+        const userAvatar = document.getElementById(`${user}-avatar`);
+        userElement.style.fontWeight = "900";
+        if (user === "user1") {
+          userAvatar.classList.add("img-user1-box-shadow");
+        } else {
+          userAvatar.classList.add("img-user2-box-shadow");
+        }
+
+        const opponent = currentPlayer === "X" ? "user2" : "user1";
+        const opponentElement = document.getElementById(opponent);
+        const opponentAvatar = document.getElementById(`${opponent}-avatar`);
+        opponentElement.style.fontWeight = "400";
+        if (opponent === "user1") {
+          opponentAvatar.classList.remove("img-user1-box-shadow");
+        } else {
+          opponentAvatar.classList.remove("img-user2-box-shadow");
+        }
+      }
+
+      socket.socket.onmessage = (event) => {
+        const data = JSON.parse(event.data);
+
+        for (const event of data.events) {
+          if (event.type === "start_game") {
+            currentPlayer = data.game.turn;
+            updateUser();
+            gameStarted = true;
+            drawBoard();
+          } else if (event.type === "finish_game") {
+            gameOver = true;
+            drawWinnerLine(event.start_position, event.end_position);
+            setTimeout(() => {
+              drawEndGameScreen(event.winner);
+              handleGameOver();
+            }, 1000);
+          } else if (event.type === "put_symbol") {
+            currentPlayer = data.game.turn;
+            updateUser();
+            drawBorder();
+            drawMark(event.position, event.symbol);
+          } else if (event.type === "block_index") {
+            if (blockIndex !== null) cleanBlockIndex();
+            blockIndex = event.block_index;
+            drawBlockIndex();
+          }
+        }
+      };
+
       drawBoard();
-    });
+      drawStartGameScreen();
+    });  
   </script>
 {% endblock %}

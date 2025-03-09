@@ -101,6 +101,7 @@
                                     <tr>
                                         <th>{% translate "Oponente" %}</th>
                                         <th>{% translate "Vencedor" %}</th>
+                                        <th>{% translate "Tipo" %}</th>
                                         <th style="min-width: 85px;">{% translate "Placar" %}</th>
                                         <th style="min-width: 175px;">{% translate "Início" %}</th>
                                         <th style="min-width: 175px;">{% translate "Fim" %}</th>
@@ -118,12 +119,25 @@
                                                     {{ match.winner|default:"-" }}
                                                 {% endif %}
                                             </td>
-                                            <td><span class="badge bg-success">{{ match.points }}</span> x <span class="badge bg-danger">{{ match.opponent_points }}</span></td>
+                                            <td>
+                                                {% if match.match_type == "tictactoe" %}
+                                                    {% translate "Jogo da velha" %}
+                                                {% else %}
+                                                    {% translate "Pong" %}
+                                                {% endif %}
+                                            </td>
+                                            <td>
+                                                {% if match.match_type == "tictactoe" %}
+                                                    -
+                                                {% else %}
+                                                    <span class="badge bg-success">{{ match.points }}</span> x <span class="badge bg-danger">{{ match.opponent_points }}</span>
+                                                {% endif %}
+                                            </td>
                                             <td>{{ match.started_date_played|date:"d/m/Y H:i:s"|default:"-" }}</td>
                                             <td>{{ match.finished_date_played|date:"d/m/Y H:i:s"|default:"-" }}</td>
                                             <td>
                                                 {% if not match.finished_date_played %}
-                                                    <a href="{% url 'match_game' match.id %}?next={{ request.get_full_path }}" class="btn btn-primary" data-bs-toggle="tooltip" data-bs-title="{% translate "Continuar partida" %}">
+                                                    <a href="{% if match.match_type == "tictactoe" %}{% url 'tictactoe_game' match.id %}?next={{ request.get_full_path }}{% else %}{% url 'match_game' match.id %}?next={{ request.get_full_path }}{% endif %}" class="btn btn-primary" data-bs-toggle="tooltip" data-bs-title="{% translate "Continuar partida" %}">
                                                         <i class="bi bi-play"></i>
                                                     </a>
                                                 {% endif %}

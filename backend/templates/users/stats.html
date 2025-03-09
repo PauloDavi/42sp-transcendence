@@ -41,7 +41,7 @@
       </div>
     </div>
 
-    <div class="col-md-6">
+    <div>
       <div class="card h-100">
         <div class="card-header">{% translate "Histórico de Partidas" %}</div>
         <div class="card-body">
@@ -64,6 +64,15 @@
         <div class="card-header">{% translate "Desempenho em Torneios" %}</div>
         <div class="card-body">
           <canvas id="tournamentPerformance"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-6">
+      <div class="card h-100">
+        <div class="card-header">{% translate "Tipos de Partidas" %}</div>
+        <div class="card-body">
+          <canvas id="matchTypes"></canvas>
         </div>
       </div>
     </div>
@@ -94,7 +103,8 @@
         losses: '#dc3545',
         rivals: '#0d6efd',
         playTime: '#0dcaf0',
-        tournament: ['#ffd700', '#c0c0c0', '#6c757d']
+        tournament: ['#ffd700', '#c0c0c0', '#6c757d'],
+        matchTypes: ['#0d6efd', '#ffc107'],
       };
     }
 
@@ -193,8 +203,6 @@
         }
       }));
 
-      console.log({{ play_dates|safe }})
-      console.log({{ play_minutes|safe }})
       charts.push(new Chart(document.getElementById('playTime'), {
         type: 'bar',
         data: {
@@ -208,6 +216,22 @@
           }]
         },
         options: chartOptions,
+      }));
+
+      charts.push(new Chart(document.getElementById('matchTypes'), {
+        type: 'doughnut',
+        data: {
+          labels: ['{% translate "Jogo da velha" %}', '{% translate "Pong" %}'],
+          datasets: [{
+            data: {{ match_types|safe }},
+            backgroundColor: chartColors.matchTypes,
+            borderWidth: 2,
+          }]
+        },
+        options: {
+          ...chartOptions,
+          scales: null,
+        }
       }));
     }
 
