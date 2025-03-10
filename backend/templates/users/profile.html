@@ -63,10 +63,13 @@
                                         <span class="badge bg-warning text-dark">{% translate "Convite pendente" %}</span>
                                     {% else %}
                                         <div class="d-flex gap-2">
-                                            <a href="{% url 'add_match' friend.id %}?next={{ request.get_full_path }}" class="btn btn-primary" data-bs-toggle="tooltip" data-bs-title="{% translate "Iniciar partida" %}">
+                                            <a href="{% url 'create_tictactoe_match' friend.id %}?next={{ request.get_full_path }}" class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-title="{% translate "Iniciar partida de jogo da velha" %}">
+                                                <i class="bi bi-hash"></i>
+                                            </a>
+                                            <a href="{% url 'add_match' friend.id %}?next={{ request.get_full_path }}" class="btn btn-primary" data-bs-toggle="tooltip" data-bs-title="{% translate "Iniciar partida de pong" %}">
                                                 <i class="bi bi-play"></i>
                                             </a>
-                                            <a href="{% url 'remove_friend' friend.id %}" class="btn btn-danger">
+                                            <a href="{% url 'remove_friend' friend.id %}" class="btn btn-danger" data-bs-toggle="tooltip" data-bs-title="{% translate "Remover amigo" %}">
                                                 <i class="bi bi-trash3"></i>
                                             </a>
                                         </div>
@@ -98,6 +101,7 @@
                                     <tr>
                                         <th>{% translate "Oponente" %}</th>
                                         <th>{% translate "Vencedor" %}</th>
+                                        <th>{% translate "Tipo" %}</th>
                                         <th style="min-width: 85px;">{% translate "Placar" %}</th>
                                         <th style="min-width: 175px;">{% translate "Início" %}</th>
                                         <th style="min-width: 175px;">{% translate "Fim" %}</th>
@@ -115,12 +119,25 @@
                                                     {{ match.winner|default:"-" }}
                                                 {% endif %}
                                             </td>
-                                            <td><span class="badge bg-success">{{ match.points }}</span> x <span class="badge bg-danger">{{ match.opponent_points }}</span></td>
+                                            <td>
+                                                {% if match.match_type == "tictactoe" %}
+                                                    {% translate "Jogo da velha" %}
+                                                {% else %}
+                                                    {% translate "Pong" %}
+                                                {% endif %}
+                                            </td>
+                                            <td>
+                                                {% if match.match_type == "tictactoe" %}
+                                                    -
+                                                {% else %}
+                                                    <span class="badge bg-success">{{ match.points }}</span> x <span class="badge bg-danger">{{ match.opponent_points }}</span>
+                                                {% endif %}
+                                            </td>
                                             <td>{{ match.started_date_played|date:"d/m/Y H:i:s"|default:"-" }}</td>
                                             <td>{{ match.finished_date_played|date:"d/m/Y H:i:s"|default:"-" }}</td>
                                             <td>
                                                 {% if not match.finished_date_played %}
-                                                    <a href="{% url 'match_game' match.id %}?next={{ request.get_full_path }}" class="btn btn-primary" data-bs-toggle="tooltip" data-bs-title="{% translate "Continuar partida" %}">
+                                                    <a href="{% if match.match_type == "tictactoe" %}{% url 'tictactoe_game' match.id %}?next={{ request.get_full_path }}{% else %}{% url 'match_game' match.id %}?next={{ request.get_full_path }}{% endif %}" class="btn btn-primary" data-bs-toggle="tooltip" data-bs-title="{% translate "Continuar partida" %}">
                                                         <i class="bi bi-play"></i>
                                                     </a>
                                                 {% endif %}

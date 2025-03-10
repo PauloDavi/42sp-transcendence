@@ -137,7 +137,7 @@ document.addEventListener("DOMContentLoaded", () => {
     context.fillText(winner + "{% translate ' ganhou!' %}", canvas.width / 2, canvas.height / 2);
   }
 
-  function drawStartGameScreen(winner) {
+  function drawStartGameScreen() {
     context.fillStyle = "rgba(0, 0, 0, 0.7)";
     context.fillRect(0, 0, canvas.width, canvas.height);
 
@@ -183,7 +183,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function handleGameOver() {
     const urlParams = new URLSearchParams(window.location.search);
-    const nextUrl = urlParams.get('next');
+    const nextUrl = urlParams.get('next') || '/';
     
     if (nextUrl) {
       setTimeout(() => {

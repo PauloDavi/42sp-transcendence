@@ -11,6 +11,11 @@ from apps.users.models import User
 from apps.users.schemas import RedirectMessage
 
 
+class MatchType(models.TextChoices):
+    PONG = "pong"
+    TICTACTOE = "tictactoe"
+
+
 class Match(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     user1 = models.ForeignKey(User, related_name="match_user1", on_delete=models.CASCADE)
@@ -22,6 +27,9 @@ class Match(models.Model):
     started_date_played = models.DateTimeField(auto_now_add=True, verbose_name=_("Jogado em"))
     finished_date_played = models.DateTimeField(null=True, verbose_name=_("Finalizado em"))
     updated_at = models.DateTimeField(auto_now=True, verbose_name=_("Atualizado em"))
+    match_type = models.CharField(
+        max_length=255, choices=MatchType.choices, verbose_name=_("Tipo de partida"), default=MatchType.PONG
+    )
 
     class Meta:
         verbose_name = _("Partida")

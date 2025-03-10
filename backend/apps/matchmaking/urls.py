@@ -3,12 +3,14 @@ from django.urls import path
 from apps.matchmaking.views import (
     create_ai_match,
     create_match,
+    create_tictactoe_match,
     create_tournament,
     delete_tournament,
     join_tournament,
     leave_tournament,
     match_game,
     match_refuse,
+    tictactoe,
     tournament_room,
     tournaments,
 )
@@ -28,4 +30,6 @@ urlpatterns = [
     path("tournament/<uuid:tournament_id>/join", join_tournament, name="join_tournament"),
     path("tournament/<uuid:tournament_id>/leave/", leave_tournament, name="leave_tournament"),
     path("create-ai-match/", create_ai_match, name="create_ai_match"),
+    path("create-tictactoe-match/<uuid:opponent_id>", create_tictactoe_match, name="create_tictactoe_match"),
+    path("tictactoe-game/<uuid:match_id>", tictactoe, name="tictactoe_game"),
 ]

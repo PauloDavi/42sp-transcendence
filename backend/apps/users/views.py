@@ -109,6 +109,7 @@ def profile(request: HttpRequest) -> HttpResponse:
             "points": match.score_user1 if match.user1 == request.user else match.score_user2,
             "opponent_points": match.score_user1 if match.user1 != request.user else match.score_user2,
             "winner": match.winner,
+            "match_type": match.match_type,
             "started_date_played": match.started_date_played,
             "finished_date_played": match.finished_date_played,
         }
@@ -298,6 +299,9 @@ def stats(request: HttpRequest) -> HttpResponse:
         )
         play_minutes.append(minutes // 60)
 
+    tictactoe_matches = matches.filter(match_type="tictactoe").count()
+    pong_matches = matches.filter(match_type="pong").count()
+
     return render(
         request,
         "users/stats.html",
@@ -314,5 +318,6 @@ def stats(request: HttpRequest) -> HttpResponse:
             "tournament_positions": tournament_positions,
             "play_dates": play_dates,
             "play_minutes": play_minutes,
+            "match_types": [tictactoe_matches, pong_matches],
         },
     )

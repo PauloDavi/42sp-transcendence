@@ -168,16 +168,8 @@ CSRF_TRUSTED_ORIGINS = [
     "http://localhost",
     "http://127.0.0.1",
     "https://localhost",
-    "https://127.0.0.1",
+    "https://192.168.0.124",
+    "https://192.168.0.124",
 ]
-
-# Se você estiver usando CORS_ALLOWED_ORIGINS
-CORS_ALLOWED_ORIGINS = [
-    "http://localhost",
-    "http://127.0.0.1",
-    "https://localhost",
-    "https://127.0.0.1",
-]
-
-# Opcional: permitir credenciais em requisições CORS
+ALLOWED_HOSTS = ["*"]
 CORS_ALLOW_CREDENTIALS = True

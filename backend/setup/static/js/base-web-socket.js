@@ -19,7 +19,6 @@ class BaseWebSocket {
       if (document.visibilityState === "visible") {
         this.reconnectAttempts = 0;
         if (this.socket.readyState === WebSocket.CLOSED) {
-          console.log("Usuário voltou para a página. Tentando reconectar...");
           this.connect();
         }
       }
@@ -28,7 +27,6 @@ class BaseWebSocket {
 
   setupBaseHandlers() {
     this.socket.onopen = () => {
-      console.log(`WebSocket conectado ao ${this.url}`);
       this.reconnectAttempts = 0;
     };
 
@@ -37,18 +35,13 @@ class BaseWebSocket {
     };
 
     this.socket.onclose = () => {
-      console.log(`WebSocket desconectado do ${this.url}`);
-
       if (this.reconnectAttempts < this.maxReconnectAttempts) {
-        console.log(
-          `Tentando reconectar em ${this.reconnectInterval / 1000} segundos...`
-        );
         setTimeout(() => {
           this.reconnectAttempts++;
           this.connect();
         }, this.reconnectInterval);
       } else {
-        console.log("Número máximo de tentativas de reconexão atingido");
+        console.error("Número máximo de tentativas de reconexão atingido");
       }
     };
   }
