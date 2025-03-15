@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-03-09 01:02-0300\n"
-"PO-Revision-Date: 2025-03-09 01:03-0300\n"
+"POT-Creation-Date: 2025-03-15 00:06-0300\n"
+"PO-Revision-Date: 2025-03-15 00:06-0300\n"
 "Last-Translator:   <super@gmail.co>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "Language: \n"
@@ -68,7 +68,7 @@ msgid "Partida"
 msgstr "Partida"
 
 #: apps/matchmaking/models.py:36 templates/matchmaking/tournament.html:84
-#: templates/users/profile.html:88 templates/users/stats.html:180
+#: templates/users/profile.html:91 templates/users/stats.html:180
 msgid "Partidas"
 msgstr "Partidas"
 
@@ -258,18 +258,18 @@ msgid "As senhas não coincidem."
 msgstr "As senhas não coincidem."
 
 #: apps/users/models.py:17 templates/users/profile.html:47
-#: templates/users/profile.html:213
+#: templates/users/profile.html:216
 msgid "Avatar"
 msgstr "Avatar"
 
 #: apps/users/models.py:22 templates/users/friend.html:19
-#: templates/users/profile.html:14 templates/users/profile.html:91
+#: templates/users/profile.html:14 templates/users/profile.html:94
 #: templates/users/stats.html:20 templates/users/stats.html:157
 msgid "Vitórias"
 msgstr "Vitórias"
 
 #: apps/users/models.py:23 templates/users/friend.html:20
-#: templates/users/profile.html:15 templates/users/profile.html:92
+#: templates/users/profile.html:15 templates/users/profile.html:95
 #: templates/users/stats.html:28 templates/users/stats.html:164
 msgid "Derrotas"
 msgstr "Derrotas"
@@ -367,19 +367,27 @@ msgstr "Inglês"
 msgid "Espanhol"
 msgstr "Espanhol"
 
-#: templates/chat/index.html:8
+#: templates/chat/index.html:5
 msgid "Create chat room"
 msgstr "Sala de chat criada"
 
-#: templates/chat/index.html:13
+#: templates/chat/index.html:10
 msgid "Enter chat room code"
 msgstr "Digite o código da sala de bate-papo"
 
-#: templates/chat/room.html:6
-msgid "Room code"
-msgstr "Código da sala"
+#: templates/chat/room.html:14 templates/chat/room.html:21
+#: templates/matchmaking/tictactoe.html:9
+#: templates/matchmaking/tictactoe.html:15
+#: templates/shared/partials/_navbar.html:47
+msgid "Foto do usuário"
+msgstr "Foto do usuário"
 
-#: templates/chat/room.html:9 templates/users/chat.html:15
+#: templates/chat/room.html:27
+#| msgid "Sua mensagem..."
+msgid "Digite sua mensagem..."
+msgstr "Digite sua mensagem..."
+
+#: templates/chat/room.html:28
 msgid "Enviar"
 msgstr "Enviar"
 
@@ -392,12 +400,6 @@ msgstr " ganhou!"
 #: templates/matchmaking/tictactoe.html:341
 msgid "Esperando o adversário entrar na partida"
 msgstr "Esperando o adversário entrar na partida"
-
-#: templates/matchmaking/tictactoe.html:9
-#: templates/matchmaking/tictactoe.html:15
-#: templates/shared/partials/_navbar.html:47
-msgid "Foto do usuário"
-msgstr "Foto do usuário"
 
 #: templates/matchmaking/tournament.html:16
 #: templates/matchmaking/tournament.html:189
@@ -442,7 +444,7 @@ msgid "Offline"
 msgstr "Offline"
 
 #: templates/matchmaking/tournament.html:65
-#: templates/matchmaking/tournaments.html:25 templates/users/profile.html:103
+#: templates/matchmaking/tournaments.html:25 templates/users/profile.html:106
 msgid "Vencedor"
 msgstr "Vencedor"
 
@@ -482,7 +484,7 @@ msgstr "Em jogo"
 msgid "Criar torneio"
 msgstr "Criar torneio"
 
-#: templates/matchmaking/tournaments.html:29 templates/users/profile.html:108
+#: templates/matchmaking/tournaments.html:29 templates/users/profile.html:111
 msgid "Ações"
 msgstr "Ações"
 
@@ -515,27 +517,27 @@ msgstr "Sair"
 msgid "Entrar"
 msgstr "Entrar"
 
-#: templates/matchmaking/tournaments.html:106 templates/users/profile.html:156
+#: templates/matchmaking/tournaments.html:106 templates/users/profile.html:159
 msgid "Primeira"
 msgstr "Primeira"
 
-#: templates/matchmaking/tournaments.html:113 templates/users/profile.html:159
+#: templates/matchmaking/tournaments.html:113 templates/users/profile.html:162
 msgid "Anterior"
 msgstr "Anterior"
 
-#: templates/matchmaking/tournaments.html:119 templates/users/profile.html:164
+#: templates/matchmaking/tournaments.html:119 templates/users/profile.html:167
 msgid "Página"
 msgstr "Página"
 
-#: templates/matchmaking/tournaments.html:119 templates/users/profile.html:164
+#: templates/matchmaking/tournaments.html:119 templates/users/profile.html:167
 msgid "de"
 msgstr "de"
 
-#: templates/matchmaking/tournaments.html:127 templates/users/profile.html:169
+#: templates/matchmaking/tournaments.html:127 templates/users/profile.html:172
 msgid "Próxima"
 msgstr "Próxima"
 
-#: templates/matchmaking/tournaments.html:134 templates/users/profile.html:172
+#: templates/matchmaking/tournaments.html:134 templates/users/profile.html:175
 msgid "Última"
 msgstr "Última"
 
@@ -629,10 +631,6 @@ msgstr "Língua"
 msgid "Logout"
 msgstr "Logout"
 
-#: templates/users/chat.html:7
-msgid "Chat"
-msgstr "Chat"
-
 #: templates/users/friend.html:9 templates/users/profile.html:9
 msgid "Perfil do Usuário"
 msgstr "Perfil do Usuário"
@@ -698,70 +696,74 @@ msgid "Convite pendente"
 msgstr "Convite pendente"
 
 #: templates/users/profile.html:66
+msgid "Iniciar chat com amigo"
+msgstr "Iniciar chat com amigo"
+
+#: templates/users/profile.html:69
 msgid "Iniciar partida de jogo da velha"
 msgstr "Iniciar partida de jogo da velha"
 
-#: templates/users/profile.html:69
+#: templates/users/profile.html:72
 msgid "Iniciar partida de pong"
 msgstr "Iniciar partida de pong"
 
-#: templates/users/profile.html:72
+#: templates/users/profile.html:75
 msgid "Remover amigo"
 msgstr "Remover amigo"
 
-#: templates/users/profile.html:81
+#: templates/users/profile.html:84
 msgid "Você ainda não tem amigos adicionados."
 msgstr "Você ainda não tem amigos adicionados."
 
-#: templates/users/profile.html:93
+#: templates/users/profile.html:96
 msgid "Todas"
 msgstr "Todas"
 
-#: templates/users/profile.html:102
+#: templates/users/profile.html:105
 msgid "Oponente"
 msgstr "Oponente"
 
-#: templates/users/profile.html:104
+#: templates/users/profile.html:107
 msgid "Tipo"
 msgstr "Tipo"
 
-#: templates/users/profile.html:105
+#: templates/users/profile.html:108
 msgid "Placar"
 msgstr "Placar"
 
-#: templates/users/profile.html:106
+#: templates/users/profile.html:109
 msgid "Início"
 msgstr "Início"
 
-#: templates/users/profile.html:107
+#: templates/users/profile.html:110
 msgid "Fim"
 msgstr "Fim"
 
-#: templates/users/profile.html:117
+#: templates/users/profile.html:120
 msgid "Você"
 msgstr "Você"
 
-#: templates/users/profile.html:124 templates/users/stats.html:224
+#: templates/users/profile.html:127 templates/users/stats.html:224
 msgid "Jogo da velha"
 msgstr "Jogo da velha"
 
-#: templates/users/profile.html:126 templates/users/stats.html:224
+#: templates/users/profile.html:129 templates/users/stats.html:224
 msgid "Pong"
 msgstr "Pong"
 
-#: templates/users/profile.html:140
+#: templates/users/profile.html:143
 msgid "Continuar partida"
 msgstr "Continuar partida"
 
-#: templates/users/profile.html:179
+#: templates/users/profile.html:182
 msgid "Você ainda não jogou nenhuma partida."
 msgstr "Você ainda não jogou nenhuma partida."
 
-#: templates/users/profile.html:234
+#: templates/users/profile.html:237
 msgid "Nenhum usuário encontrado"
 msgstr "Nenhum usuário encontrado"
 
-#: templates/users/profile.html:242
+#: templates/users/profile.html:245
 msgid "Erro ao buscar usuários"
 msgstr "Erro ao buscar usuários"
 
@@ -790,7 +792,6 @@ msgid "Desempenho em Torneios"
 msgstr "Desempenho em Torneios"
 
 #: templates/users/stats.html:73
-#| msgid "Tipo de partida"
 msgid "Tipos de Partidas"
 msgstr "Tipos de partidas"
 
@@ -817,6 +818,12 @@ msgstr "Minutos Jogados"
 #: templates/users/update_user.html:35
 msgid "Atualize seu perfil"
 msgstr "Atualize seu perfil"
+
+#~ msgid "Room code"
+#~ msgstr "Código da sala"
+
+#~ msgid "Chat"
+#~ msgstr "Chat"
 
 #, fuzzy
 #~ msgid "Últimas Partidas"
@@ -847,9 +854,6 @@ msgstr "Atualize seu perfil"
 
 #~ msgid "Bem-vindo ao meu site!"
 #~ msgstr "Bem-vindo ao meu site!"
-
-#~ msgid "Sua mensagem..."
-#~ msgstr "Sua mensagem..."
 
 #~ msgid "Mensagem enviada com sucesso!"
 #~ msgstr "Mensagem enviada com sucesso!"
