@@ -63,6 +63,9 @@
                                         <span class="badge bg-warning text-dark">{% translate "Convite pendente" %}</span>
                                     {% else %}
                                         <div class="d-flex gap-2">
+                                            <a href="{% url 'friend_chat' friend.id %}?next={{ request.get_full_path }}" class="btn btn-success" data-bs-toggle="tooltip" data-bs-title="{% translate "Iniciar chat com amigo" %}">
+                                                <i class="bi bi-whatsapp"></i>
+                                            </a>
                                             <a href="{% url 'create_tictactoe_match' friend.id %}?next={{ request.get_full_path }}" class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-title="{% translate "Iniciar partida de jogo da velha" %}">
                                                 <i class="bi bi-hash"></i>
                                             </a>

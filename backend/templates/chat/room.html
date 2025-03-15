@@ -1,56 +1,206 @@
-{% extends 'shared/base.html' %}
+{% extends "shared/base.html" %}
 {% load static %}
 {% load i18n %}
 {% block content %}
-<h1>{{ chat.name }}</h1>
-    <p>{% translate "Room code" %}: {{ chat.id }}</p>
-    <textarea id="chat-log" cols="100" rows="20" readonly></textarea><br>
-    <input id="chat-message-input" type="text" size="100"><br>
-    <input id="chat-message-submit" type="button" value="{% translate "Enviar" %}">
-    {{ chat.id|json_script:"room-uuid" }}
-    {{ messages|json_script:"messages" }}
+<div class="container mb-2">
+    <div class="card">
+        <h1 class="card-header text-center">{{ chat.name }}</h1>
+        <div class="card-body">
+            <div id="chat" class="chat-container">
+                {% for message in chat.messages.all %}
+                    <div class="d-flex {% if message.sender == user %}justify-content-end{% else %}justify-content-start{% endif %}">
+                        {% if message.sender != user %}
+                            <a href="{% url 'friend_profile' message.sender.id %}">
+                                <img src="{{ message.sender.avatar.url }}" alt="{% translate "Foto do usuário" %}" width="30" height="30" class="rounded-circle me-2">
+                            </a>
+                        {% endif %}
+                        <div class="message {% if message.sender == user %}sent{% else %}received{% endif %}">
+                            {{ message.content }}
+                        </div>
+                        {% if message.sender == user %}
+                            <img src="{{ message.sender.avatar.url }}" alt="{% translate "Foto do usuário" %}" width="30" height="30" class="rounded-circle ms-2">
+                        {% endif %}
+                    </div>
+                {% endfor %}
+            </div>
+            <div class="input-group mt-2">
+                <textarea id="chat-message-input" rows="1" class="form-control" placeholder="{% translate 'Digite sua mensagem...' %}" style="resize: none;"></textarea>
+                <button id="chat-message-submit" type="button" class="btn btn-primary" disabled>{% translate "Enviar" %}</button>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}
 
 {% block scripts %}
 <script>
-    const roomUuid = JSON.parse(document.getElementById('room-uuid').textContent);
-    const messages = JSON.parse(document.getElementById('messages').textContent);
+document.addEventListener('DOMContentLoaded', function() {
+    const chat = document.getElementById("chat");
+    const input = document.getElementById("chat-message-input");
+    const submitButton = document.getElementById("chat-message-submit");
 
-    const chatSocket = new WebSocket(
-        'ws://'
-        + window.location.host
-        + '/ws/chat/'
-        + roomUuid
-        + '/'
-    );
+    class ChatWebSocket extends BaseWebSocket {
+        constructor() {
+            super("chat/{{chat.id}}");
+            this.socket.onmessage = (e) => this.handleMessage(e);
+        }
 
-    for (let i = 0; i < messages.length; i++) {
-        document.querySelector('#chat-log').value += (messages[i].sender + ": " + messages[i].content + '\n');
+        handleMessage(e) {
+            const data = JSON.parse(e.data);
+            const message = document.createElement("div");
+            message.classList.add("d-flex", data.message.sender_id === "{{ user.id }}" ? "justify-content-end" : "justify-content-start");
+
+            const msgBubble = document.createElement("div");
+            msgBubble.classList.add("message", data.message.sender_id === "{{ user.id }}" ? "sent" : "received");
+            msgBubble.textContent = data.message.content;
+
+            if (data.message.sender_id !== "{{ user.id }}") {
+                const avatar = document.createElement("img");
+                avatar.src = data.message.sender_avatar;
+                avatar.classList.add("rounded-circle", "me-2");
+                avatar.width = 30;
+                avatar.height = 30;
+                message.appendChild(avatar);
+            }
+
+            message.appendChild(msgBubble);
+
+            if (data.message.sender_id === "{{ user.id }}") {
+                const avatar = document.createElement("img");
+                avatar.src = data.message.sender_avatar;
+                avatar.classList.add("rounded-circle", "ms-2");
+                avatar.width = 30;
+                avatar.height = 30;
+                message.appendChild(avatar);
+            }
+
+            chat.appendChild(message);
+            chat.scrollTop = chat.scrollHeight;
+        }
+
+        sendMessage(content) {
+            if (content.trim() === "") return;
+            this.socket.send(JSON.stringify({ message: content }));
+        }
     }
 
-    chatSocket.onmessage = function(e) {
-        const data = JSON.parse(e.data);
-        document.querySelector('#chat-log').value += (data.message + '\n');
-    };
+    const chatWebSocket = new ChatWebSocket();
 
-    chatSocket.onclose = function(e) {
-        console.error('Chat socket closed unexpectedly');
-    };
-
-    document.querySelector('#chat-message-input').focus();
-    document.querySelector('#chat-message-input').onkeyup = function(e) {
-        if (e.key === 'Enter') {
-            document.querySelector('#chat-message-submit').click();
+    input.addEventListener("input", () => {
+        submitButton.disabled = input.value.trim() === "";
+        input.rows = input.value.split("\n").length;
+    });
+    input.addEventListener("keydown", (e) => {
+        if (e.key === "Enter" && !e.shiftKey && input.value.trim() !== "") {
+            e.preventDefault();
+            submitButton.click();
         }
-    };
+    });
 
-    document.querySelector('#chat-message-submit').onclick = function(e) {
-        const messageInputDom = document.querySelector('#chat-message-input');
-        const message = messageInputDom.value;
-        chatSocket.send(JSON.stringify({
-            'message': message
-        }));
-        messageInputDom.value = '';
-    };
+    submitButton.addEventListener("click", () => {
+        chatWebSocket.sendMessage(input.value.trim());
+        input.value = "";
+        input.rows = 1;
+        submitButton.disabled = true;
+    });
+
+    chat.scrollTop = chat.scrollHeight;
+});
 </script>
+{% endblock %}
+
+{% block styles %}
+<style>
+    .message {
+        max-width: 60%;
+        padding: 10px 15px;
+        font-size: 1rem;
+        word-wrap: break-word;
+        display: inline-block;
+        white-space: pre-line;
+    }
+
+    .sent {
+        background-color: #0d6efd;
+        border-radius: 20px 0 20px 20px;
+        color: white;
+        text-align: right;
+        position: relative;
+    }
+
+    .sent:before {
+        display: block;
+        clear: both;
+        content: '';
+        position: absolute;
+        top: 0px;
+        right: -7px;
+        width: 0;
+        height: 0;
+        border-style: solid;
+        border-width: 0 12px 15px 12px;
+        border-color: transparent transparent #0d6efd transparent;
+        -webkit-transform: rotate(180deg);
+        -ms-transform: rotate(180deg);
+        transform: rotate(180deg);
+    }
+
+    .sent:after {
+        display: block;
+        content: '';
+        clear: both;
+    }
+
+    .received {
+        background-color: #e9ecef;
+        border-radius: 0 20px 20px 20px;
+        color: black;
+        position: relative;
+    }
+
+    .received:before {
+        display: block;
+        clear: both;
+        content: '';
+        position: absolute;
+        top: 0px;
+        left: -7px;
+        width: 0;
+        height: 0;
+        border-style: solid;
+        border-width: 0 12px 15px 12px;
+        border-color: transparent transparent #e9ecef transparent;
+        -webkit-transform: rotate(180deg);
+        -ms-transform: rotate(180deg);
+        transform: rotate(180deg);
+    }
+
+    .received:after {
+        display: block;
+        content: '';
+        clear: both;
+    }
+
+    .chat-container {
+        height: 60vh;
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        padding: 10px;
+    }
+
+    .chat-container::-webkit-scrollbar {
+        width: 6px;
+    }
+
+    .chat-container::-webkit-scrollbar-thumb {
+        background: rgba(0, 0, 0, 0.2);
+        border-radius: 3px;
+    }
+
+    .chat-container::-webkit-scrollbar-track {
+        background: transparent;
+    }
+</style>
 {% endblock %}

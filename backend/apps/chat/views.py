@@ -5,7 +5,7 @@ from django.http import HttpRequest, HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
 
-from apps.chat.models import Chat, ChatParticipants, Message
+from apps.chat.models import Chat, ChatParticipants
 from apps.users.models import User
 
 
@@ -23,21 +23,21 @@ def create_room(request: HttpRequest, room_uuid: UUID, room_name: str) -> HttpRe
 
 
 @login_required
+def friend_chat(request: HttpRequest, friend_id: int) -> HttpResponse:
+    friend = get_object_or_404(User, id=friend_id)
+    chat = Chat.objects.filter(is_group_chat=False, participants=request.user).filter(participants=friend).first()
+
+    if not chat:
+        chat = Chat.objects.create(
+            is_group_chat=False,
+            name=f"{request.user.username} - {friend.username}",
+        )
+        chat.participants.add(request.user, friend)
+
+    return redirect("enter_room", room_uuid=chat.id)
+
+
+@login_required
 def enter_room(request: HttpRequest, room_uuid: UUID) -> HttpResponse:
     chat = get_object_or_404(Chat, id=room_uuid)
-    messages = Message.objects.filter(chat=chat).order_by("sent_at")
-    messages_list = list(messages.values("sender", "content", "sent_at"))
-    sender = list(messages.values("sender"))
-
-    for i in range(len(sender)):
-        sender[i] = User.objects.get(id=sender[i]["sender"]).username
-
-    for i in range(len(messages_list)):
-        messages_list[i]["sender"] = sender[i]
-
-    context = {
-        "chat": chat,
-        "messages": messages_list,
-    }
-
-    return render(request, "chat/room.html", context)
+    return render(request, "chat/room.html", {"chat": chat})
