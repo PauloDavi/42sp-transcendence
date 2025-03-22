@@ -6,7 +6,7 @@ from django.http import HttpRequest, HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
 
-from apps.chat.models import Chat, ChatParticipants, BlockList
+from apps.chat.models import BlockList, Chat, ChatParticipants
 from apps.users.models import User
 
 
@@ -42,18 +42,25 @@ def friend_chat(request: HttpRequest, friend_id: UUID) -> HttpResponse:
 def enter_room(request: HttpRequest, room_uuid: UUID) -> HttpResponse:
     chat = get_object_or_404(Chat, id=room_uuid)
 
-    opponent = None
+    receiver = None
+    is_blocked = False
     if not chat.is_group_chat:
-        opponent = chat.participants.filter(~Q(id=request.user.id)).first()
+        receiver = chat.participants.filter(~Q(id=request.user.id)).first()
 
-    return render(request, "chat/room.html", {"chat": chat, "opponent": opponent})
+        is_blocked = BlockList.objects.filter(
+            Q(blocker=receiver, blocked=request.user) | Q(blocker=request.user, blocked=receiver)
+        ).exists()
+
+    return render(request, "chat/room.html", {"chat": chat, "receiver": receiver, "is_blocked": is_blocked})
+
 
 @login_required
 def block_friend(request: HttpRequest, friend_id: UUID) -> HttpResponse:
     friend = get_object_or_404(User, id=friend_id)
     chat = Chat.objects.filter(is_group_chat=False, participants=request.user).filter(participants=friend).first()
     BlockList.objects.create(blocker=request.user, blocked=friend, chat=chat)
-    return redirect("profile") 
+    return redirect("profile")
+
 
 @login_required
 def unblock_friend(request: HttpRequest, friend_id: UUID) -> HttpResponse:

@@ -1,6 +1,6 @@
 from django.urls import path
 
-from apps.chat.views import create_room, enter_room, friend_chat, index, block_friend, unblock_friend
+from apps.chat.views import block_friend, create_room, enter_room, friend_chat, index, unblock_friend
 
 urlpatterns = [
     path("index", index, name="chat_index"),

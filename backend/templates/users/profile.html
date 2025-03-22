@@ -66,14 +66,16 @@
                                             <a href="{% url 'friend_chat' friend.id %}?next={{ request.get_full_path }}" class="btn btn-success" data-bs-toggle="tooltip" data-bs-title="{% translate "Iniciar chat com amigo" %}">
                                                 <i class="bi bi-whatsapp"></i>
                                             </a>
-                                            {% if friend.block_status %}
-                                                <a href="{% url 'unblock_friend' friend.id %}?next={{ request.get_full_path }}" class="btn btn-warning" data-bs-toggle="tooltip" data-bs-title="{% translate "Desbloquear amigo" %}">
-                                                    <i class="bi bi-unlock"></i>
-                                                </a>
-                                            {% else %}
-                                                <a href="{% url 'block_friend' friend.id %}?next={{ request.get_full_path }}" class="btn btn-danger" data-bs-toggle="tooltip" data-bs-title="{% translate "Bloquear amigo" %}">
-                                                    <i class="bi bi-ban"></i>
-                                                </a>
+                                            {% if friend.block_status is not None %}
+                                                {% if friend.block_status %}
+                                                    <a href="{% url 'unblock_friend' friend.id %}?next={{ request.get_full_path }}" class="btn btn-warning" data-bs-toggle="tooltip" data-bs-title="{% translate "Desbloquear amigo" %}">
+                                                        <i class="bi bi-unlock"></i>
+                                                    </a>
+                                                {% else %}
+                                                    <a href="{% url 'block_friend' friend.id %}?next={{ request.get_full_path }}" class="btn btn-danger" data-bs-toggle="tooltip" data-bs-title="{% translate "Bloquear amigo" %}">
+                                                        <i class="bi bi-ban"></i>
+                                                    </a>
+                                                {% endif %}
                                             {% endif %}
                                             <a href="{% url 'create_tictactoe_match' friend.id %}?next={{ request.get_full_path }}" class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-title="{% translate "Iniciar partida de jogo da velha" %}">
                                                 <i class="bi bi-hash"></i>

@@ -9,10 +9,10 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.utils.timezone import now, timedelta
 from django.utils.translation import gettext_lazy as _
 
+from apps.chat.models import BlockList, Chat
 from apps.matchmaking.models import Match, Tournament
 from apps.users.forms import UserCreationForm, UserEditProfileForm, UserLoginForm
 from apps.users.models import Friendship, FriendshipStatus, User
-from apps.chat.models import BlockList
 
 
 def login(request: HttpRequest) -> HttpResponse:
@@ -92,11 +92,14 @@ def profile(request: HttpRequest) -> HttpResponse:
             "status_online": friend.user1.status_online if friend.user1 != request.user else friend.user2.status_online,
             "status": friend.status,
             "block_status": (
-            BlockList.objects.filter(
-                Q(blocker=request.user, blocked=friend.user1) |
-                Q(blocker=request.user, blocked=friend.user2)
-            ).exists()
-        ),
+                BlockList.objects.filter(
+                    Q(blocker=request.user, blocked=friend.user1) | Q(blocker=request.user, blocked=friend.user2)
+                ).exists()
+                if Chat.objects.filter(is_group_chat=False, participants=request.user)
+                .filter(participants=friend.user1 if friend.user1 != request.user else friend.user2)
+                .exists()
+                else None
+            ),
         }
         for friend in friends
     ]

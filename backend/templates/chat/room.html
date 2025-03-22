@@ -27,8 +27,8 @@
             </div>
             <div class="input-group mt-2">
                 <textarea id="chat-message-input" rows="1" class="form-control" placeholder="{% translate 'Digite sua mensagem...' %}" style="resize: none;"></textarea>
-                {% if opponent %}
-                <a href="{% url 'add_match' opponent.id %}?next={{ request.get_full_path }}" class="btn btn-success" data-bs-toggle="tooltip" data-bs-title="{% translate "Iniciar partida de pong" %}">
+                {% if receiver %}
+                <a href="{% url 'add_match' receiver.id %}?next={{ request.get_full_path }}" class="btn btn-success" data-bs-toggle="tooltip" data-bs-title="{% translate "Iniciar partida de pong" %}">
                     {% translate "Iniciar partida" %}
                 </a>
                 {% endif %}
@@ -45,7 +45,8 @@ document.addEventListener('DOMContentLoaded', function() {
     const chat = document.getElementById("chat");
     const input = document.getElementById("chat-message-input");
     const submitButton = document.getElementById("chat-message-submit");
-
+    
+    {% if not is_blocked %}
     class ChatWebSocket extends BaseWebSocket {
         constructor() {
             super("chat/{{chat.id}}");
@@ -110,6 +111,7 @@ document.addEventListener('DOMContentLoaded', function() {
         input.rows = 1;
         submitButton.disabled = true;
     });
+    {% endif %}
 
     chat.scrollTop = chat.scrollHeight;
 });

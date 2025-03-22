@@ -162,22 +162,24 @@ MESSAGE_TAGS = {
     messages.ERROR: "danger",
 }
 
+
 # Secure
 def generate_local_ips():
-    base_ip = '192.168.'
+    base_ip = "192.168."
     ips = []
     for i in range(1, 255):
         for j in range(1, 255):
-            ips.append(f'http://{base_ip}.{i}.{j}:8443')
-            ips.append(f'https://{base_ip}.{i}.{j}:8443')
+            ips.append(f"http://{base_ip}.{i}.{j}:8443")
+            ips.append(f"https://{base_ip}.{i}.{j}:8443")
     return ips
+
 
 LOGIN_URL = "login"
 CSRF_TRUSTED_ORIGINS = [
-    'http://localhost:8443',
-    'https://localhost:8443',
-    'http://127.0.0.1:8443',
-    'https://127.0.0.1:8443',
+    "http://localhost:8443",
+    "https://localhost:8443",
+    "http://127.0.0.1:8443",
+    "https://127.0.0.1:8443",
 ] + generate_local_ips()
 ALLOWED_HOSTS = ["*"]
 CORS_ALLOW_CREDENTIALS = True
