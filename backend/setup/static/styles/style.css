@@ -46,6 +46,19 @@ body {
   box-shadow: 0 0 10px rgba(0, 255, 128, 1);
 }
 
+.btn-warning:hover {
+  background: linear-gradient(45deg, #FF6600, #FFCC00);
+  box-shadow: 0 0 10px rgba(255, 102, 0, 1);
+}
+
+.btn-secondary {
+  border-radius: 50px;
+  background: linear-gradient(45deg, #9370DB, #6A5ACD);
+  border: none;
+  color: white;
+  transition: 0.3s;
+}
+
 .btn-secondary {
   border-radius: 50px;
   background: linear-gradient(45deg, #9370DB, #6A5ACD);

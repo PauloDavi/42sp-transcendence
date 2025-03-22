@@ -42,3 +42,9 @@ class Message(models.Model):
 
     def __str__(self) -> str:
         return f"{self.sender}: {self.content[:50]}"
+
+class BlockList(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    chat = models.ForeignKey(Chat, on_delete=models.CASCADE)
+    blocked = models.ForeignKey(User, related_name="blocked_user", on_delete=models.CASCADE)
+    blocker = models.ForeignKey(User, related_name="blocker_user", on_delete=models.CASCADE)

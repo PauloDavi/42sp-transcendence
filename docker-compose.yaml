@@ -2,8 +2,7 @@ services:
   nginx:
     build: nginx
     ports:
-      - "80:80"
-      - "443:443"
+      - "8443:443"
     depends_on:
       - web
     networks:
@@ -13,7 +12,7 @@ services:
     image: postgres:17.2
     restart: always
     volumes:
-      - ./database/data:/var/lib/postgresql/data
+      - /goinfre/database/data:/var/lib/postgresql/data
     env_file:
       - .env
     environment:
@@ -50,7 +49,7 @@ services:
     networks:
       - backend_network
     volumes:
-      - ./database/redis:/data
+      - /goinfre/database/redis:/data
 
 networks:
   backend_network:

@@ -12,6 +12,7 @@ from django.utils.translation import gettext_lazy as _
 from apps.matchmaking.models import Match, Tournament
 from apps.users.forms import UserCreationForm, UserEditProfileForm, UserLoginForm
 from apps.users.models import Friendship, FriendshipStatus, User
+from apps.chat.models import BlockList
 
 
 def login(request: HttpRequest) -> HttpResponse:
@@ -90,6 +91,12 @@ def profile(request: HttpRequest) -> HttpResponse:
             "is_request": friend.requestd_by == request.user,
             "status_online": friend.user1.status_online if friend.user1 != request.user else friend.user2.status_online,
             "status": friend.status,
+            "block_status": (
+            BlockList.objects.filter(
+                Q(blocker=request.user, blocked=friend.user1) |
+                Q(blocker=request.user, blocked=friend.user2)
+            ).exists()
+        ),
         }
         for friend in friends
     ]

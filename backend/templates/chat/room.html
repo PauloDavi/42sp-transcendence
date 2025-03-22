@@ -18,13 +18,20 @@
                             {{ message.content }}
                         </div>
                         {% if message.sender == user %}
-                            <img src="{{ message.sender.avatar.url }}" alt="{% translate "Foto do usuário" %}" width="30" height="30" class="rounded-circle ms-2">
+                            <a href="{% url 'profile' %}">
+                                <img src="{{ message.sender.avatar.url }}" alt="{% translate "Foto do usuário" %}" width="30" height="30" class="rounded-circle ms-2">
+                            </a>
                         {% endif %}
                     </div>
                 {% endfor %}
             </div>
             <div class="input-group mt-2">
                 <textarea id="chat-message-input" rows="1" class="form-control" placeholder="{% translate 'Digite sua mensagem...' %}" style="resize: none;"></textarea>
+                {% if opponent %}
+                <a href="{% url 'add_match' opponent.id %}?next={{ request.get_full_path }}" class="btn btn-success" data-bs-toggle="tooltip" data-bs-title="{% translate "Iniciar partida de pong" %}">
+                    {% translate "Iniciar partida" %}
+                </a>
+                {% endif %}
                 <button id="chat-message-submit" type="button" class="btn btn-primary" disabled>{% translate "Enviar" %}</button>
             </div>
         </div>
