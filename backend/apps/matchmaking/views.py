@@ -313,8 +313,5 @@ def create_ai_match(request: HttpRequest) -> HttpResponse:
         user2=ai_user,
     )
 
-    return redirect(
-        f"{reverse('match_game', kwargs={'match_id': match.id})}?single_player=true&difficulty={difficulty}&next={
-            next_url
-        }"
-    )
+    url = reverse("match_game", kwargs={"match_id": match.id})
+    return redirect(f"{url}?single_player=true&difficulty={difficulty}&next={next_url}")

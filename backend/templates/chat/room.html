@@ -4,7 +4,14 @@
 {% block content %}
 <div class="container mb-2">
     <div class="card">
-        <h1 class="card-header text-center">{{ chat.name }}</h1>
+        <h1 class="card-header text-center">
+            {{ chat.name }}
+            {% if chat.is_group_chat %}
+                <button id="copy-chat-id" class="btn btn-secondary ms-2" data-bs-toggle="tooltip" data-bs-title="{% translate "Copiar ID do chat" %}">
+                    <i class="bi bi-clipboard"></i> 
+                </button>
+            {% endif %}
+        </h1>
         <div class="card-body">
             <div id="chat" class="chat-container">
                 {% for message in chat.messages.all %}
@@ -14,9 +21,7 @@
                                 <img src="{{ message.sender.avatar.url }}" alt="{% translate "Foto do usuário" %}" width="30" height="30" class="rounded-circle me-2">
                             </a>
                         {% endif %}
-                        <div class="message {% if message.sender == user %}sent{% else %}received{% endif %}">
-                            {{ message.content }}
-                        </div>
+                        <div class="message {% if message.sender == user %}sent{% else %}received{% endif %}">{{ message.content }}</div>
                         {% if message.sender == user %}
                             <a href="{% url 'profile' %}">
                                 <img src="{{ message.sender.avatar.url }}" alt="{% translate "Foto do usuário" %}" width="30" height="30" class="rounded-circle ms-2">
@@ -92,7 +97,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         sendMessage(content) {
-            if (content.trim() === "") return;
+            if (content === "") return;
             this.socket.send(JSON.stringify({ type: "new-message", message: content }));
         }
     }
@@ -117,6 +122,43 @@ document.addEventListener('DOMContentLoaded', function() {
         submitButton.disabled = true;
     });
     {% endif %}
+
+    const copyChatIdButton = document.getElementById("copy-chat-id");
+    if (copyChatIdButton) {
+        copyChatIdButton.addEventListener("click", () => {
+            navigator.clipboard.writeText("{{ chat.id }}").then(() => {
+                showToast("{% translate 'Sucesso' %}", "{% translate 'Chat ID copiado para a área de transferência!'%}", "bg-success", "text-white");
+            })
+            .catch(err => {
+                console.error("Erro ao copiar o Chat ID:", err);
+                showToast("{% translate 'Erro' %}", "{% translate 'Falha ao copiar o Chat ID!' %}", "bg-danger", "text-white");
+            });
+        });
+    }
+
+    function showToast(title, message, bgClass, colorClass) {
+        const toastContainer = document.getElementById("toasts");
+        const toastElement = document.createElement("div");
+        toastElement.className = `toast fade show ${bgClass} ${colorClass}`;
+        toastElement.setAttribute("role", "alert");
+        toastElement.setAttribute("aria-live", "assertive");
+        toastElement.setAttribute("data-bs-autohide", "true");
+        toastElement.innerHTML = `
+            <div class="toast-header">
+                <strong class="me-auto">${title}</strong>
+                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+            <div class="toast-body">
+                ${message}
+            </div>
+        `;
+        toastContainer.appendChild(toastElement);
+        const bsToast = new bootstrap.Toast(toastElement);
+        bsToast.show();
+        toastElement.addEventListener("hidden.bs.toast", () => {
+            toastElement.remove();
+        });
+    }
 
     chat.scrollTop = chat.scrollHeight;
 });

@@ -8,7 +8,7 @@ from django.utils.timezone import now
 from django.utils.translation import gettext_lazy as _
 
 from apps.users.models import User
-from apps.users.schemas import RedirectMessage
+from apps.users.schemas import RedirectMessage, ToastMessage
 
 
 class MatchType(models.TextChoices):
@@ -142,6 +142,26 @@ class Tournament(models.Model):
                 RedirectMessage(
                     url=f"{reverse('match_game', args=[match.id])}?next={reverse('tournament_room', args=[self.id])}",
                     delay=500,
+                ).send_to_group(match.user2.id)
+                ToastMessage(
+                    title=str(_("Convite de partida")),
+                    message=f"Nova partida no torneio {self.name}",
+                    tag="warning",
+                    action="match",
+                    extra_data={
+                        "accept_url": reverse("match_game", kwargs={"match_id": match.id}),
+                        "accept_text": str(_("Entrar no jogo")),
+                    },
+                ).send_to_group(match.user1.id)
+                ToastMessage(
+                    title=str(_("Convite de partida")),
+                    message=f"Nova partida no torneio {self.name}",
+                    tag="warning",
+                    action="match",
+                    extra_data={
+                        "accept_url": reverse("match_game", kwargs={"match_id": match.id}),
+                        "accept_text": str(_("Entrar no jogo")),
+                    },
                 ).send_to_group(match.user2.id)
 
     def get_rounds_data(self) -> list[dict]:

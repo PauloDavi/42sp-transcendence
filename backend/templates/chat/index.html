@@ -2,19 +2,29 @@
 {% load static %}
 {% load i18n %}
 {% block content %}
-    {% translate "Create chat room" %}<br>
-    <input id="create-room-name-input" type="text" size="100" placeholder="Room Name"><br>
-    <input id="create-room-name-submit" type="button" value="Enter">
-    <br>
-    <br>
-    {% translate "Enter chat room code" %}<br>
-    <input id="enter-room-name-input" type="text" size="100" placeholder="Room code"><br>
-    <input id="enter-room-name-submit" type="button" value="Enter">
+<div class="container mb-2">
+    <div class="card shadow-sm">
+        <h1 class="card-header text-center">{{ chat.name }}</h1>
+        <div class="card-body">
+            <div class="row g-4">
+                <div>
+                    <h2 class="h4">{% translate "Create chat room" %}</h2>
+                    <input id="create-room-name-input" type="text" class="form-control mb-2" placeholder="{% translate "Nome da sala" %}">
+                    <button id="create-room-name-submit" class="btn btn-primary w-100">{% translate "Criar" %}</button>
+                </div>
+                <div>
+                    <h2 class="h4">{% translate "Enter chat room code" %}</h2>
+                    <input id="enter-room-name-input" type="text" class="form-control mb-2" placeholder="{% translate "Código da sala" %}">
+                    <button id="enter-room-name-submit" class="btn btn-primary w-100">{% translate "Entrar" %}</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}
 
 {% block scripts %}
 <script>
-    // Create chat room logic
     document.querySelector('#create-room-name-input');
     document.querySelector('#create-room-name-input').onkeyup = function(e) {
         if (e.key === 'Enter') {
@@ -24,12 +34,10 @@
 
     document.querySelector('#create-room-name-submit').onclick = function(e) {
         var roomName = document.querySelector('#create-room-name-input').value;
-        var uuid = crypto.randomUUID();
-        window.location.pathname = '/chat/' + uuid + '/' + roomName + '/';
+        var roomId = crypto.randomUUID();
+        window.location.pathname = `/chat/${roomId}/${roomName}/`;
     };
 
-    // Enter chat room logic
-    document.querySelector('#enter-room-name-input');
     document.querySelector('#enter-room-name-input').onkeyup = function(e) {
         if (e.key === 'Enter') {
             document.querySelector('#enter-room-name-submit').click();
@@ -37,8 +45,8 @@
     };
 
     document.querySelector('#enter-room-name-submit').onclick = function(e) {
-        var uuid = document.querySelector('#enter-room-name-input').value;
-        window.location.pathname = '/chat/' + uuid + '/';
+        const roomId = document.querySelector('#enter-room-name-input').value;
+        window.location.pathname = `/chat/${roomId}/`;
     };
 </script>
 {% endblock %}
