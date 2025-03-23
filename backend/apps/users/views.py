@@ -256,7 +256,28 @@ def reject_friend(request: HttpRequest, friend_id: UUID) -> HttpResponse:
 def friend_profile(request: HttpRequest, friend_id: UUID) -> HttpResponse:
     friend = get_object_or_404(User, id=friend_id)
 
-    return render(request, "users/friend.html", {"friend": friend})
+    matches = Match.objects.filter(Q(user1=friend) | Q(user2=friend)).order_by("-started_date_played")
+    match_filter = request.GET.get("match_filter", "")
+    if match_filter == "wins":
+        matches = matches.filter(winner=friend).order_by("-started_date_played")
+    elif match_filter == "losses":
+        matches = matches.exclude(winner=friend).order_by("-started_date_played")
+
+    matches = [
+        {
+            "id": match.id,
+            "opponent": match.user1 if match.user1 != friend else match.user2,
+            "points": match.score_user1 if match.user1 == friend else match.score_user2,
+            "opponent_points": match.score_user1 if match.user1 != friend else match.score_user2,
+            "winner": match.winner,
+            "match_type": match.match_type,
+            "started_date_played": match.started_date_played,
+            "finished_date_played": match.finished_date_played,
+        }
+        for match in matches
+    ]
+
+    return render(request, "users/friend.html", {"friend": friend, "matches": matches})
 
 
 @login_required
