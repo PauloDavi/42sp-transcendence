@@ -166,7 +166,7 @@ MESSAGE_TAGS = {
 
 # Secure
 def generate_local_ips() -> list[str]:
-    base_ip = "192.168"
+    base_ip = "10.11"
     ips = []
     for i in range(1, 255):
         for j in range(1, 255):
