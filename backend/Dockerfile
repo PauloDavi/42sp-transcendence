@@ -7,7 +7,10 @@ WORKDIR /app
 
 COPY requirements.txt /app/
 
-RUN pip install -r requirements.txt
+RUN apt update \
+  && apt install -y graphviz libgraphviz-dev \
+  && rm -rf /var/lib/apt/lists/* \
+  && pip install -r requirements.txt
 
 COPY . /app/
 

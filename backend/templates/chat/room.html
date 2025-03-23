@@ -84,11 +84,16 @@ document.addEventListener('DOMContentLoaded', function() {
 
             chat.appendChild(message);
             chat.scrollTop = chat.scrollHeight;
+            this.readMessages();
+        }
+
+        readMessages() {
+            this.socket.send(JSON.stringify({ type: "read-messages" }));
         }
 
         sendMessage(content) {
             if (content.trim() === "") return;
-            this.socket.send(JSON.stringify({ message: content }));
+            this.socket.send(JSON.stringify({ type: "new-message", message: content }));
         }
     }
 

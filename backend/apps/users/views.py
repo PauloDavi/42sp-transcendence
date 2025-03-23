@@ -9,7 +9,7 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.utils.timezone import now, timedelta
 from django.utils.translation import gettext_lazy as _
 
-from apps.chat.models import BlockList, Chat
+from apps.chat.models import BlockList, Chat, ChatParticipants
 from apps.matchmaking.models import Match, Tournament
 from apps.users.forms import UserCreationForm, UserEditProfileForm, UserLoginForm
 from apps.users.models import Friendship, FriendshipStatus, User
@@ -82,6 +82,7 @@ def update_user(request: HttpRequest) -> HttpResponse:
 @login_required
 def profile(request: HttpRequest) -> HttpResponse:
     friends = Friendship.objects.filter(Q(user1=request.user) | Q(user2=request.user))
+    chat_participants = ChatParticipants.objects.filter(Q(user=request.user)).select_related("chat")
 
     friends = [
         {
@@ -100,6 +101,10 @@ def profile(request: HttpRequest) -> HttpResponse:
                 .exists()
                 else None
             ),
+            "chat_participant": chat_participants.filter(
+                chat__participants=friend.user1 if friend.user1 != request.user else friend.user2,
+                chat__is_group_chat=False,
+            ).first(),
         }
         for friend in friends
     ]

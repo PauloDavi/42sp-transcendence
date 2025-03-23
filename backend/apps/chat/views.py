@@ -41,6 +41,7 @@ def friend_chat(request: HttpRequest, friend_id: UUID) -> HttpResponse:
 @login_required
 def enter_room(request: HttpRequest, room_uuid: UUID) -> HttpResponse:
     chat = get_object_or_404(Chat, id=room_uuid)
+    ChatParticipants.objects.filter(chat=chat, user=request.user).update(messages_not_read=0)
 
     receiver = None
     is_blocked = False

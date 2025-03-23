@@ -22,6 +22,7 @@ class Chat(models.Model):
 
 
 class ChatParticipants(models.Model):
+    messages_not_read = models.IntegerField(default=0)
     chat = models.ForeignKey(Chat, on_delete=models.CASCADE)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     joined_at = models.DateTimeField(auto_now_add=True)
