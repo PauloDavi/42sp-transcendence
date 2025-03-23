@@ -82,9 +82,7 @@ def update_user(request: HttpRequest) -> HttpResponse:
 @login_required
 def profile(request: HttpRequest) -> HttpResponse:
     friends = Friendship.objects.filter(Q(user1=request.user) | Q(user2=request.user))
-    print("oi")
     chat_participants = ChatParticipants.objects.filter(Q(user=request.user)).select_related("chat")
-    print(chat_participants)
 
     friends = [
         {

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-03-20 08:51-0300\n"
+"POT-Creation-Date: 2025-03-23 09:59-0300\n"
 "PO-Revision-Date: 2025-03-15 00:08-0300\n"
 "Last-Translator:   <super@gmail.co>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -129,7 +129,6 @@ msgid "Convite de partida"
 msgstr "Invitación a un partido"
 
 #: apps/matchmaking/views.py:48 apps/matchmaking/views.py:114
-#: templates/chat/room.html:64
 msgid "Aceitar"
 msgstr "Aceptar"
 
@@ -328,32 +327,32 @@ msgstr "El usuario ha cerrado sesión correctamente"
 msgid "Seu perfil foi atualizado com sucesso!"
 msgstr "¡Tu perfil ha sido actualizado exitosamente!"
 
-#: apps/users/views.py:140
+#: apps/users/views.py:138
 msgid "Você não pode adicionar a si mesmo como amigo!"
 msgstr "¡No puedes agregarte como amigo!"
 
-#: apps/users/views.py:144 apps/users/views.py:160 apps/users/views.py:210
-#: apps/users/views.py:231
+#: apps/users/views.py:142 apps/users/views.py:158 apps/users/views.py:208
+#: apps/users/views.py:229
 msgid "Usuário não encontrado!"
 msgstr "¡Usuario no encontrado!"
 
-#: apps/users/views.py:152
+#: apps/users/views.py:150
 msgid "Solicitação de amizade enviada com sucesso!"
 msgstr "¡Solicitud de amistad enviada exitosamente!"
 
-#: apps/users/views.py:168 apps/users/views.py:218 apps/users/views.py:239
+#: apps/users/views.py:166 apps/users/views.py:216 apps/users/views.py:237
 msgid "Amigo não encontrado!"
 msgstr "¡Amigo no encontrado!"
 
-#: apps/users/views.py:172
+#: apps/users/views.py:170
 msgid "Amigo removido com sucesso!"
 msgstr "¡Amigo eliminado exitosamente!"
 
-#: apps/users/views.py:223
+#: apps/users/views.py:221
 msgid "Amigo aceito com sucesso!"
 msgstr "¡Amigo aceptado exitosamente!"
 
-#: apps/users/views.py:244
+#: apps/users/views.py:242
 msgid "Amigo rejeitado com sucesso!"
 msgstr "¡Amigo rechazado exitosamente!"
 
@@ -388,25 +387,9 @@ msgstr "Foto de usuario"
 msgid "Digite sua mensagem..."
 msgstr "Introduce tu mensaje..."
 
-#: templates/chat/room.html:29
-#, fuzzy
-#| msgid "Iniciar Torneio"
-msgid "Iniciar Jogo"
-msgstr "Iniciar torneo"
-
-#: templates/chat/room.html:31
+#: templates/chat/room.html:28
 msgid "Enviar"
 msgstr "Para enviar"
-
-#: templates/chat/room.html:60
-msgid "O usuário deseja iniciar um jogo com você."
-msgstr ""
-
-#: templates/chat/room.html:72
-#, fuzzy
-#| msgid "Recusar convite"
-msgid "Recusar"
-msgstr "Rechazar invitación"
 
 #: templates/matchmaking/pong.html:137 templates/matchmaking/tictactoe.html:355
 msgid " ganhou!"
@@ -837,6 +820,16 @@ msgstr "Minutos jugados"
 #: templates/users/update_user.html:35
 msgid "Atualize seu perfil"
 msgstr "Actualiza tu perfil"
+
+#, fuzzy
+#~| msgid "Iniciar Torneio"
+#~ msgid "Iniciar Jogo"
+#~ msgstr "Iniciar torneo"
+
+#, fuzzy
+#~| msgid "Recusar convite"
+#~ msgid "Recusar"
+#~ msgstr "Rechazar invitación"
 
 #~ msgid "Room code"
 #~ msgstr "Código de el chat"
