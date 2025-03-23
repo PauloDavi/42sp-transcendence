@@ -3,6 +3,7 @@
 {% url 'tournaments' as tournaments_url %}
 {% url 'stats' as stats_url %}
 {% url 'create_ai_match' as create_ai_match_url %}
+{% url 'chat_index' as chat_index_url %}
 {% if user.is_authenticated %}
 <header class="p-3 mb-3 border-bottom bg-body-tertiary">
   <div class="container">
@@ -39,6 +40,11 @@
               </a>
             </li>
           </ul>
+        </li>
+        <li>
+          <a href="{{ chat_index_url }}" class="nav-link px-2 {% if request.path == chat_index_url %}active{% else %}link-secondary{% endif %}">
+            {% translate "Chats" %}
+          </a>
         </li>
       </ul>
 

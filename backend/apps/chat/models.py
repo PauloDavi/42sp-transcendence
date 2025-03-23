@@ -22,6 +22,7 @@ class Chat(models.Model):
 
 
 class ChatParticipants(models.Model):
+    messages_not_read = models.IntegerField(default=0)
     chat = models.ForeignKey(Chat, on_delete=models.CASCADE)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     joined_at = models.DateTimeField(auto_now_add=True)
@@ -42,3 +43,13 @@ class Message(models.Model):
 
     def __str__(self) -> str:
         return f"{self.sender}: {self.content[:50]}"
+
+
+class BlockList(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    chat = models.ForeignKey(Chat, on_delete=models.CASCADE)
+    blocked = models.ForeignKey(User, related_name="blocked_user", on_delete=models.CASCADE)
+    blocker = models.ForeignKey(User, related_name="blocker_user", on_delete=models.CASCADE)
+
+    def __str__(self) -> str:
+        return f"{self.blocked} blocked by {self.blocker}"

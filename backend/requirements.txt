@@ -13,9 +13,12 @@ daphne==4.1.2
 Django==5.1.6
 django-allauth==65.4.1
 django-rosetta==0.10.1
+django-extensions==3.2.3
 filelock==3.17.0
 fsspec==2025.2.0
 gunicorn==23.0.0
+graphviz==0.20.3
+pygraphviz==1.14
 hyperlink==21.0.0
 idna==3.10
 incremental==24.7.2

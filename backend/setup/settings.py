@@ -26,6 +26,7 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "django_extensions",
     "allauth",
     "allauth.account",
     "allauth.socialaccount",
@@ -162,14 +163,25 @@ MESSAGE_TAGS = {
     messages.ERROR: "danger",
 }
 
+
 # Secure
+def generate_local_ips() -> list[str]:
+    base_ip = "10.11"
+    ips = []
+    for i in range(1, 255):
+        for j in range(1, 255):
+            ips.append(f"http://{base_ip}.{i}.{j}:8443")
+            ips.append(f"https://{base_ip}.{i}.{j}:8443")
+    return ips
+
+
 LOGIN_URL = "login"
 CSRF_TRUSTED_ORIGINS = [
-    "http://localhost",
-    "http://127.0.0.1",
-    "https://localhost",
-    "https://192.168.0.124",
-    "https://192.168.0.124",
+    "http://localhost:8443",
+    "https://localhost:8443",
+    "http://127.0.0.1:8443",
+    "https://127.0.0.1:8443",
+    *generate_local_ips(),
 ]
 ALLOWED_HOSTS = ["*"]
 CORS_ALLOW_CREDENTIALS = True

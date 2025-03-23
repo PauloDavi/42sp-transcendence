@@ -9,6 +9,7 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.utils.timezone import now, timedelta
 from django.utils.translation import gettext_lazy as _
 
+from apps.chat.models import BlockList, Chat, ChatParticipants
 from apps.matchmaking.models import Match, Tournament
 from apps.users.forms import UserCreationForm, UserEditProfileForm, UserLoginForm
 from apps.users.models import Friendship, FriendshipStatus, User
@@ -81,6 +82,7 @@ def update_user(request: HttpRequest) -> HttpResponse:
 @login_required
 def profile(request: HttpRequest) -> HttpResponse:
     friends = Friendship.objects.filter(Q(user1=request.user) | Q(user2=request.user))
+    chat_participants = ChatParticipants.objects.filter(Q(user=request.user)).select_related("chat")
 
     friends = [
         {
@@ -90,6 +92,19 @@ def profile(request: HttpRequest) -> HttpResponse:
             "is_request": friend.requestd_by == request.user,
             "status_online": friend.user1.status_online if friend.user1 != request.user else friend.user2.status_online,
             "status": friend.status,
+            "block_status": (
+                BlockList.objects.filter(
+                    Q(blocker=request.user, blocked=friend.user1) | Q(blocker=request.user, blocked=friend.user2)
+                ).exists()
+                if Chat.objects.filter(is_group_chat=False, participants=request.user)
+                .filter(participants=friend.user1 if friend.user1 != request.user else friend.user2)
+                .exists()
+                else None
+            ),
+            "chat_participant": chat_participants.filter(
+                chat__participants=friend.user1 if friend.user1 != request.user else friend.user2,
+                chat__is_group_chat=False,
+            ).first(),
         }
         for friend in friends
     ]
@@ -241,7 +256,28 @@ def reject_friend(request: HttpRequest, friend_id: UUID) -> HttpResponse:
 def friend_profile(request: HttpRequest, friend_id: UUID) -> HttpResponse:
     friend = get_object_or_404(User, id=friend_id)
 
-    return render(request, "users/friend.html", {"friend": friend})
+    matches = Match.objects.filter(Q(user1=friend) | Q(user2=friend)).order_by("-started_date_played")
+    match_filter = request.GET.get("match_filter", "")
+    if match_filter == "wins":
+        matches = matches.filter(winner=friend).order_by("-started_date_played")
+    elif match_filter == "losses":
+        matches = matches.exclude(winner=friend).order_by("-started_date_played")
+
+    matches = [
+        {
+            "id": match.id,
+            "opponent": match.user1 if match.user1 != friend else match.user2,
+            "points": match.score_user1 if match.user1 == friend else match.score_user2,
+            "opponent_points": match.score_user1 if match.user1 != friend else match.score_user2,
+            "winner": match.winner,
+            "match_type": match.match_type,
+            "started_date_played": match.started_date_played,
+            "finished_date_played": match.finished_date_played,
+        }
+        for match in matches
+    ]
+
+    return render(request, "users/friend.html", {"friend": friend, "matches": matches})
 
 
 @login_required

@@ -46,6 +46,27 @@ body {
   box-shadow: 0 0 10px rgba(0, 255, 128, 1);
 }
 
+.btn-warning {
+  border-radius: 50px;
+  background: linear-gradient(45deg, #FFA500, #FF4500);
+  border: none;
+  color: white;
+  transition: 0.3s;
+}
+
+.btn-warning:hover {
+  background: linear-gradient(45deg, #FF4500, #FFA500);
+  box-shadow: 0 0 10px rgba(255, 165, 0, 1);
+}
+
+.btn-secondary {
+  border-radius: 50px;
+  background: linear-gradient(45deg, #9370DB, #6A5ACD);
+  border: none;
+  color: white;
+  transition: 0.3s;
+}
+
 .btn-secondary {
   border-radius: 50px;
   background: linear-gradient(45deg, #9370DB, #6A5ACD);

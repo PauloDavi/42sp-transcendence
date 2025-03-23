@@ -2,26 +2,121 @@
 {% load static %}
 {% load i18n %}
 {% block content %}
-<div class="w-100 ps-4 pb-4 pt-2 row">
-    <div class="container col-12 col-md-4">
-        <div class="card text-center">
-            <div class="card-header">
-                <h4>{% translate "Perfil do Usuário" %} - {{ friend.username }}</h4>
-            </div>
-            <div class="card-body">
-                <img src="{{ friend.avatar.url }}" alt="Avatar" class="img-fluid rounded-circle mb-3" style="width: 150px; height: 150px; object-fit: cover;">
-                <h5 class="card-title">{{ friend.email }}</h5>
-                <p class="card-text">
-                    <span class="badge bg-{% if friend.status_online %}success{% else %}secondary{% endif %}">
-                        {% if friend.status_online %}{% translate "Online" %}{% else %}{% translate "Offline" %}{% endif %}
-                    </span>
-                </p>
-                <p class="card-text">{% translate "Vitórias" %}: <strong>{{ friend.wins }}</strong></p>
-                <p class="card-text">{% translate "Derrotas" %}: <strong>{{ friend.losses }}</strong></p>
-                <p class="text-muted">{% translate "Criado em" %}: {{ friend.created_at|date:"d/m/Y H:i" }}</p>
-                <p class="text-muted">{% translate "Atualizado em" %}: {{ friend.updated_at|date:"d/m/Y H:i" }}</p>
+<div class="container row gap-3 mx-auto">
+    <div class="card col-12 text-center p-0">
+        <div class="card-header">
+            <h4>{% translate "Perfil do Usuário" %} - {{ friend.username }}</h4>
+        </div>
+        <div class="card-body">
+            <img src="{{ friend.avatar.url }}" alt="Avatar" class="img-fluid rounded-circle mb-3" style="width: 150px; height: 150px; object-fit: cover;">
+            <h5 class="card-title">{{ friend.email }}</h5>
+            <p class="card-text">
+                <span class="badge bg-{% if friend.status_online %}success{% else %}secondary{% endif %}">
+                    {% if friend.status_online %}{% translate "Online" %}{% else %}{% translate "Offline" %}{% endif %}
+                </span>
+            </p>
+            <p class="card-text">{% translate "Vitórias" %}: <strong>{{ friend.wins }}</strong></p>
+            <p class="card-text">{% translate "Derrotas" %}: <strong>{{ friend.losses }}</strong></p>
+            <p class="text-muted">{% translate "Criado em" %}: {{ friend.created_at|date:"d/m/Y H:i" }}</p>
+            <p class="text-muted">{% translate "Atualizado em" %}: {{ friend.updated_at|date:"d/m/Y H:i" }}</p>
+        </div>
+    </div>
+    <div class="card col-12 p-0">
+        <div class="card-header align-items-center d-flex">
+            <h4 class="flex-grow-1">{% translate "Partidas" %}</h4>
+
+            <div class="d-flex gap-2 flex-column flex-sm-row">
+                <a href="?match_filter=wins" class="btn btn-success btn-sm">{% translate "Vitórias" %}</a>
+                <a href="?match_filter=losses" class="btn btn-danger btn-sm">{% translate "Derrotas" %}</a>
+                <a href="?" class="btn btn-secondary btn-sm">{% translate "Todas" %}</a>
             </div>
         </div>
+        {% if matches %}
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover">
+                        <thead>
+                            <tr>
+                                <th>{% translate "Oponente" %}</th>
+                                <th>{% translate "Vencedor" %}</th>
+                                <th>{% translate "Tipo" %}</th>
+                                <th style="min-width: 85px;">{% translate "Placar" %}</th>
+                                <th style="min-width: 175px;">{% translate "Início" %}</th>
+                                <th style="min-width: 175px;">{% translate "Fim" %}</th>
+                                <th>{% translate "Ações" %}</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for match in matches %}
+                                <tr>
+                                    <td><a href="{% url 'friend_profile' match.opponent.id %}">{{ match.opponent.username }}</a></td>
+                                    <td>
+                                        {% if match.winner == user %}
+                                            {% translate "Você" %}
+                                        {% else %}
+                                            {{ match.winner|default:"-" }}
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if match.match_type == "tictactoe" %}
+                                            {% translate "Jogo da velha" %}
+                                        {% else %}
+                                            {% translate "Pong" %}
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if match.match_type == "tictactoe" %}
+                                            -
+                                        {% else %}
+                                            <span class="badge bg-success">{{ match.points }}</span> x <span class="badge bg-danger">{{ match.opponent_points }}</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ match.started_date_played|date:"d/m/Y H:i:s"|default:"-" }}</td>
+                                    <td>{{ match.finished_date_played|date:"d/m/Y H:i:s"|default:"-" }}</td>
+                                    <td>
+                                        {% if not match.finished_date_played %}
+                                            <a href="{% if match.match_type == "tictactoe" %}{% url 'tictactoe_game' match.id %}?next={{ request.get_full_path }}{% else %}{% url 'match_game' match.id %}?next={{ request.get_full_path }}{% endif %}" class="btn btn-primary" data-bs-toggle="tooltip" data-bs-title="{% translate "Continuar partida" %}">
+                                                <i class="bi bi-play"></i>
+                                            </a>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <nav>
+                <ul class="pagination justify-content-center">
+                    {% if matches.has_previous %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page=1{% if request.GET.filter %}&filter={{ request.GET.filter }}{% endif %}">&laquo; <span class="d-none d-sm-inline">{% translate "Primeira" %}</span></a>
+                        </li>
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ matches.previous_page_number }}{% if request.GET.filter %}&filter={{ request.GET.filter }}{% endif %}">&lsaquo; <span class="d-none d-sm-inline">{% translate "Anterior" %}</span></a>
+                        </li>
+                    {% endif %}
+    
+                    <li class="page-item active">
+                        <span class="page-link">{% translate "Página" %} {{ matches.number }} {% translate "de" %} {{ matches.paginator.num_pages }}</span>
+                    </li>
+    
+                    {% if matches.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ matches.next_page_number }}{% if request.GET.filter %}&filter={{ request.GET.filter }}{% endif %}"><span class="d-none d-sm-inline">{% translate "Próxima" %}</span> &rsaquo;</a>
+                        </li>
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ matches.paginator.num_pages }}{% if request.GET.filter %}&filter={{ request.GET.filter }}{% endif %}"><span class="d-none d-sm-inline">{% translate "Última" %}</span> &raquo;</a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </nav>
+        {% else %}
+            <div class="card-body">
+                <p class="text-muted">{% translate "Você ainda não jogou nenhuma partida." %}</p>
+            </div>
+        {% endif %}
     </div>
 </div>
 {% endblock %}
