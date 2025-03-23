@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-03-23 11:57-0300\n"
+"POT-Creation-Date: 2025-03-23 12:01-0300\n"
 "PO-Revision-Date: 2025-03-23 12:00-0300\n"
 "Last-Translator:   <super@gmail.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,7 +16,8 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=3; plural=n == 1 ? 0 : n != 0 && n % 1000000 == 0 ? 1 : 2;\n"
+"Plural-Forms: nplurals=3; plural=n == 1 ? 0 : n != 0 && n % 1000000 == 0 ? "
+"1 : 2;\n"
 "X-Translated-Using: django-rosetta 0.10.1\n"
 
 #: apps/matchmaking/forms.py:16 apps/matchmaking/forms.py:42
@@ -117,7 +118,6 @@ msgid "Convite de partida"
 msgstr "Invitación a un partido"
 
 #: apps/matchmaking/models.py:153 apps/matchmaking/models.py:163
-#| msgid "Entrar no torneio"
 msgid "Entrar no jogo"
 msgstr "Entrar al juego"
 
@@ -438,17 +438,14 @@ msgid "Erro"
 msgstr "Error"
 
 #: templates/chat/room.html:134
-#| msgid "Falha ao enviar o convite"
 msgid "Falha ao copiar o Chat ID!"
 msgstr "¡Error al copiar el ID del chat!"
 
-#: templates/matchmaking/pong.html:137
-#: templates/matchmaking/tictactoe.html:355
+#: templates/matchmaking/pong.html:137 templates/matchmaking/tictactoe.html:355
 msgid " ganhou!"
 msgstr " ganó"
 
-#: templates/matchmaking/pong.html:147
-#: templates/matchmaking/tictactoe.html:341
+#: templates/matchmaking/pong.html:147 templates/matchmaking/tictactoe.html:341
 msgid "Esperando o adversário entrar na partida"
 msgstr "Esperando que el oponente entre al partido"
 

@@ -50,3 +50,6 @@ class BlockList(models.Model):
     chat = models.ForeignKey(Chat, on_delete=models.CASCADE)
     blocked = models.ForeignKey(User, related_name="blocked_user", on_delete=models.CASCADE)
     blocker = models.ForeignKey(User, related_name="blocker_user", on_delete=models.CASCADE)
+
+    def __str__(self) -> str:
+        return f"{self.blocked} blocked by {self.blocker}"

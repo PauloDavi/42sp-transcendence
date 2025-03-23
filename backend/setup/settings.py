@@ -165,8 +165,8 @@ MESSAGE_TAGS = {
 
 
 # Secure
-def generate_local_ips():
-    base_ip = "192.168."
+def generate_local_ips() -> list[str]:
+    base_ip = "192.168"
     ips = []
     for i in range(1, 255):
         for j in range(1, 255):
@@ -181,6 +181,7 @@ CSRF_TRUSTED_ORIGINS = [
     "https://localhost:8443",
     "http://127.0.0.1:8443",
     "https://127.0.0.1:8443",
-] + generate_local_ips()
+    *generate_local_ips(),
+]
 ALLOWED_HOSTS = ["*"]
 CORS_ALLOW_CREDENTIALS = True

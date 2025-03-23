@@ -19,8 +19,7 @@ class FortyTwoOAuth2Adapter(OAuth2Adapter):
 
     def get_callback_url(self, request: any, app: any) -> str:
         host = request.get_host()
-        callback_url = f"https://{host}:8443/accounts/fortytwo/login/callback"
-        return callback_url
+        return f"https://{host}:8443/accounts/fortytwo/login/callback"
 
     def complete_login(self, request: any, app: any, token: SocialToken, **kwargs: dict) -> any:
         headers = {"Authorization": f"Bearer {token.token}"}

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-03-23 11:57-0300\n"
+"POT-Creation-Date: 2025-03-23 12:01-0300\n"
 "PO-Revision-Date: 2025-03-23 11:58-0300\n"
 "Last-Translator:   <super@gmail.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -117,7 +117,6 @@ msgid "Convite de partida"
 msgstr "Convite de partida"
 
 #: apps/matchmaking/models.py:153 apps/matchmaking/models.py:163
-#| msgid "Entrar no torneio"
 msgid "Entrar no jogo"
 msgstr "Entrar no jogo"
 
@@ -438,17 +437,14 @@ msgid "Erro"
 msgstr "Erro"
 
 #: templates/chat/room.html:134
-#| msgid "Falha ao enviar o convite"
 msgid "Falha ao copiar o Chat ID!"
 msgstr "Falha ao copiar o Chat ID!"
 
-#: templates/matchmaking/pong.html:137
-#: templates/matchmaking/tictactoe.html:355
+#: templates/matchmaking/pong.html:137 templates/matchmaking/tictactoe.html:355
 msgid " ganhou!"
 msgstr " ganhou!"
 
-#: templates/matchmaking/pong.html:147
-#: templates/matchmaking/tictactoe.html:341
+#: templates/matchmaking/pong.html:147 templates/matchmaking/tictactoe.html:341
 msgid "Esperando o adversário entrar na partida"
 msgstr "Esperando o adversário entrar na partida"
 
