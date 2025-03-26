@@ -6,13 +6,13 @@
       <div class="card-header">
         <div class="card-title m-0 position-relative d-flex justify-content-between">
           <span id="user1" style="color: red; font-weight: 900;">
-            <img id="user1-avatar" src="{{ match.user1.avatar.url }}" alt="{% translate "Foto do usuário" %}" width="22" height="22" class="me-1 img-user1-box-shadow" style="border-radius: 50%;">
+            <img id="user1-avatar" src="{{ match.user1.avatar.url }}" loading="lazy" alt="{% translate "Foto do usuário" %}" width="22" height="22" class="me-1 img-user1-box-shadow" style="border-radius: 50%;">
             {{ match.user1.username }} X
           </span>
           <span class="text-light position-absolute start-50 translate-middle-x">VS</span>
           <span id="user2" style="color: blue; font-weight: 400;">
             O {{ match.user2.username }}
-            <img id="user2-avatar" src="{{ match.user2.avatar.url }}" alt="{% translate "Foto do usuário" %}" width="22" height="22" class="ms-1" style="border-radius: 50%;">
+            <img id="user2-avatar" src="{{ match.user2.avatar.url }}" loading="lazy" alt="{% translate "Foto do usuário" %}" width="22" height="22" class="ms-1" style="border-radius: 50%;">
           </span>
         </div>
       </div>
@@ -39,283 +39,271 @@
 {% endblock %}
 
 {% block scripts %}
-  <script>
-    document.addEventListener("DOMContentLoaded", () => {
-      class TicTacToeWebSocket extends BaseWebSocket {
-        constructor(matchId) {
-          super(`tictactoe/${matchId}`);
-        }
-      }
-
-      const socket = new TicTacToeWebSocket("{{ match.id }}");
-      const canvas = document.getElementById("game");
-      adjustCanvasSize();
-      adjustCanvasResolution();
-
-      const context = canvas.getContext("2d");
-      context.lineWidth = 4;
-      const gridSize = 5;
-      const cellSize = canvas.width / gridSize;
-      const X_COLOR = "red";
-      const O_COLOR = "blue";
-      const WINNER_COLOR = "green";
-      const BACKGROUND_COLOR = "#f0f0f070";
-      const STROKE_COLOR = "#333";
-
-      let currentPlayer = null;
-      let gameStarted = false;
-      let gameOver = false;
-      let blockIndex = null;
-
-      function drawBoard() {
-        context.clearRect(0, 0, canvas.width, canvas.height);
-        context.fillStyle = BACKGROUND_COLOR;
-        context.fillRect(0, 0, canvas.width, canvas.height);
-        context.strokeStyle = STROKE_COLOR;
-
-        for (let i = 1; i < gridSize; i++) {
-          context.beginPath();
-          context.moveTo(i * cellSize, 0);
-          context.lineTo(i * cellSize, canvas.height);
-          context.stroke();
-
-          context.beginPath();
-          context.moveTo(0, i * cellSize);
-          context.lineTo(canvas.width, i * cellSize);
-          context.stroke();
-        }
-        drawBorder();
-      }
-
-      function drawBorder() {
-        context.strokeStyle = gameOver
-          ? WINNER_COLOR
-          : currentPlayer === "O"
-          ? O_COLOR
-          : X_COLOR;
-        context.beginPath();
-        context.moveTo(0, context.lineWidth / 2);
-        context.lineTo(canvas.width - context.lineWidth / 2, context.lineWidth / 2);
-        context.lineTo(
-          canvas.width - context.lineWidth / 2,
-          canvas.height - context.lineWidth / 2
-        );
-        context.lineTo(
-          context.lineWidth / 2,
-          canvas.height - context.lineWidth / 2
-        );
-        context.lineTo(context.lineWidth / 2, context.lineWidth / 2);
-        context.stroke();
-      }
-
-      function drawX(x, y) {
-        let progress = 0.0;
-        const totalFrames = 7.5;
-        let drawSecondLine = false;
-        let x1 = x - cellSize / 6;
-        let y1 = y - cellSize / 4;
-        let x2 = x + cellSize / 6;
-        let y2 = y + cellSize / 4;
-        let previousX = x1;
-        let previousY = y1;
-
-        function animate() {
-          context.strokeStyle = X_COLOR;
-          progress += 1 / totalFrames;
-
-          if (progress > 1) {
-            progress = 1;
-          }
-
-          context.beginPath();
-          context.moveTo(previousX, previousY);
-          const currentX = x1 + (x2 - x1) * progress;
-          const currentY = y1 + (y2 - y1) * progress;
-          context.lineTo(currentX, currentY);
-          context.stroke();
-          previousX = currentX;
-          previousY = currentY;
-
-          if (progress < 1) {
-            requestAnimationFrame(animate);
-          } else if (!drawSecondLine) {
-            progress = 0;
-            drawSecondLine = true;
-            x1 = x + cellSize / 6;
-            y1 = y - cellSize / 4;
-            x2 = x - cellSize / 6;
-            y2 = y + cellSize / 4;
-            previousX = x1;
-            previousY = y1;
-            requestAnimationFrame(animate);
-          }
-        }
-
-        animate();
-      }
-
-      function drawO(x, y) {
-        let progress = 0.0;
-        const totalFrames = 15;
-        let previousArc = 0;
-
-        function animate() {
-          context.strokeStyle = O_COLOR;
-          progress += 1 / totalFrames;
-
-          if (progress > 1) {
-            progress = 1;
-          }
-
-          const currentArc = progress * Math.PI * 2;
-          context.beginPath();
-          context.arc(x, y, cellSize / 4, previousArc, currentArc);
-          context.stroke();
-          previousArc = currentArc;
-
-          if (progress < 1) {
-            requestAnimationFrame(animate);
-          }
-        }
-        animate();
-      }
-
-      function drawMark(index, player) {
-        const x = (index % gridSize) * cellSize + cellSize / 2;
-        const y = Math.floor(index / gridSize) * cellSize + cellSize / 2;
-
-        if (player === "X") {
-          drawX(x, y);
-        } else {
-          drawO(x, y);
-        }
-      }
-
-      function drawWinnerLine(i1, i2) {
-        let x1 = (i1 % gridSize) * cellSize + cellSize / 2;
-        let y1 = Math.floor(i1 / gridSize) * cellSize + cellSize / 2;
-        let x2 = (i2 % gridSize) * cellSize + cellSize / 2;
-        let y2 = Math.floor(i2 / gridSize) * cellSize + cellSize / 2;
-
-        if (i2 - i1 === 3 || i2 - i1 === 4) {
-          x1 -= cellSize / 3;
-          x2 += cellSize / 3;
-        } else if (i2 - i1 === 15 || i2 - i1 === 20) {
-          y1 -= cellSize / 3;
-          y2 += cellSize / 3;
-        } else {
-          const isNormalDiagonal = i2 - i1 === 18 || i2 - i1 === 24;
-          x1 += isNormalDiagonal ? -cellSize / 3 : cellSize / 3;
-          y1 += isNormalDiagonal ? -cellSize / 3 : -cellSize / 3;
-          x2 += isNormalDiagonal ? cellSize / 3 : -cellSize / 3;
-          y2 += isNormalDiagonal ? cellSize / 3 : cellSize / 3;
-        }
-
-        let progress = 0.0;
-        const totalFrames = 15;
-
-        function animate() {
-          context.strokeStyle = WINNER_COLOR;
-          progress += 1 / totalFrames;
-
-          if (progress > 1) {
-            progress = 1;
-          }
-
-          context.beginPath();
-          context.moveTo(x1, y1);
-
-          const currentX = x1 + (x2 - x1) * progress;
-          const currentY = y1 + (y2 - y1) * progress;
-          context.lineTo(currentX, currentY);
-          context.stroke();
-
-          if (progress < 1) {
-            requestAnimationFrame(animate);
-          }
-        }
-
-        setTimeout(() => {
-          animate();
-          drawBorder();
-        }, 100);
-      }
-
-      function drawBlockIndex() {
-        context.fillStyle = "gray";
-        context.globalAlpha = 0.5;
-        const x = (blockIndex % gridSize) * cellSize + context.lineWidth / 2;
-        const y =
-          Math.floor(blockIndex / gridSize) * cellSize + context.lineWidth / 2;
-        context.fillRect(
-          x,
-          y,
-          cellSize - context.lineWidth,
-          cellSize - context.lineWidth
-        );
-        context.globalAlpha = 1;
-        drawBorder();
-      }
-
-    function handleGameOver() {
-      const urlParams = new URLSearchParams(window.location.search);
-      const nextUrl = urlParams.get('next') || '/';
-      
-      if (nextUrl) {
-        setTimeout(() => {
-          window.location.href = nextUrl;
-        }, 1000);
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    class TicTacToeWebSocket extends BaseWebSocket {
+      constructor(matchId) {
+        super(`tictactoe/${matchId}`);
       }
     }
 
-      function cleanBlockIndex() {
-        const x = (blockIndex % gridSize) * cellSize + context.lineWidth / 2;
-        const y =
-          Math.floor(blockIndex / gridSize) * cellSize + context.lineWidth / 2;
-        context.clearRect(
-          x,
-          y,
-          cellSize - context.lineWidth,
-          cellSize - context.lineWidth
-        );
-        context.fillStyle = BACKGROUND_COLOR;
-        context.fillRect(
-          x,
-          y,
-          cellSize - context.lineWidth,
-          cellSize - context.lineWidth
-        );
-        drawBorder();
+    const socket = new TicTacToeWebSocket("{{ match.id }}");
+    const canvas = document.getElementById("game");
+    adjustCanvasResolution();
+
+    const context = canvas.getContext("2d");
+    context.lineWidth = 4;
+    const gridSize = 5;
+    const cellSize = canvas.width / gridSize;
+    const X_COLOR = "red";
+    const O_COLOR = "blue";
+    const WINNER_COLOR = "green";
+    const BACKGROUND_COLOR = "#f0f0f070";
+    const STROKE_COLOR = "#333";
+
+    let currentPlayer = null;
+    let gameStarted = false;
+    let gameOver = false;
+    let blockIndex = null;
+
+    function drawBoard() {
+      context.clearRect(0, 0, canvas.width, canvas.height);
+      context.fillStyle = BACKGROUND_COLOR;
+      context.fillRect(0, 0, canvas.width, canvas.height);
+      context.strokeStyle = STROKE_COLOR;
+
+      for (let i = 1; i < gridSize; i++) {
+        context.beginPath();
+        context.moveTo(i * cellSize, 0);
+        context.lineTo(i * cellSize, canvas.height);
+        context.stroke();
+
+        context.beginPath();
+        context.moveTo(0, i * cellSize);
+        context.lineTo(canvas.width, i * cellSize);
+        context.stroke();
+      }
+      drawBorder();
+    }
+
+    function drawBorder() {
+      context.strokeStyle = gameOver
+        ? WINNER_COLOR
+        : currentPlayer === "O"
+        ? O_COLOR
+        : X_COLOR;
+      context.beginPath();
+      context.moveTo(0, context.lineWidth / 2);
+      context.lineTo(canvas.width - context.lineWidth / 2, context.lineWidth / 2);
+      context.lineTo(
+        canvas.width - context.lineWidth / 2,
+        canvas.height - context.lineWidth / 2
+      );
+      context.lineTo(
+        context.lineWidth / 2,
+        canvas.height - context.lineWidth / 2
+      );
+      context.lineTo(context.lineWidth / 2, context.lineWidth / 2);
+      context.stroke();
+    }
+
+    function drawX(x, y) {
+      let progress = 0.0;
+      const totalFrames = 7.5;
+      let drawSecondLine = false;
+      let x1 = x - cellSize / 6;
+      let y1 = y - cellSize / 4;
+      let x2 = x + cellSize / 6;
+      let y2 = y + cellSize / 4;
+      let previousX = x1;
+      let previousY = y1;
+
+      function animate() {
+        context.strokeStyle = X_COLOR;
+        progress += 1 / totalFrames;
+
+        if (progress > 1) {
+          progress = 1;
+        }
+
+        context.beginPath();
+        context.moveTo(previousX, previousY);
+        const currentX = x1 + (x2 - x1) * progress;
+        const currentY = y1 + (y2 - y1) * progress;
+        context.lineTo(currentX, currentY);
+        context.stroke();
+        previousX = currentX;
+        previousY = currentY;
+
+        if (progress < 1) {
+          requestAnimationFrame(animate);
+        } else if (!drawSecondLine) {
+          progress = 0;
+          drawSecondLine = true;
+          x1 = x + cellSize / 6;
+          y1 = y - cellSize / 4;
+          x2 = x - cellSize / 6;
+          y2 = y + cellSize / 4;
+          previousX = x1;
+          previousY = y1;
+          requestAnimationFrame(animate);
+        }
       }
 
-      canvas.addEventListener("click", (e) => {
-        if (gameOver || !gameStarted) return;
+      animate();
+    }
 
-        const rect = canvas.getBoundingClientRect();
-        const x = e.clientX - rect.left;
-        const y = e.clientY - rect.top;
-        const index = Math.floor(y / cellSize) * gridSize + Math.floor(x / cellSize);
+    function drawO(x, y) {
+      let progress = 0.0;
+      const totalFrames = 15;
+      let previousArc = 0;
 
-        socket.socket.send(
-          JSON.stringify({
-            action: "click",
-            position: index,
-          })
-        );
-      });
+      function animate() {
+        context.strokeStyle = O_COLOR;
+        progress += 1 / totalFrames;
+
+        if (progress > 1) {
+          progress = 1;
+        }
+
+        const currentArc = progress * Math.PI * 2;
+        context.beginPath();
+        context.arc(x, y, cellSize / 4, previousArc, currentArc);
+        context.stroke();
+        previousArc = currentArc;
+
+        if (progress < 1) {
+          requestAnimationFrame(animate);
+        }
+      }
+      animate();
+    }
+
+    function drawMark(index, player) {
+      const x = (index % gridSize) * cellSize + cellSize / 2;
+      const y = Math.floor(index / gridSize) * cellSize + cellSize / 2;
+
+      if (player === "X") {
+        drawX(x, y);
+      } else {
+        drawO(x, y);
+      }
+    }
+
+    function drawWinnerLine(i1, i2) {
+      let x1 = (i1 % gridSize) * cellSize + cellSize / 2;
+      let y1 = Math.floor(i1 / gridSize) * cellSize + cellSize / 2;
+      let x2 = (i2 % gridSize) * cellSize + cellSize / 2;
+      let y2 = Math.floor(i2 / gridSize) * cellSize + cellSize / 2;
+
+      if (i2 - i1 === 3 || i2 - i1 === 4) {
+        x1 -= cellSize / 3;
+        x2 += cellSize / 3;
+      } else if (i2 - i1 === 15 || i2 - i1 === 20) {
+        y1 -= cellSize / 3;
+        y2 += cellSize / 3;
+      } else {
+        const isNormalDiagonal = i2 - i1 === 18 || i2 - i1 === 24;
+        x1 += isNormalDiagonal ? -cellSize / 3 : cellSize / 3;
+        y1 += isNormalDiagonal ? -cellSize / 3 : -cellSize / 3;
+        x2 += isNormalDiagonal ? cellSize / 3 : -cellSize / 3;
+        y2 += isNormalDiagonal ? cellSize / 3 : cellSize / 3;
+      }
+
+      let progress = 0.0;
+      const totalFrames = 15;
+
+      function animate() {
+        context.strokeStyle = WINNER_COLOR;
+        progress += 1 / totalFrames;
+
+        if (progress > 1) {
+          progress = 1;
+        }
+
+        context.beginPath();
+        context.moveTo(x1, y1);
+
+        const currentX = x1 + (x2 - x1) * progress;
+        const currentY = y1 + (y2 - y1) * progress;
+        context.lineTo(currentX, currentY);
+        context.stroke();
+
+        if (progress < 1) {
+          requestAnimationFrame(animate);
+        }
+      }
+
+      setTimeout(() => {
+        animate();
+        drawBorder();
+      }, 100);
+    }
+
+    function drawBlockIndex() {
+      context.fillStyle = "gray";
+      context.globalAlpha = 0.5;
+      const x = (blockIndex % gridSize) * cellSize + context.lineWidth / 2;
+      const y =
+        Math.floor(blockIndex / gridSize) * cellSize + context.lineWidth / 2;
+      context.fillRect(
+        x,
+        y,
+        cellSize - context.lineWidth,
+        cellSize - context.lineWidth
+      );
+      context.globalAlpha = 1;
+      drawBorder();
+    }
+
+  function handleGameOver() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const nextUrl = urlParams.get('next') || '/';
+    
+    if (nextUrl) {
+      setTimeout(() => {
+        window.location.href = nextUrl;
+      }, 1000);
+    }
+  }
+
+    function cleanBlockIndex() {
+      const x = (blockIndex % gridSize) * cellSize + context.lineWidth / 2;
+      const y =
+        Math.floor(blockIndex / gridSize) * cellSize + context.lineWidth / 2;
+      context.clearRect(
+        x,
+        y,
+        cellSize - context.lineWidth,
+        cellSize - context.lineWidth
+      );
+      context.fillStyle = BACKGROUND_COLOR;
+      context.fillRect(
+        x,
+        y,
+        cellSize - context.lineWidth,
+        cellSize - context.lineWidth
+      );
+      drawBorder();
+    }
+
+    canvas.addEventListener("click", (e) => {
+      if (gameOver || !gameStarted) return;
+
+      const rect = canvas.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+      const index = Math.floor(y / cellSize) * gridSize + Math.floor(x / cellSize);
+
+      socket.socket.send(
+        JSON.stringify({
+          action: "click",
+          position: index,
+        })
+      );
+    });
 
       function adjustCanvasResolution() {
-        const dpr = window.devicePixelRatio || 1;
-        const width = canvas.clientWidth * dpr;
-        const height = canvas.clientHeight * dpr;
-
-        canvas.width = width;
-        canvas.height = height;
-        canvas.style.width = `${canvas.clientWidth}px`;
-        canvas.style.height = `${canvas.clientHeight}px`;
-      }
-
-      function adjustCanvasSize() {
         const header = document.querySelector("header");
         const container = canvas.parentElement;
 
@@ -330,87 +318,93 @@
         canvas.height = availableHeight;
       }
 
-      function drawStartGameScreen() {
-        context.fillStyle = "rgba(0, 0, 0, 0.7)";
-        context.fillRect(0, 0, canvas.width, canvas.height);
+    function drawStartGameScreen() {
+      context.fillStyle = "rgba(0, 0, 0, 0.7)";
+      context.fillRect(0, 0, canvas.width, canvas.height);
 
-        context.fillStyle = "white";
-        context.font = canvas.height * 0.04 + "px Arial";
-        context.textAlign = "center";
-        context.fillText(
-          "{% translate 'Esperando o adversário entrar na partida' %}",
-          canvas.width / 2,
-          canvas.height / 2
-        );
+      context.fillStyle = "white";
+      context.font = canvas.height * 0.04 + "px Arial";
+      context.textAlign = "center";
+      context.fillText(
+        "{% translate 'Esperando o adversário entrar na partida' %}",
+        canvas.width / 2,
+        canvas.height / 2
+      );
+    }
+
+    function drawEndGameScreen(winner) {
+      context.fillStyle = "rgba(0, 0, 0, 0.7)";
+      context.fillRect(0, 0, canvas.width, canvas.height);
+
+      context.fillStyle = "white";
+      context.font = canvas.height * 0.06 + "px Arial";
+      context.textAlign = "center";
+      context.fillText(
+        winner + "{% translate ' ganhou!' %}",
+        canvas.width / 2,
+        canvas.height / 2
+      );
+    }
+
+    function updateUser() {
+      const user = currentPlayer === "X" ? "user1" : "user2";
+      const userElement = document.getElementById(user);
+      const userAvatar = document.getElementById(`${user}-avatar`);
+      userElement.style.fontWeight = "900";
+      if (user === "user1") {
+        userAvatar.classList.add("img-user1-box-shadow");
+      } else {
+        userAvatar.classList.add("img-user2-box-shadow");
       }
 
-      function drawEndGameScreen(winner) {
-        context.fillStyle = "rgba(0, 0, 0, 0.7)";
-        context.fillRect(0, 0, canvas.width, canvas.height);
-
-        context.fillStyle = "white";
-        context.font = canvas.height * 0.06 + "px Arial";
-        context.textAlign = "center";
-        context.fillText(
-          winner + "{% translate ' ganhou!' %}",
-          canvas.width / 2,
-          canvas.height / 2
-        );
+      const opponent = currentPlayer === "X" ? "user2" : "user1";
+      const opponentElement = document.getElementById(opponent);
+      const opponentAvatar = document.getElementById(`${opponent}-avatar`);
+      opponentElement.style.fontWeight = "400";
+      if (opponent === "user1") {
+        opponentAvatar.classList.remove("img-user1-box-shadow");
+      } else {
+        opponentAvatar.classList.remove("img-user2-box-shadow");
       }
+    }
 
-      function updateUser() {
-        const user = currentPlayer === "X" ? "user1" : "user2";
-        const userElement = document.getElementById(user);
-        const userAvatar = document.getElementById(`${user}-avatar`);
-        userElement.style.fontWeight = "900";
-        if (user === "user1") {
-          userAvatar.classList.add("img-user1-box-shadow");
-        } else {
-          userAvatar.classList.add("img-user2-box-shadow");
-        }
+    socket.socket.onmessage = (event) => {
+      const data = JSON.parse(event.data);
 
-        const opponent = currentPlayer === "X" ? "user2" : "user1";
-        const opponentElement = document.getElementById(opponent);
-        const opponentAvatar = document.getElementById(`${opponent}-avatar`);
-        opponentElement.style.fontWeight = "400";
-        if (opponent === "user1") {
-          opponentAvatar.classList.remove("img-user1-box-shadow");
-        } else {
-          opponentAvatar.classList.remove("img-user2-box-shadow");
+      for (const event of data.events) {
+        if (event.type === "start_game") {
+          currentPlayer = data.game.turn;
+          updateUser();
+          gameStarted = true;
+          drawBoard();
+        } else if (event.type === "finish_game") {
+          gameOver = true;
+          drawWinnerLine(event.start_position, event.end_position);
+          setTimeout(() => {
+            drawEndGameScreen(event.winner);
+            handleGameOver();
+          }, 1000);
+        } else if (event.type === "put_symbol") {
+          currentPlayer = data.game.turn;
+          updateUser();
+          drawBorder();
+          drawMark(event.position, event.symbol);
+        } else if (event.type === "block_index") {
+          if (blockIndex !== null) cleanBlockIndex();
+          blockIndex = event.block_index;
+          drawBlockIndex();
         }
       }
+    };
 
-      socket.socket.onmessage = (event) => {
-        const data = JSON.parse(event.data);
+    drawBoard();
+    drawStartGameScreen();
 
-        for (const event of data.events) {
-          if (event.type === "start_game") {
-            currentPlayer = data.game.turn;
-            updateUser();
-            gameStarted = true;
-            drawBoard();
-          } else if (event.type === "finish_game") {
-            gameOver = true;
-            drawWinnerLine(event.start_position, event.end_position);
-            setTimeout(() => {
-              drawEndGameScreen(event.winner);
-              handleGameOver();
-            }, 1000);
-          } else if (event.type === "put_symbol") {
-            currentPlayer = data.game.turn;
-            updateUser();
-            drawBorder();
-            drawMark(event.position, event.symbol);
-          } else if (event.type === "block_index") {
-            if (blockIndex !== null) cleanBlockIndex();
-            blockIndex = event.block_index;
-            drawBlockIndex();
-          }
-        }
-      };
-
+    window.addEventListener("resize", () => {
+      adjustCanvasResolution();
       drawBoard();
-      drawStartGameScreen();
-    });  
-  </script>
+      if (!gameStarted) drawStartGameScreen();
+    });
+  });
+</script>
 {% endblock %}

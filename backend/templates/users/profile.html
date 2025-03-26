@@ -6,11 +6,12 @@
     <div class="container col-12 col-md-4">
         <div class="card text-center">
             <div class="card-header">
-                <h4>{% translate "Perfil do Usuário" %}</h4>
+                <h1 class="h2">{% translate "Perfil do Usuário" %}</h1>
             </div>
             <div class="card-body">
-                <img src="{{ user.avatar.url }}" alt="Avatar" class="img-fluid rounded-circle mb-3" style="width: 150px; height: 150px; object-fit: cover;">
-                <h5 class="card-title">{{ user.email }}</h5>
+                <img src="{{ user.avatar.url }}" loading="lazy" alt="Avatar" class="img-fluid rounded-circle mb-3" style="width: 150px; height: 150px; object-fit: cover;">
+                <h2 class="card-title">{{ user.username }}</h2>
+                <p class="card-text"><strong>{{ user.email }}</strong></p>
                 <p class="card-text">{% translate "Vitórias" %}: <strong>{{ user.wins }}</strong></p>
                 <p class="card-text">{% translate "Derrotas" %}: <strong>{{ user.losses }}</strong></p>
                 <p class="card-text">{% translate "Criado em" %}: {{ user.created_at|date:"d/m/Y H:i" }}</p>
@@ -24,7 +25,7 @@
         <div class="row gap-3 px-2 px-md-0">
             <div class="card col-12 p-0">
                 <div class="card-header d-flex justify-content-between align-items-center">
-                    <h4 class="me-2">{% translate "Amigos" %}</h4>
+                    <h2 class="me-2">{% translate "Amigos" %}</h2>
                     <form class="d-flex" method="post" action="{% url 'add_friend' %}">
                         {% csrf_token %}
                         <div class="position-relative">
@@ -32,9 +33,9 @@
                             <input class="form-control" type="text" id="search-user" name="friend_email" placeholder="{% translate "Buscar usuário..." %}" autocomplete="off">
                             <div id="user-dropdown" class="dropdown-menu w-100 shadow" style="display: none; max-height: 250px; overflow-y: auto;"></div>
                         </div>
-                        
-                        <button id="add-friend-button" disabled class="btn btn-outline-success ms-2" type="submit" data-bs-toggle="tooltip" data-bs-title="{% translate "Adicionar amigo" %}">
-                            <i class="bi bi-person-add"></i>
+
+                        <button id="add-friend-button" disabled class="btn btn-success ms-2" type="submit" data-bs-toggle="tooltip" data-bs-title="{% translate "Adicionar amigo" %}" aria-label="{% translate "Adicionar amigo" %}">
+                            <i class="bi bi-person-add"></i> {% translate "Adicionar" %}
                         </button>
                     </form>
                 </div>
@@ -44,7 +45,7 @@
                             {% for friend in friends %}
                                 <li class="list-group-item d-flex align-items-center">
                                     <div class="position-relative">
-                                        <img src="{{ friend.avatar }}" alt="{% translate "Avatar" %}" class="rounded-circle" style="width: 50px; height: 50px; object-fit: cover;"/>
+                                        <img src="{{ friend.avatar }}" loading="lazy" alt="{% translate "Avatar" %}" class="rounded-circle" style="width: 50px; height: 50px; object-fit: cover;"/>
                                         <span class="{% if friend.status_online %} bg-success {% else %} bg-danger {% endif %} position-absolute top-0 rounded-circle" style="left: 35px; padding: 0.4rem;" />
                                     </div>
                                     <div class="flex-grow-1 ms-3">
@@ -63,7 +64,7 @@
                                         <span class="badge bg-warning text-dark">{% translate "Convite pendente" %}</span>
                                     {% else %}
                                         <div class="d-flex gap-2">
-                                            <a href="{% url 'friend_chat' friend.id %}?next={{ request.get_full_path }}" class="btn btn-success position-relative" data-bs-toggle="tooltip" data-bs-title="{% translate "Iniciar chat com amigo" %}">
+                                            <a href="{% url 'friend_chat' friend.id %}?next={{ request.get_full_path }}" class="btn btn-success position-relative" data-bs-toggle="tooltip" data-bs-title="{% translate "Iniciar chat com amigo" %}" aria-label="{% translate "Iniciar chat com amigo" %}">
                                                 <i class="bi bi-whatsapp"></i>
                                                 {% if friend.chat_participant.messages_not_read != 0 and friend.chat_participant.messages_not_read != None %}
                                                     <span class="position-absolute top-0 p-1 translate-middle badge bg-warning rounded-pill" style="left: 2rem;" data-bs-toggle="tooltip" data-bs-title="{% translate "Quantidade de mensagens não lidas" %}">
@@ -73,22 +74,22 @@
                                             </a>
                                             {% if friend.block_status is not None %}
                                                 {% if friend.block_status %}
-                                                    <a href="{% url 'unblock_friend' friend.id %}?next={{ request.get_full_path }}" class="btn btn-warning" data-bs-toggle="tooltip" data-bs-title="{% translate "Desbloquear amigo" %}">
+                                                    <a href="{% url 'unblock_friend' friend.id %}?next={{ request.get_full_path }}" class="btn btn-warning" data-bs-toggle="tooltip" data-bs-title="{% translate "Desbloquear amigo" %}" aria-label="{% translate "Desbloquear amigo" %}">
                                                         <i class="bi bi-unlock"></i>
                                                     </a>
                                                 {% else %}
-                                                    <a href="{% url 'block_friend' friend.id %}?next={{ request.get_full_path }}" class="btn btn-danger" data-bs-toggle="tooltip" data-bs-title="{% translate "Bloquear amigo" %}">
+                                                    <a href="{% url 'block_friend' friend.id %}?next={{ request.get_full_path }}" class="btn btn-danger" data-bs-toggle="tooltip" data-bs-title="{% translate "Bloquear amigo" %}" aria-label="{% translate "Bloquear amigo" %}">
                                                         <i class="bi bi-ban"></i>
                                                     </a>
                                                 {% endif %}
                                             {% endif %}
-                                            <a href="{% url 'create_tictactoe_match' friend.id %}?next={{ request.get_full_path }}" class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-title="{% translate "Iniciar partida de jogo da velha" %}">
+                                            <a href="{% url 'create_tictactoe_match' friend.id %}?next={{ request.get_full_path }}" class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-title="{% translate "Iniciar partida de jogo da velha" %}" aria-label="{% translate "Iniciar partida de jogo da velha" %}">
                                                 <i class="bi bi-hash"></i>
                                             </a>
-                                            <a href="{% url 'add_match' friend.id %}?next={{ request.get_full_path }}" class="btn btn-primary" data-bs-toggle="tooltip" data-bs-title="{% translate "Iniciar partida de pong" %}">
+                                            <a href="{% url 'add_match' friend.id %}?next={{ request.get_full_path }}" class="btn btn-primary" data-bs-toggle="tooltip" data-bs-title="{% translate "Iniciar partida de pong" %}" aria-label="{% translate "Iniciar partida de pong" %}">
                                                 <i class="bi bi-controller"></i>
                                             </a>
-                                            <a href="{% url 'remove_friend' friend.id %}" class="btn btn-danger" data-bs-toggle="tooltip" data-bs-title="{% translate "Remover amigo" %}">
+                                            <a href="{% url 'remove_friend' friend.id %}" class="btn btn-danger" data-bs-toggle="tooltip" data-bs-title="{% translate "Remover amigo" %}" aria-label="{% translate "Remover amigo" %}">
                                                 <i class="bi bi-trash3"></i>
                                             </a>
                                         </div>
@@ -104,7 +105,7 @@
 
             <div class="card col-12 p-0">
                 <div class="card-header align-items-center d-flex">
-                    <h4 class="flex-grow-1">{% translate "Partidas" %}</h4>
+                    <h2 class="flex-grow-1">{% translate "Partidas" %}</h2>
 
                     <div class="d-flex gap-2 flex-column flex-sm-row">
                         <a href="?match_filter=wins" class="btn btn-success btn-sm">{% translate "Vitórias" %}</a>
@@ -229,7 +230,7 @@ document.addEventListener("DOMContentLoaded", function() {
         const item = document.createElement("div");
         item.className = "dropdown-item d-flex align-items-center";
         item.innerHTML = `
-            <img src="${escapeHTML(user.avatar)}" alt="{% translate "Avatar" %}" class="rounded-circle me-2" style="width: 40px; height: 40px; object-fit: cover;">
+            <img src="${escapeHTML(user.avatar)}" loading="lazy" alt="{% translate "Avatar" %}" class="rounded-circle me-2" style="width: 40px; height: 40px; object-fit: cover;">
             <div>
                 <strong>${escapeHTML(user.username)}</strong><br>
                 <small class="text-muted">${escapeHTML(user.email)}</small>

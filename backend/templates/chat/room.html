@@ -18,13 +18,13 @@
                     <div class="d-flex {% if message.sender == user %}justify-content-end{% else %}justify-content-start{% endif %}">
                         {% if message.sender != user %}
                             <a href="{% url 'friend_profile' message.sender.id %}">
-                                <img src="{{ message.sender.avatar.url }}" alt="{% translate "Foto do usuário" %}" width="30" height="30" class="rounded-circle me-2">
+                                <img src="{{ message.sender.avatar.url }}" loading="lazy" alt="{% translate "Foto do usuário" %}" width="30" height="30" class="rounded-circle me-2">
                             </a>
                         {% endif %}
                         <div class="message {% if message.sender == user %}sent{% else %}received{% endif %}">{{ message.content }}</div>
                         {% if message.sender == user %}
                             <a href="{% url 'profile' %}">
-                                <img src="{{ message.sender.avatar.url }}" alt="{% translate "Foto do usuário" %}" width="30" height="30" class="rounded-circle ms-2">
+                                <img src="{{ message.sender.avatar.url }}" loading="lazy" alt="{% translate "Foto do usuário" %}" width="30" height="30" class="rounded-circle ms-2">
                             </a>
                         {% endif %}
                     </div>

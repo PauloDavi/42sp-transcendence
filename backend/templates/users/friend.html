@@ -5,11 +5,11 @@
 <div class="container row gap-3 mx-auto">
     <div class="card col-12 text-center p-0">
         <div class="card-header">
-            <h4>{% translate "Perfil do Usuário" %} - {{ friend.username }}</h4>
+            <h1 class="h2">{% translate "Perfil do Usuário" %} - {{ friend.username }}</h1>
         </div>
         <div class="card-body">
-            <img src="{{ friend.avatar.url }}" alt="Avatar" class="img-fluid rounded-circle mb-3" style="width: 150px; height: 150px; object-fit: cover;">
-            <h5 class="card-title">{{ friend.email }}</h5>
+            <img src="{{ friend.avatar.url }}" loading="lazy" alt="Avatar" class="img-fluid rounded-circle mb-3" style="width: 150px; height: 150px; object-fit: cover;">
+            <h2 class="card-title">{{ friend.email }}</h2>
             <p class="card-text">
                 <span class="badge bg-{% if friend.status_online %}success{% else %}secondary{% endif %}">
                     {% if friend.status_online %}{% translate "Online" %}{% else %}{% translate "Offline" %}{% endif %}
@@ -23,7 +23,7 @@
     </div>
     <div class="card col-12 p-0">
         <div class="card-header align-items-center d-flex">
-            <h4 class="flex-grow-1">{% translate "Partidas" %}</h4>
+            <h2 class="flex-grow-1">{% translate "Partidas" %}</h2>
 
             <div class="d-flex gap-2 flex-column flex-sm-row">
                 <a href="?match_filter=wins" class="btn btn-success btn-sm">{% translate "Vitórias" %}</a>

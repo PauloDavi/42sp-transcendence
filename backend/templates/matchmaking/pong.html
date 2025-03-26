@@ -4,6 +4,10 @@
 {% block content %}
 <div class="mb-3 mx-auto p-0 bg-opacity-50 bg-dark">
   <canvas class="canvas-size" id="game"></canvas>
+  <div class="d-md-none">
+    <button id="move-up" class="btn btn-primary btn-sm btn-secondary floating-btn up">↑</button>
+    <button id="move-down" class="btn btn-primary btn-sm btn-secondary floating-btn down">↓</button>
+  </div>
 </div>
 {% endblock %}
 
@@ -33,6 +37,9 @@ document.addEventListener("DOMContentLoaded", () => {
   const backgroundCanvas = document.createElement("canvas");
   const scoreboardCanvas = document.createElement("canvas");
   const scoreboardContext = scoreboardCanvas.getContext("2d");
+
+  const moveUpButton = document.getElementById("move-up");
+  const moveDownButton = document.getElementById("move-down");
 
   let leftScore, rightScore;
   let grid, keysPressed = {}, lastKeysPressed = {}, gameStart = false, gameOver = false;
@@ -147,16 +154,7 @@ document.addEventListener("DOMContentLoaded", () => {
     context.fillText("{% translate 'Esperando o adversário entrar na partida' %}", canvas.width / 2, canvas.height / 2);
   }
 
-  function adjustCanvasResolution() {
-    const dpr = window.devicePixelRatio || 1;
-    const width = canvas.clientWidth * dpr;
-    const height = canvas.clientHeight * dpr;
-
-    canvas.width = width;
-    canvas.height = height;
-    canvas.style.width = `${canvas.clientWidth}px`;
-    canvas.style.height = `${canvas.clientHeight}px`;
-
+  function setup() {
     initializeGame();
     createBackground();
     drawScoreboard();
@@ -168,23 +166,27 @@ document.addEventListener("DOMContentLoaded", () => {
     const header = document.querySelector("header");
     const container = canvas.parentElement;
 
-    let availableHeight = window.innerHeight - header.offsetHeight - 32;
+    const dpr = window.devicePixelRatio || 1;
+    let availableHeight = (window.innerHeight - header.offsetHeight - 32) / dpr;
     let width = availableHeight * 2;
-    if (width > window.innerWidth) {
-      width = window.innerWidth;
+
+    if (width > window.innerWidth / dpr) {
+      width = window.innerWidth / dpr;
       availableHeight = width / 2;
     }
 
-    container.style.width = `${width}px`;
-    container.style.height = `${availableHeight}px`;
-    canvas.width = width;
-    canvas.height = availableHeight;
+    container.style.width = `${width * dpr}px`;
+    container.style.height = `${availableHeight * dpr}px`;
+    canvas.style.width = `${width * dpr}px`;
+    canvas.style.height = `${availableHeight * dpr}px`;
+    canvas.width = width * dpr;
+    canvas.height = availableHeight * dpr;
   }
 
   function handleGameOver() {
     const urlParams = new URLSearchParams(window.location.search);
     const nextUrl = urlParams.get('next') || '/';
-    
+
     if (nextUrl) {
       setTimeout(() => {
         window.location.href = nextUrl;
@@ -245,8 +247,52 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
+    moveUpButton.addEventListener("touchstart", () => {
+      keysPressed["KeyW"] = true;
+    });
+    moveUpButton.addEventListener("touchend", () => {
+      keysPressed["KeyW"] = false;
+    });
+
+    moveDownButton.addEventListener("touchstart", () => {
+      keysPressed["KeyS"] = true;
+    });
+    moveDownButton.addEventListener("touchend", () => {
+      keysPressed["KeyS"] = false;
+    });
+
+  window.addEventListener("resize", () => {
+    adjustCanvasSize();
+    setup();
+  });
+
   adjustCanvasSize();
-  adjustCanvasResolution();
+  setup();
 });
 </script>
+{% endblock %}
+
+{% block styles %}
+<style>
+  .floating-btn {
+    position: fixed;
+    right: 20px;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    font-size: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+
+  .up {
+    bottom: 100px;
+  }
+
+  .down {
+    bottom: 30px;
+  }
+</style>
 {% endblock %}
