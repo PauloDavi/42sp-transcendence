@@ -5,11 +5,11 @@
 <div class="container my-4">
   <div class="card">
     <div class="card-header d-flex justify-content-between align-items-center">
-      <h2 class="mb-0">
+      <h1 class="mb-0 h2">
         {{ tournament.name }}
         <span
           id="tournament-status"
-          class="badge {% if tournament.finished_at %}bg-secondary{% elif tournament.started_at %}bg-primary{% else %}bg-warning{% endif %} ms-2"
+          class="badge {% if tournament.finished_at %}bg-secondary{% elif tournament.started_at %}bg-primary{% else %}bg-warning text-black{% endif %} ms-2"
           style="font-size: 0.5em; vertical-align: middle;"
         >
           {% if tournament.finished_at %}
@@ -20,7 +20,7 @@
             {% translate "Aguardando início" %}
           {% endif %}
         </span>
-      </h2>
+      </h1>
 
       {% if tournament.created_by == user and not tournament.started_at %}
         <button id="start-tournament-button" type="button" class="btn btn-success" onclick="startTournament()">
@@ -40,7 +40,7 @@
         <div class="col-lg-4">
           <div class="card">
             <div class="card-header d-flex justify-content-between align-items-center">
-              <h5 class="mb-0">{% translate "Jogadores" %}</h5>
+              <h2 class="mb-0">{% translate "Jogadores" %}</h2>
               <span class="badge bg-primary">{{ tournament.players.count }}</span>
             </div>
             <div class="table-responsive">
@@ -81,7 +81,7 @@
         <div class="col-lg-8">
           <div class="card">
             <div class="card-header">
-              <h5 class="mb-0">{% translate "Partidas" %}</h5>
+              <h2 class="mb-0">{% translate "Partidas" %}</h2>
             </div>
             <div id="matches-container" class="card-body">
               {% for round in tournament.get_rounds_data %}
@@ -278,7 +278,7 @@
         usernameCell.textContent = player.username;
         statusCell.className = "text-end";
 
-        let statusClass = player.is_connected ? "bg-success" : "bg-secondary";
+        let statusClass = player.is_connected ? "bg-success text-black" : "bg-secondary";
         let statusText = player.is_connected ? "{% translate "Na sala" %}" : "{% translate "Offline" %}";
 
         if (player.in_match) {

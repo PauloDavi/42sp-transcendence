@@ -10,12 +10,12 @@
     <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start">
       <h2 class="m-0 text-body">Pong 42</h2>
 
-      <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
-        <li><a href="{{ profile_url }}" class="nav-link px-2 {% if request.path == profile_url %}active{% else %}link-secondary{% endif %}">{% translate "Perfil" %}</a></li>
-        <li><a href="{{ tournaments_url }}" class="nav-link px-2 {% if request.path == tournaments_url %}active{% else %}link-secondary{% endif %}">{% translate "Tournaments" %}</a></li>
-        <li><a href="{{ stats_url }}" class="nav-link px-2 {% if request.path == stats_url %}active{% else %}link-secondary{% endif %}">{% translate "Estatísticas" %}</a></li>
+      <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0 ms-md-2  ">
+        <li><a href="{{ profile_url }}" class="nav-link px-2 {% if request.path == profile_url %}active{% else %}link-light{% endif %}">{% translate "Perfil" %}</a></li>
+        <li><a href="{{ tournaments_url }}" class="nav-link px-2 {% if request.path == tournaments_url %}active{% else %}link-light{% endif %}">{% translate "Tournaments" %}</a></li>
+        <li><a href="{{ stats_url }}" class="nav-link px-2 {% if request.path == stats_url %}active{% else %}link-light{% endif %}">{% translate "Estatísticas" %}</a></li>
         <li class="nav-item dropdown">
-          <a class="nav-link px-2 dropdown-toggle {% if "single_player=true" in request.get_full_path and "matchmaking/game" in request.get_full_path %}active{% else %}link-secondary{% endif %}" 
+          <a class="nav-link px-2 dropdown-toggle {% if "single_player=true" in request.get_full_path and "matchmaking/game" in request.get_full_path %}active{% else %}link-light{% endif %}" 
             href="#" 
             role="button" 
             data-bs-toggle="dropdown" 
@@ -42,7 +42,7 @@
           </ul>
         </li>
         <li>
-          <a href="{{ chat_index_url }}" class="nav-link px-2 {% if request.path == chat_index_url %}active{% else %}link-secondary{% endif %}">
+          <a href="{{ chat_index_url }}" class="nav-link px-2 {% if request.path == chat_index_url %}active{% else %}link-light{% endif %}">
             {% translate "Chats" %}
           </a>
         </li>
@@ -50,7 +50,7 @@
 
       <div class="dropdown text-end">
         <button class="btn btn-outline-secondary d-block link-body-emphasis text-decoration-none dropdown-toggle" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">
-          <img src="{{ user.avatar.url }}" alt="{% translate "Foto do usuário" %}" width="32" height="32" class="rounded-circle">
+          <img src="{{ user.avatar.url }}" loading="lazy" alt="{% translate "Foto do usuário" %}" width="32" height="32" class="rounded-circle">
           <span class="d-none d-sm-inline ms-1">{{ user.username }}</span>
         </button>
         <ul class="dropdown-menu text-small">
