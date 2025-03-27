@@ -277,6 +277,10 @@ def friend_profile(request: HttpRequest, friend_id: UUID) -> HttpResponse:
         for match in matches
     ]
 
+    paginator = Paginator(matches, 5)
+    page_number = request.GET.get("page")
+    matches = paginator.get_page(page_number)
+
     return render(request, "users/friend.html", {"friend": friend, "matches": matches})
 
 

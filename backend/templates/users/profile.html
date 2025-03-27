@@ -34,8 +34,8 @@
                             <div id="user-dropdown" class="dropdown-menu w-100 shadow" style="display: none; max-height: 250px; overflow-y: auto;"></div>
                         </div>
 
-                        <button id="add-friend-button" disabled class="btn btn-success ms-2" type="submit" data-bs-toggle="tooltip" data-bs-title="{% translate "Adicionar amigo" %}" aria-label="{% translate "Adicionar amigo" %}">
-                            <i class="bi bi-person-add"></i> {% translate "Adicionar" %}
+                        <button id="add-friend-button" disabled class="btn btn-success ms-2 d-flex gap-2" type="submit" data-bs-toggle="tooltip" data-bs-title="{% translate "Adicionar amigo" %}" aria-label="{% translate "Adicionar amigo" %}">
+                            <i class="bi bi-person-add"></i> <span class="d-none d-sm-block">{% translate "Adicionar" %}</span
                         </button>
                     </form>
                 </div>
@@ -63,8 +63,8 @@
                                     {% elif friend.is_request and friend.status == "PENDING" %}
                                         <span class="badge bg-warning text-dark">{% translate "Convite pendente" %}</span>
                                     {% else %}
-                                        <div class="d-flex gap-2">
-                                            <a href="{% url 'friend_chat' friend.id %}?next={{ request.get_full_path }}" class="btn btn-success position-relative" data-bs-toggle="tooltip" data-bs-title="{% translate "Iniciar chat com amigo" %}" aria-label="{% translate "Iniciar chat com amigo" %}">
+                                        <div class="row gap-2 me-1 ms-3">
+                                            <a href="{% url 'friend_chat' friend.id %}?next={{ request.get_full_path }}" class="col btn btn-success position-relative" data-bs-toggle="tooltip" data-bs-title="{% translate "Iniciar chat com amigo" %}" aria-label="{% translate "Iniciar chat com amigo" %}">
                                                 <i class="bi bi-whatsapp"></i>
                                                 {% if friend.chat_participant.messages_not_read != 0 and friend.chat_participant.messages_not_read != None %}
                                                     <span class="position-absolute top-0 p-1 translate-middle badge bg-warning rounded-pill" style="left: 2rem;" data-bs-toggle="tooltip" data-bs-title="{% translate "Quantidade de mensagens não lidas" %}">
@@ -74,22 +74,22 @@
                                             </a>
                                             {% if friend.block_status is not None %}
                                                 {% if friend.block_status %}
-                                                    <a href="{% url 'unblock_friend' friend.id %}?next={{ request.get_full_path }}" class="btn btn-warning" data-bs-toggle="tooltip" data-bs-title="{% translate "Desbloquear amigo" %}" aria-label="{% translate "Desbloquear amigo" %}">
+                                                    <a href="{% url 'unblock_friend' friend.id %}?next={{ request.get_full_path }}" class="col btn btn-warning" data-bs-toggle="tooltip" data-bs-title="{% translate "Desbloquear amigo" %}" aria-label="{% translate "Desbloquear amigo" %}">
                                                         <i class="bi bi-unlock"></i>
                                                     </a>
                                                 {% else %}
-                                                    <a href="{% url 'block_friend' friend.id %}?next={{ request.get_full_path }}" class="btn btn-danger" data-bs-toggle="tooltip" data-bs-title="{% translate "Bloquear amigo" %}" aria-label="{% translate "Bloquear amigo" %}">
+                                                    <a href="{% url 'block_friend' friend.id %}?next={{ request.get_full_path }}" class="col btn btn-danger" data-bs-toggle="tooltip" data-bs-title="{% translate "Bloquear amigo" %}" aria-label="{% translate "Bloquear amigo" %}">
                                                         <i class="bi bi-ban"></i>
                                                     </a>
                                                 {% endif %}
                                             {% endif %}
-                                            <a href="{% url 'create_tictactoe_match' friend.id %}?next={{ request.get_full_path }}" class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-title="{% translate "Iniciar partida de jogo da velha" %}" aria-label="{% translate "Iniciar partida de jogo da velha" %}">
+                                            <a href="{% url 'create_tictactoe_match' friend.id %}?next={{ request.get_full_path }}" class="col btn btn-secondary" data-bs-toggle="tooltip" data-bs-title="{% translate "Iniciar partida de jogo da velha" %}" aria-label="{% translate "Iniciar partida de jogo da velha" %}">
                                                 <i class="bi bi-hash"></i>
                                             </a>
-                                            <a href="{% url 'add_match' friend.id %}?next={{ request.get_full_path }}" class="btn btn-primary" data-bs-toggle="tooltip" data-bs-title="{% translate "Iniciar partida de pong" %}" aria-label="{% translate "Iniciar partida de pong" %}">
+                                            <a href="{% url 'add_match' friend.id %}?next={{ request.get_full_path }}" class="col btn btn-primary" data-bs-toggle="tooltip" data-bs-title="{% translate "Iniciar partida de pong" %}" aria-label="{% translate "Iniciar partida de pong" %}">
                                                 <i class="bi bi-controller"></i>
                                             </a>
-                                            <a href="{% url 'remove_friend' friend.id %}" class="btn btn-danger" data-bs-toggle="tooltip" data-bs-title="{% translate "Remover amigo" %}" aria-label="{% translate "Remover amigo" %}">
+                                            <a href="{% url 'remove_friend' friend.id %}" class="col btn btn-danger" data-bs-toggle="tooltip" data-bs-title="{% translate "Remover amigo" %}" aria-label="{% translate "Remover amigo" %}">
                                                 <i class="bi bi-trash3"></i>
                                             </a>
                                         </div>

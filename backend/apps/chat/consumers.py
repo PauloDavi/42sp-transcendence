@@ -3,16 +3,18 @@ import json
 from asgiref.sync import sync_to_async
 from channels.generic.websocket import AsyncWebsocketConsumer
 from django.db import models
+from django.db.models import Q
 from django.utils.formats import date_format
 from django.utils.timezone import localtime
 
-from apps.chat.models import ChatParticipants, Message
+from apps.chat.models import BlockList, Chat, ChatParticipants, Message
 
 
 class ChatConsumer(AsyncWebsocketConsumer):
     async def connect(self) -> None:
         self.room_uuid = self.scope["url_route"]["kwargs"]["room_uuid"]
         self.room_group_uuid = f"chat_{self.room_uuid}"
+        self.chat = await sync_to_async(Chat.objects.get)(id=self.room_uuid)
         await self.channel_layer.group_add(self.room_group_uuid, self.channel_name)
         await self.accept()
 
@@ -23,6 +25,9 @@ class ChatConsumer(AsyncWebsocketConsumer):
         text_data_json = json.loads(text_data)
         if text_data_json["type"] == "read-messages":
             await self.read_messages()
+            return
+
+        if not self.chat.is_group_chat and await self.verify_block():
             return
 
         message_content = text_data_json["message"]
@@ -61,3 +66,10 @@ class ChatConsumer(AsyncWebsocketConsumer):
         ChatParticipants.objects.filter(chat_id=self.room_uuid).filter(user=self.scope["user"]).update(
             messages_not_read=0
         )
+
+    @sync_to_async
+    def verify_block(self) -> bool:
+        receiver = self.chat.participants.filter(~Q(id=self.scope["user"].id)).first()
+        return BlockList.objects.filter(
+            Q(blocker=receiver, blocked=self.scope["user"]) | Q(blocker=self.scope["user"], blocked=receiver)
+        ).exists()
