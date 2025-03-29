@@ -177,6 +177,13 @@ class TicTacToeConsumer(AsyncWebsocketConsumer):
                         }
                     ]
                 )
+                winner = self.match.user1 if game.winner == "X" else self.match.user2
+                losser = self.match.user2 if game.winner == "X" else self.match.user1
+                winner.wins += 1
+                losser.losses += 1
+                self.match.winner = winner
+                await winner.asave(update_fields=["wins"])
+                await losser.asave(update_fields=["losses"])
                 self.match.winner = self.match.user1 if game.winner == "X" else self.match.user2
                 self.match.finished_date_played = now()
                 await self.match.asave(update_fields=["winner", "finished_date_played"])

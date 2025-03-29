@@ -276,6 +276,8 @@ class PongConsumer(AsyncWebsocketConsumer):
         human_players = [p for p in game.players.values() if p != "AI"]
         if all(p is None for p in human_players):
             del self.games[self.room_group_name]
+            if not game.running:
+                return
             self.match.score_user1 = game.score.left_score
             self.match.score_user2 = game.score.right_score
             self.match.finished_date_played = now()
