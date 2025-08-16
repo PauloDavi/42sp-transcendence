@@ -1,4 +1,3 @@
-
 import os
 from pathlib import Path
 import dj_database_url
@@ -28,7 +27,7 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    'whitenoise.runserver_nostatic',    
+    "whitenoise.runserver_nostatic",
     "django_extensions",
     "allauth",
     "allauth.account",
@@ -115,9 +114,7 @@ import dj_database_url
 
 DATABASE_URL = os.getenv("DATABASE_URL")
 if DATABASE_URL:
-    DATABASES = {
-        "default": dj_database_url.parse(DATABASE_URL, conn_max_age=600, ssl_require=True)
-    }
+    DATABASES = {"default": dj_database_url.parse(DATABASE_URL, conn_max_age=600, ssl_require=True)}
 else:
     DATABASES = {
         "default": {
@@ -163,18 +160,16 @@ LOCALE_PATHS = [
     os.path.join(BASE_DIR, "locale"),
 ]
 
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/5.1/howto/static-files/
+# Configurações de arquivos estáticos
 STATIC_URL = "static/"
-STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, "setup/static"),
-]
-STATIC_ROOT = os.path.join(BASE_DIR, "static")
-STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
+STATIC_ROOT = BASE_DIR / "staticfiles"
 
-# Media files
-MEDIA_ROOT = os.path.join(BASE_DIR, "media")
-MEDIA_URL = "/media/"
+# Configurações de arquivos de mídia
+MEDIA_URL = "media/"
+MEDIA_ROOT = BASE_DIR / "media"
+
+# Configure o WhiteNoise para servir os arquivos estáticos comprimidos
+STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
@@ -189,8 +184,6 @@ MESSAGE_TAGS = {
 }
 
 LOGIN_URL = "login"
-CSRF_TRUSTED_ORIGINS = [
-    "https://transcendence.up.railway.app"
-]
+CSRF_TRUSTED_ORIGINS = ["https://transcendence.up.railway.app"]
 ALLOWED_HOSTS = ["*"]
 CORS_ALLOW_CREDENTIALS = True
