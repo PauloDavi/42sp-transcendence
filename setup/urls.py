@@ -4,6 +4,7 @@ from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import include, path, re_path
 
+
 urlpatterns = (
     i18n_patterns(
         re_path(r"^rosetta/", include("rosetta.urls")),
@@ -13,8 +14,10 @@ urlpatterns = (
         path("matchmaking/", include("apps.matchmaking.urls")),
         path("chat/", include("apps.chat.urls")),
     )
-    + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
     + [
         path("accounts/", include("apps.users.providers.fortytwo.urls")),
     ]
 )
+
+# Sempre servir arquivos de media, mesmo em produção (Railway)
+urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
