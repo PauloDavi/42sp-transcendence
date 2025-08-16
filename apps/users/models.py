@@ -16,7 +16,7 @@ class User(AbstractUser):
     avatar = models.ImageField(
         verbose_name=_("Avatar"),
         upload_to="avatars/",
-        default="avatars/blank-profile-picture.png",
+        default="https://github.com/PauloDavi/42sp-transcendence/blob/main/backend/media/avatars/blank-profile-picture.png?raw=true",
     )
     status_online = models.BooleanField(default=False)
     wins = models.IntegerField(default=0, verbose_name=_("Vitórias"))
