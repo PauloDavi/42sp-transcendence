@@ -162,7 +162,7 @@ LOCALE_PATHS = [
 
 # Configurações de arquivos estáticos
 STATIC_URL = "static/"
-STATIC_ROOT = BASE_DIR / "staticfiles"
+STATIC_ROOT = BASE_DIR / "static"
 
 # Configurações de arquivos de mídia
 MEDIA_URL = "media/"
