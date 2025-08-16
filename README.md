@@ -20,3 +20,20 @@
 ## Módulos para finalizar
 - Minor module: User and Game Stats Dashboards.
 - Minor module: Add accessibility for Visually Impaired Users.
+
+
+# Deploy no Railway
+
+1. Crie um novo projeto no Railway e conecte este repositório.
+2. Configure as variáveis de ambiente no painel do Railway conforme o arquivo `.env.example`.
+3. O Railway detectará o `Procfile` automaticamente.
+4. O banco de dados PostgreSQL pode ser adicionado como plugin no Railway. As variáveis de conexão serão preenchidas automaticamente.
+5. Certifique-se de rodar as migrações após o deploy:
+	Vá em "Deployments" > "New Deployment Command" e adicione:
+	```
+	python manage.py migrate
+	python manage.py collectstatic --noinput
+	```
+6. O projeto será servido via Daphne (ASGI) na porta definida pelo Railway.
+
+Veja `.env.example` para as variáveis necessárias.
