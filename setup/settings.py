@@ -5,7 +5,7 @@ import dj_database_url
 from django.contrib.messages import constants as messages
 from django.utils.translation import gettext_lazy as _
 
-print("PWD:", Path.getcwd())
+print("PWD:", os.getcwd())
 print("Conteúdo do diretório atual:", os.listdir("."))
 for root, dirs, files in os.walk("."):
     print(f"\nDiretório: {root}")
