@@ -201,11 +201,7 @@ def generate_local_ips() -> list[str]:
 
 LOGIN_URL = "login"
 CSRF_TRUSTED_ORIGINS = [
-    "http://localhost:8443",
-    "https://localhost:8443",
-    "http://127.0.0.1:8443",
-    "https://127.0.0.1:8443",
-    *generate_local_ips(),
+    "https://transcendence.up.railway.app"
 ]
 ALLOWED_HOSTS = ["*"]
 CORS_ALLOW_CREDENTIALS = True
