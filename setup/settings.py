@@ -5,6 +5,15 @@ import dj_database_url
 from django.contrib.messages import constants as messages
 from django.utils.translation import gettext_lazy as _
 
+print("PWD:", Path.getcwd())
+print("Conteúdo do diretório atual:", os.listdir("."))
+for root, dirs, files in os.walk("."):
+    print(f"\nDiretório: {root}")
+    for d in dirs:
+        print(f"  [DIR] {d}")
+    for f in files:
+        print(f"  [FILE] {f}")
+
 # Build paths inside the project like this: BASE_DIR / "subdir".
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -163,8 +172,11 @@ LOCALE_PATHS = [
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 STATIC_URL = "static/"
-STATICFILES_DIRS = [os.path.join(BASE_DIR, "static")]
-STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, "setup/static"),
+]
+STATIC_ROOT = os.path.join(BASE_DIR, "static")
+STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
 # Media files
 MEDIA_URL = "media/"
