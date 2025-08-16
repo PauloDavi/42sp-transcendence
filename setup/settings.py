@@ -187,18 +187,6 @@ MESSAGE_TAGS = {
     messages.ERROR: "danger",
 }
 
-
-# Secure
-def generate_local_ips() -> list[str]:
-    base_ip = "10.11"
-    ips = []
-    for i in range(1, 255):
-        for j in range(1, 255):
-            ips.append(f"http://{base_ip}.{i}.{j}:8443")
-            ips.append(f"https://{base_ip}.{i}.{j}:8443")
-    return ips
-
-
 LOGIN_URL = "login"
 CSRF_TRUSTED_ORIGINS = [
     "https://transcendence.up.railway.app"
