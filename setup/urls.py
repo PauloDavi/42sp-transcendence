@@ -18,6 +18,3 @@ urlpatterns = (
         path("accounts/", include("apps.users.providers.fortytwo.urls")),
     ]
 )
-
-# Sempre servir arquivos de media, mesmo em produção (Railway)
-urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
