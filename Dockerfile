@@ -13,6 +13,7 @@ RUN apt update \
   && pip install -r requirements.txt
 
 COPY . /app/
+COPY media /app/media
 
 RUN chmod +x entrypoint.sh \
   && apt update \
