@@ -9,7 +9,7 @@
                 <h1 class="h2">{% translate "Perfil do Usuário" %}</h1>
             </div>
             <div class="card-body">
-                <img src="{{ user.avatar.url }}" loading="lazy" alt="Avatar" class="img-fluid rounded-circle mb-3" style="width: 150px; height: 150px; object-fit: cover;">
+                <img src="{% static '/avatars/blank-profile-picture.png' %}" loading="lazy" alt="Avatar" class="img-fluid rounded-circle mb-3" style="width: 150px; height: 150px; object-fit: cover;">
                 <h2 class="card-title">{{ user.username }}</h2>
                 <p class="card-text"><strong>{{ user.email }}</strong></p>
                 <p class="card-text">{% translate "Vitórias" %}: <strong>{{ user.wins }}</strong></p>

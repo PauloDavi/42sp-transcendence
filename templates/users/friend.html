@@ -8,7 +8,7 @@
             <h1 class="h2">{% translate "Perfil do Usuário" %} - {{ friend.username }}</h1>
         </div>
         <div class="card-body">
-            <img src="{{ friend.avatar.url }}" loading="lazy" alt="Avatar" class="img-fluid rounded-circle mb-3" style="width: 150px; height: 150px; object-fit: cover;">
+            <img src="{% static '/avatars/blank-profile-picture.png' %}" loading="lazy" alt="Avatar" class="img-fluid rounded-circle mb-3" style="width: 150px; height: 150px; object-fit: cover;">
             <h2 class="card-title">{{ friend.email }}</h2>
             <p class="card-text">
                 <span class="badge bg-{% if friend.status_online %}success{% else %}secondary{% endif %}">

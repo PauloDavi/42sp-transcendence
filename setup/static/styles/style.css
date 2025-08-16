@@ -1,5 +1,5 @@
 body {
-  background: url('https://github.com/PauloDavi/42sp-transcendence/blob/main/backend/media/backgrounds/profile.jpg?raw=true');
+  background: url('https://transcendence.up.railway.app/static/backgrounds/profile.jpg');
   background-position: center;
   background-attachment: fixed;
   animation: moveBackground 60s linear infinite alternate;

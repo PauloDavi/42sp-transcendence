@@ -6,13 +6,13 @@
       <div class="card-header">
         <div class="card-title m-0 position-relative d-flex justify-content-between">
           <span id="user1" style="color: red; font-weight: 900;">
-            <img id="user1-avatar" src="{{ match.user1.avatar.url }}" loading="lazy" alt="{% translate "Foto do usuário" %}" width="22" height="22" class="me-1 img-user1-box-shadow" style="border-radius: 50%;">
+            <img id="user1-avatar" src="{% static '/avatars/blank-profile-picture.png' %}" loading="lazy" alt="{% translate "Foto do usuário" %}" width="22" height="22" class="me-1 img-user1-box-shadow" style="border-radius: 50%;">
             {{ match.user1.username }} X
           </span>
           <span class="text-light position-absolute start-50 translate-middle-x">VS</span>
           <span id="user2" style="color: blue; font-weight: 400;">
             O {{ match.user2.username }}
-            <img id="user2-avatar" src="{{ match.user2.avatar.url }}" loading="lazy" alt="{% translate "Foto do usuário" %}" width="22" height="22" class="ms-1" style="border-radius: 50%;">
+            <img id="user2-avatar" src="{% static '/avatars/blank-profile-picture.png' %}" loading="lazy" alt="{% translate "Foto do usuário" %}" width="22" height="22" class="ms-1" style="border-radius: 50%;">
           </span>
         </div>
       </div>

@@ -50,7 +50,7 @@
 
       <div class="dropdown text-end">
         <button class="btn btn-outline-secondary d-block link-body-emphasis text-decoration-none dropdown-toggle" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">
-          <img src="{{ user.avatar.url }}" loading="lazy" alt="{% translate "Foto do usuário" %}" width="32" height="32" class="rounded-circle">
+          <img src="{% static '/avatars/blank-profile-picture.png' %}" loading="lazy" alt="{% translate "Foto do usuário" %}" width="32" height="32" class="rounded-circle">
           <span class="d-none d-sm-inline ms-1">{{ user.username }}</span>
         </button>
         <ul class="dropdown-menu text-small">
